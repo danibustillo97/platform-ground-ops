@@ -1,0 +1,203 @@
+/* General styles for the container */
+.container {
+    padding: 2rem;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin: auto;
+    max-width: 1200px;
+}
+
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #510c76;
+}
+
+.addButton {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    background-color: #9bbe68;
+    /* Color más suave */
+    color: #ffffff;
+    border-radius: 4px;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: 600;
+    border: 1px solid #9bbe68;
+    /* Borde del mismo color para un diseño más elegante */
+}
+
+.addIcon {
+    margin-right: 0.5rem;
+}
+
+.addButtonText {
+    font-weight: 600;
+}
+
+/* Filters styles */
+.filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.searchInput {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.statusSelect {
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.dateFilters {
+    display: flex;
+    gap: 1rem;
+}
+
+.dateFilterGroup {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.dateLabel {
+    font-weight: 600;
+}
+
+.dateInput {
+    padding: 0.5rem;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+}
+
+/* Table styles */
+.tableContainer {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.tableHeader {
+    background-color: #510c76;
+    color: #ffffff;
+}
+
+.tableHeaderCell {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+}
+
+.tableBody {
+    font-size: 0.9rem;
+}
+
+.tableCell {
+    padding: 1rem;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.statusTag {
+    display: inline-block;
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    color: #ffffff;
+}
+
+.status-abierto {
+    background-color: #9bbe68;
+}
+
+.status-en-espera-de-pasajero {
+    background-color: #ffc400;
+    color: black;
+}
+
+.status-en-espera-de-formulario {
+    background-color: #ff4e00;
+    color: black;
+}
+
+.status-cerrado {
+    background-color: #c70000;
+}
+
+.viewDetails {
+    display: flex;
+    align-items: center;
+    color: #510c76;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.viewDetails .icon {
+    margin-right: 0.5rem;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .filters {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .dateFilters {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+}
+
+@media(max-width: 570px) {
+    .header {
+        flex-flow: column;
+
+    }
+
+    .title {
+        font-size: 1.3rem;
+        padding: 0px 0px 15px 0px;
+    }
+}
+
+
+@media(max-width: 960px) {
+    .filters {
+
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1.5rem;
+        row-gap: 1.5rem;
+        column-gap: 1.5rem;
+        margin-bottom: 1.5rem;
+        font-size: 1rem;
+        
+
+    }
+}

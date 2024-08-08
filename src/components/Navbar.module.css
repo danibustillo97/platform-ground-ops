@@ -1,0 +1,85 @@
+@import url('https://fonts.googleapis.com/css2?family=Epilogue:wght@400;700&display=swap');
+
+.topBar {
+    background-color: #510C76;
+    color: white;
+    padding: 3px 16px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.topLink {
+    color: white;
+    text-decoration: none;
+    padding: 0 2px;
+    font-family: 'Epilogue', sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+.topLink:hover {
+    text-decoration: underline;
+}
+
+.separator {
+    padding: 0 8px;
+}
+
+.navBar {
+    background-color: white;
+    height: 64px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.navContainer {
+    display: flex;
+    align-items: center;
+}
+
+.navItems {
+    margin-left: auto;
+}
+
+.navLink {
+    color: #510C76;
+    text-decoration: none;
+    padding: 0 5px;
+    font-weight: 800;
+    font-family: 'Epilogue', sans-serif;
+    font-size: 13px;
+}
+
+.navLink:hover {
+    box-shadow: 0 2px 0px rgba(38, 0, 84, 0.1);
+}
+
+.loginButton {
+    background-color: #510C76;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    padding: 8px 16px;
+    font-family: 'Epilogue', sans-serif;
+}
+
+.loginButton:hover {
+    background-color: #3a0e56;
+}
+
+.logo {
+    display: inline-block;
+    max-width: 100%;
+    height: auto;
+    width: 120px;
+    height: auto;
+}
+
+@media(max-width: 560px) {
+    .loginButton {
+        padding: 5px 10px;
+
+    }
+}

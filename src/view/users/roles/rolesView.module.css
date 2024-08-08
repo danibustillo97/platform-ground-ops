@@ -1,0 +1,237 @@
+.ro_container_body {
+    padding: 20px;
+    background-color: #F8F9FA;
+}
+
+.container_header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.ro_title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #510C76;
+}
+
+.button {
+    background-color: #FF4E00;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s, transform 0.2s;
+    margin: 0 5px;
+}
+
+.button:hover {
+    background-color: #FF3A00;
+    transform: scale(1.05);
+}
+
+.button:active {
+    transform: scale(0.95);
+}
+
+.addRoleButton {
+    background-color: #9BBE68;
+}
+
+.addRoleButton:hover {
+    background-color: #8A9A5B;
+}
+
+.editButton {
+    background-color: #74C4D6;
+}
+
+.editButton:hover {
+    background-color: #60A3B8;
+}
+
+.deleteButton {
+    background-color: #FF4E00;
+    border: 1px solid #FF4E00;
+}
+
+.deleteButton:hover {
+    background-color: #FF3A00;
+}
+
+.tableContainer {
+    overflow-x: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #FFFFFF;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.tableHeader {
+    background-color: #510C76;
+    color: white;
+}
+
+.tableHeaderCell {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.tableBody {
+    background-color: #FFFFFF;
+}
+
+.tableCell {
+    padding: 12px;
+    border-bottom: 1px solid #E5E5E5;
+}
+
+.tableCell button {
+    margin-right: 5px;
+}
+
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modalContent {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+}
+
+
+.modalContent h2 {
+    margin-top: 0;
+    color: #510C76;
+
+    font-size: 1.5em;
+}
+
+
+.modalContent label {
+    margin-top: 10px;
+    font-size: 1em;
+    color: #3a0e56;
+}
+
+.modalContent input,
+.modalContent textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #dcdcdc;
+    border-radius: 4px;
+    margin-top: 5px;
+    box-sizing: border-box;
+}
+
+
+.modalContent button {
+    background-color: #510C76;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 1em;
+}
+
+.modalContent button:hover {
+    background-color: #510C76;
+
+}
+
+.modalContent button.cancel {
+    background-color: #9BBE68;
+
+}
+
+.modalContent button.cancel:hover {
+    background-color: #8AAE5B;
+
+}
+
+.modalDelete {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+
+.modalDeleteContent {
+    background: #fff;
+    border-radius: 8px;
+    padding: 20px;
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.modalDeleteContent h2 {
+    margin-top: 0;
+    color: #FF4E00;
+    font-size: 1.5em;
+}
+
+.modalDeleteContent p {
+    margin: 15px 0;
+    font-size: 1em;
+    color: #3a0e56;
+}
+
+.modalDeleteContent button {
+    background-color: #FF4E00;
+    color: #fff;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    margin: 10px;
+    display: inline-block;
+}
+
+.modalDeleteContent button.confirm {
+    background-color: #FF4E00;
+}
+
+.modalDeleteContent button.confirm:hover {
+    background-color: #FF3B00;
+}
+
+.modalDeleteContent button.cancel:hover {
+    background-color: #8AAE5B
+}
