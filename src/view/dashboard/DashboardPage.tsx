@@ -15,6 +15,7 @@ import {
 } from "chart.js";
 import { SvgIcon } from "@mui/material";
 import { Luggage, CheckCircle, HourglassEmpty } from "@mui/icons-material";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 Chart.register(
   PieController,
@@ -114,46 +115,48 @@ const DashboardPage: React.FC = () => {
   }, []);
 
   return (
-    <div className={styles.dashboardContainer}>
-      <div className={styles.innerContainer}>
-        <h1 className={styles.header}>Dashboard</h1>
+    <ProtectedRoute>
+      <div className={styles.dashboardContainer}>
+        <div className={styles.innerContainer}>
+          <h1 className={styles.header}>Dashboard</h1>
 
-        <div className={`${styles.gridContainer} ${styles.gridContainerMd}`}>
-          <div className={styles.card}>
-            <SvgIcon component={Luggage} className={styles.cardIcon} />
-            <div className={styles.cardText}>120</div>
-            <div className={styles.cardSubtext}>Total de Equipajes</div>
-          </div>
-          <div className={`${styles.card} ${styles.cardRecovered}`}>
-            <SvgIcon component={CheckCircle} className={styles.cardIcon} />
-            <div className={styles.cardText}>75</div>
-            <div className={styles.cardSubtext}>Equipajes Recuperados</div>
-          </div>
-          <div className={`${styles.card} ${styles.cardInProgress}`}>
-            <SvgIcon component={HourglassEmpty} className={styles.cardIcon} />
-            <div className={styles.cardText}>30</div>
-            <div className={styles.cardSubtext}>Equipajes en Proceso</div>
-          </div>
-        </div>
-
-        <div
-          className={`${styles.gridContainer} ${styles.gridContainerCharts}`}
-        >
-          <div className={styles.chartContainer}>
-            <h2 className={styles.chartTitle}>Estado de Equipajes</h2>
-            <div className={styles.canvasWrapper}>
-              <canvas ref={chart1Ref}></canvas>
+          <div className={`${styles.gridContainer} ${styles.gridContainerMd}`}>
+            <div className={styles.card}>
+              <SvgIcon component={Luggage} className={styles.cardIcon} />
+              <div className={styles.cardText}>120</div>
+              <div className={styles.cardSubtext}>Total de Equipajes</div>
+            </div>
+            <div className={`${styles.card} ${styles.cardRecovered}`}>
+              <SvgIcon component={CheckCircle} className={styles.cardIcon} />
+              <div className={styles.cardText}>75</div>
+              <div className={styles.cardSubtext}>Equipajes Recuperados</div>
+            </div>
+            <div className={`${styles.card} ${styles.cardInProgress}`}>
+              <SvgIcon component={HourglassEmpty} className={styles.cardIcon} />
+              <div className={styles.cardText}>30</div>
+              <div className={styles.cardSubtext}>Equipajes en Proceso</div>
             </div>
           </div>
-          <div className={styles.chartContainer}>
-            <h2 className={styles.chartTitle}>Recuperación Mensual</h2>
-            <div className={styles.canvasWrapper}>
-              <canvas ref={chart2Ref}></canvas>
+
+          <div
+            className={`${styles.gridContainer} ${styles.gridContainerCharts}`}
+          >
+            <div className={styles.chartContainer}>
+              <h2 className={styles.chartTitle}>Estado de Equipajes</h2>
+              <div className={styles.canvasWrapper}>
+                <canvas ref={chart1Ref}></canvas>
+              </div>
+            </div>
+            <div className={styles.chartContainer}>
+              <h2 className={styles.chartTitle}>Recuperación Mensual</h2>
+              <div className={styles.canvasWrapper}>
+                <canvas ref={chart2Ref}></canvas>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
+    </ProtectedRoute>
   );
 };
 

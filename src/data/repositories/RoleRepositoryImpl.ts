@@ -1,6 +1,6 @@
 import { RoleRepository } from "@/domain/repositories/RoleRepository";
 import { Role } from "@/domain/entities/Role";
-import { RoleApi } from "@/data/datasources/RoleApi";
+import { RoleApi } from "@/data/api/RoleApi";
 
 export class RoleRepositoryImpl implements RoleRepository {
     async getRoles(): Promise<Role[]> {

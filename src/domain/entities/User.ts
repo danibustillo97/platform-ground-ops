@@ -1,15 +1,15 @@
-export interface User {
-    username: string;
-    password: string;
-  }
-  
-
-  export interface Baggage{
-    id: number;
-    pnr: string;
-    passenger: string;
-    
-  }
+// src/domain/entities/User.ts
+export interface UserInfo {
+  displayName: string;
+  userPrincipalName: string;
+}
 
 
-  // return 
+export interface UserCreate {
+  name: string;
+  email: string;
+  phone: string;
+  rol: string;
+  estacion: string;
+  password: string;
+}

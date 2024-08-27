@@ -34,7 +34,6 @@
     font-size: 1rem;
     font-weight: 600;
     border: 1px solid #9bbe68;
-    /* Borde del mismo color para un diseño más elegante */
 }
 
 .addIcon {
@@ -197,7 +196,7 @@
         column-gap: 1.5rem;
         margin-bottom: 1.5rem;
         font-size: 1rem;
-        
+
 
     }
 }

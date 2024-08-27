@@ -1,16 +1,14 @@
-"use client"; // Marca el componente como Client Component
+// app/page.tsx
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+"use client";
+
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const HomePage: React.FC = () => {
   const router = useRouter();
 
-  useEffect(() => {
-    router.push('/login'); // Redirige a la página de inicio de sesión
-  }, [router]);
-
-  return null; // No renderiza nada
+  return <div>Home</div>;
 };
 
 export default HomePage;

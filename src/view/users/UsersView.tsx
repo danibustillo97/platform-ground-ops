@@ -1,26 +1,16 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import axios from "axios";
-import { RoleRepositoryImpl } from "@/data/repositories/RoleRepositoryImpl";
+import { User } from "@/domain/entities/User";
+import { UserUseCases } from "@/domain/usecases/UsersUseCase";
+import { UserRepositoryImpl } from "@/data/repositories/UserRepositoryImpl";
 import styles from "@/view/users/users.module.css";
-import { Role } from "@/domain/entities/Role";
 import { MdAdd, MdEdit, MdDelete } from "react-icons/md";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { confirmAlert } from "react-confirm-alert";
 import "react-confirm-alert/src/react-confirm-alert.css";
-
-const API_URL = "https://f2e0-20-81-239-96.ngrok-free.app/api/users/";
-
-interface User {
-    id: number;
-    name: string;
-    email: string;
-    phone: string | null;
-    rol: string | null;
-    estacion: string | null;
-}
+import { useRouter } from "next/navigation";
 
 const UsersView: React.FC = () => {
     const [users, setUsers] = useState<User[]>([]);
@@ -31,39 +21,53 @@ const UsersView: React.FC = () => {
         phone: "",
         rol: "",
         estacion: "",
+        password: "",
     });
-    const [roles, setRoles] = useState<Role[]>([]);
     const [showModal, setShowModal] = useState<boolean>(false);
     const [modalMode, setModalMode] = useState<"add" | "edit">("add");
     const [loading, setLoading] = useState<boolean>(true);
 
+    const router = useRouter();
+    const userRepository = new UserRepositoryImpl();
+    const userUseCases = new UserUseCases(userRepository);
+
     useEffect(() => {
-        const fetchRoles = async () => {
-            const roleRepository = new RoleRepositoryImpl();
+        const fetchUsers = async () => {
             try {
-                const rolesData = await roleRepository.getRoles();
-                setRoles(rolesData);
+                const usersData = await userUseCases.getUsers();
+                if (Array.isArray(usersData)) {
+                    setUsers(usersData);
+                } else {
+                    console.error(
+                        "Error: los datos de usuarios no son un array.",
+                    );
+                    toast.error(
+                        "Error: los datos de usuarios no son un array.",
+                    );
+                    setUsers([]);
+                }
             } catch (error) {
-                console.error("Error al obtener los roles:", error);
+                console.error("Error al obtener los usuarios:", error);
+                toast.error("Error al obtener los usuarios.");
+                setUsers([]);
             } finally {
                 setLoading(false);
             }
         };
 
-        const fetchUsers = async () => {
-            try {
-                const response = await axios.get<User[]>(API_URL, {
-                    headers: { "ngrok-skip-browser-warning": "true" },
-                });
-                setUsers(response.data);
-            } catch (error) {
-                console.error("Error al obtener los usuarios:", error);
-            }
-        };
-
-        fetchRoles();
         fetchUsers();
     }, []);
+
+    const resetNewUser = () => {
+        setNewUser({
+            name: "",
+            email: "",
+            phone: "",
+            rol: "",
+            estacion: "",
+            password: "",
+        });
+    };
 
     const handleUserSelect = (user: User) => {
         setSelectedUser(user);
@@ -73,6 +77,7 @@ const UsersView: React.FC = () => {
             phone: user.phone || "",
             rol: user.rol || "",
             estacion: user.estacion || "",
+            password: "",
         });
         setModalMode("edit");
         setShowModal(true);
@@ -94,60 +99,27 @@ const UsersView: React.FC = () => {
         }));
     };
 
-    const checkUserExists = async (email: string) => {
-        try {
-            const response = await axios.get<User[]>(
-                `${API_URL}?email=${email}`,
-            );
-            return response.data.length > 0;
-        } catch (error) {
-            console.error("Error al verificar existencia de usuario:", error);
-            return false;
-        }
-    };
-
     const handleSubmit = async () => {
-        if (await checkUserExists(newUser.email)) {
-            toast.error("Error: El usuario ya existe.");
-            return;
-        }
-
         try {
             if (modalMode === "add") {
-                const response = await axios.post<User>(API_URL, newUser, {
-                    headers: { "ngrok-skip-browser-warning": "true" },
-                });
-                const createdUser = response.data;
-                setUsers((prevUsers) => [...prevUsers, createdUser]);
+                await userUseCases.createUser(newUser);
                 toast.success("Usuario creado con éxito");
             } else if (selectedUser) {
-                const response = await axios.put<User>(
-                    `${API_URL}${selectedUser.id}/`,
+                await userUseCases.updateUser(
+                    selectedUser.id,
                     newUser,
-                    {
-                        headers: { "ngrok-skip-browser-warning": "true" },
-                    },
-                );
-                const updatedUser = response.data;
-                setUsers((prevUsers) =>
-                    prevUsers.map((user) =>
-                        user.id === updatedUser.id ? updatedUser : user,
-                    ),
+                    selectedUser,
                 );
                 toast.success("Usuario actualizado con éxito");
             }
             setShowModal(false);
-            setNewUser({
-                name: "",
-                email: "",
-                phone: "",
-                rol: "",
-                estacion: "",
-            });
+            resetNewUser();
             setSelectedUser(null);
+            const updatedUsers = await userUseCases.getUsers();
+            setUsers(updatedUsers);
         } catch (error) {
             console.error("Error al procesar el usuario:", error);
-            toast.error("Error al procesar el usuario");
+            toast.error("Error al procesar el usuario.");
         }
     };
 
@@ -160,11 +132,7 @@ const UsersView: React.FC = () => {
                     label: "Sí",
                     onClick: async () => {
                         try {
-                            await axios.delete(`${API_URL}${userId}/`, {
-                                headers: {
-                                    "ngrok-skip-browser-warning": "true",
-                                },
-                            });
+                            await userUseCases.deleteUser(userId);
                             setUsers((prevUsers) =>
                                 prevUsers.filter((user) => user.id !== userId),
                             );
@@ -174,7 +142,7 @@ const UsersView: React.FC = () => {
                                 "Error al eliminar el usuario:",
                                 error,
                             );
-                            toast.error("Error al eliminar el usuario");
+                            toast.error("Error al eliminar el usuario.");
                         }
                     },
                 },
@@ -186,7 +154,7 @@ const UsersView: React.FC = () => {
     };
 
     if (loading) {
-        return <div>Cargando roles...</div>;
+        return <div>Cargando usuarios...</div>;
     }
 
     return (
@@ -197,13 +165,18 @@ const UsersView: React.FC = () => {
                 <button
                     onClick={() => {
                         setModalMode("add");
+                        resetNewUser();
                         setShowModal(true);
                     }}
+                    className={styles.addButton}
                 >
                     <MdAdd size={20} />
                     Añadir Usuario
                 </button>
-                <button onClick={() => {}}>
+                <button
+                    onClick={() => router.push("users/roles")}
+                    className={styles.manageRolesButton}
+                >
                     <MdEdit size={20} />
                     Gestionar Roles
                 </button>
@@ -222,37 +195,47 @@ const UsersView: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {users.map((user) => (
-                            <tr key={user.id}>
-                                <td>{user.name}</td>
-                                <td>{user.estacion || "N/A"}</td>
-                                <td>{user.email}</td>
-                                <td>{user.phone || "N/A"}</td>
-                                <td>{user.rol || "N/A"}</td>
-                                <td>
-                                    <div className={styles.containerAction}>
-                                        <button
-                                            onClick={() =>
-                                                handleUserSelect(user)
-                                            }
-                                            className={styles.userEditButton}
-                                        >
-                                            <MdEdit size={16} />
-                                            Editar
-                                        </button>
-                                        <button
-                                            onClick={() =>
-                                                handleDelete(user.id)
-                                            }
-                                            className={styles.userDeleteButton}
-                                        >
-                                            <MdDelete size={16} />
-                                            Eliminar
-                                        </button>
-                                    </div>
-                                </td>
+                        {users.length > 0 ? (
+                            users.map((user) => (
+                                <tr key={user.id}>
+                                    <td>{user.name}</td>
+                                    <td>{user.estacion || "N/A"}</td>
+                                    <td>{user.email}</td>
+                                    <td>{user.phone || "N/A"}</td>
+                                    <td>{user.rol || "N/A"}</td>
+                                    <td>
+                                        <div className={styles.containerAction}>
+                                            <button
+                                                onClick={() =>
+                                                    handleUserSelect(user)
+                                                }
+                                                className={
+                                                    styles.userEditButton
+                                                }
+                                            >
+                                                <MdEdit size={16} />
+                                                Editar
+                                            </button>
+                                            <button
+                                                onClick={() =>
+                                                    handleDelete(user.id)
+                                                }
+                                                className={
+                                                    styles.userDeleteButton
+                                                }
+                                            >
+                                                <MdDelete size={16} />
+                                                Eliminar
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={6}>No hay usuarios disponibles</td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -273,6 +256,7 @@ const UsersView: React.FC = () => {
                                 value={newUser.name}
                                 onChange={handleInputChange}
                                 className={styles.userFormInput}
+                                placeholder="Ingrese el nombre del usuario"
                             />
                         </div>
                         <div className={styles.userFormGroup}>
@@ -283,6 +267,7 @@ const UsersView: React.FC = () => {
                                 value={newUser.email}
                                 onChange={handleInputChange}
                                 className={styles.userFormInput}
+                                placeholder="Ingrese el correo electrónico"
                             />
                         </div>
                         <div className={styles.userFormGroup}>
@@ -290,19 +275,10 @@ const UsersView: React.FC = () => {
                             <input
                                 type="text"
                                 name="phone"
-                                value={newUser.phone || ""}
+                                value={newUser.phone}
                                 onChange={handleInputChange}
                                 className={styles.userFormInput}
-                            />
-                        </div>
-                        <div className={styles.userFormGroup}>
-                            <label>Estación</label>
-                            <input
-                                type="text"
-                                name="estacion"
-                                value={newUser.estacion || ""}
-                                onChange={handleInputChange}
-                                className={styles.userFormInput}
+                                placeholder="Ingrese el número de teléfono"
                             />
                         </div>
                         <div className={styles.userFormGroup}>
@@ -311,33 +287,58 @@ const UsersView: React.FC = () => {
                                 name="rol"
                                 value={newUser.rol}
                                 onChange={handleSelectChange}
-                                className={styles.userFormSelect}
+                                className={styles.userFormInput}
                             >
-                                <option value="">Seleccione un rol</option>
-                                {roles.map((role) => (
-                                    <option key={role.id} value={role.rol}>
-                                        {role.rol}
-                                    </option>
-                                ))}
+                                <option value="">Seleccionar rol</option>
+                                <option value="admin">Admin</option>
+                                <option value="user">User</option>
+                                {/* Agrega más opciones si es necesario */}
                             </select>
                         </div>
-                        <button
-                            onClick={handleSubmit}
-                            className={styles.userFormButton}
-                        >
-                            {modalMode === "add"
-                                ? "Crear Usuario"
-                                : "Actualizar Usuario"}
-                        </button>
-                        <button
-                            onClick={() => setShowModal(false)}
-                            className={`${styles.userFormButton} ${styles.cancel}`}
-                        >
-                            Cancelar
-                        </button>
+                        <div className={styles.userFormGroup}>
+                            <label>Estación</label>
+                            <input
+                                type="text"
+                                name="estacion"
+                                value={newUser.estacion}
+                                onChange={handleInputChange}
+                                className={styles.userFormInput}
+                                placeholder="Ingrese la estación"
+                            />
+                        </div>
+                        <div className={styles.userFormGroup}>
+                            <label>Contraseña</label>
+                            <input
+                                type="password"
+                                name="password"
+                                value={newUser.password}
+                                onChange={handleInputChange}
+                                className={styles.userFormInput}
+                                placeholder="Ingrese la contraseña"
+                            />
+                        </div>
+                        <div className={styles.modalActions}>
+                            <button
+                                onClick={handleSubmit}
+                                className={styles.submitButton}
+                            >
+                                {modalMode === "add" ? "Añadir" : "Actualizar"}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    setShowModal(false);
+                                    resetNewUser();
+                                    setSelectedUser(null);
+                                }}
+                                className={styles.cancelButton}
+                            >
+                                Cancelar
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
+
             <ToastContainer />
         </div>
     );

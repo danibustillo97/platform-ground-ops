@@ -1,6 +1,6 @@
 "use client";
-
-import React, { useState } from "react";
+import React from "react";
+import { useFormBaggageController } from "./form_baggage_controller";
 import styles from "@/view/baggage/form_baggage/form_baggage_view.module.css";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
@@ -8,73 +8,25 @@ import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 
 const FormReclamoView: React.FC = () => {
-    const [pnr, setPnr] = useState("");
-    const [pnrAdded, setPnrAdded] = useState(false);
-    const [selectedPassenger, setSelectedPassenger] = useState<string>("");
-    const [luggageList, setLuggageList] = useState<string[]>([]);
-    const [selectedLuggage, setSelectedLuggage] = useState<
-        { luggage: string; phone: string; email: string }[]
-    >([]);
-    const [formData, setFormData] = useState({ phone: "", email: "" });
-
-    // Información de pasajeros con datos de contacto
-    const passengerData: Record<
-        string,
-        { luggages: string[]; phone: string; email: string }
-    > = {
-        "1": {
-            luggages: ["L001", "L002"],
-            phone: "123-456-7890",
-            email: "ana.perez@example.com",
-        },
-        "2": {
-            luggages: ["L003", "L004"],
-            phone: "987-654-3210",
-            email: "luis.garcia@example.com",
-        },
-        "3": {
-            luggages: ["L005"],
-            phone: "555-555-5555",
-            email: "maria.fernandez@example.com",
-        },
-    };
-
-    const handleAddPnr = () => {
-        if (pnr.trim()) {
-            setPnrAdded(true);
-        }
-    };
-
-    const handlePassengerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const passenger = e.target.value;
-        setSelectedPassenger(passenger);
-        const passengerInfo =
-            passengerData[passenger as keyof typeof passengerData];
-        setLuggageList(passengerInfo?.luggages || []);
-        setFormData({
-            phone: passengerInfo?.phone || "",
-            email: passengerInfo?.email || "",
-        });
-    };
-
-    const handleLuggageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const luggage = e.target.value;
-        if (
-            luggage &&
-            !selectedLuggage.some((item) => item.luggage === luggage)
-        ) {
-            setSelectedLuggage([
-                ...selectedLuggage,
-                { luggage, phone: formData.phone, email: formData.email },
-            ]);
-        }
-    };
-
-    const handleRemoveLuggage = (luggage: string) => {
-        setSelectedLuggage(
-            selectedLuggage.filter((item) => item.luggage !== luggage),
-        );
-    };
+    const {
+        pnr,
+        setPnr,
+        pnrAdded,
+        handleAddPnr,
+        passengerData,
+        selectedPassenger,
+        setSelectedPassenger,
+        luggageList,
+        selectedLuggage,
+        formData,
+        setFormData,
+        handlePassengerChange,
+        handleLuggageSelect,
+        handleRemoveLuggage,
+        handleDescriptionChange,
+        handleIssueChange,
+        handleCreateCases,
+    } = useFormBaggageController();
 
     return (
         <div className={styles.container}>
@@ -122,9 +74,11 @@ const FormReclamoView: React.FC = () => {
                         disabled={!pnrAdded}
                     >
                         <option value="">Seleccionar pasajero</option>
-                        <option value="1">Ana Pérez</option>
-                        <option value="2">Luis García</option>
-                        <option value="3">María Fernández</option>
+                        {passengerData.map((passenger, index) => (
+                            <option key={index} value={passenger.Pax_Name}>
+                                {passenger.Pax_Name}
+                            </option>
+                        ))}
                     </select>
                 </div>
 
@@ -187,68 +141,126 @@ const FormReclamoView: React.FC = () => {
                 </div>
 
                 <div className={styles.selectedLuggageContainer}>
-                    {selectedLuggage.map(({ luggage, phone, email }) => (
-                        <div key={luggage} className={styles.luggageItem}>
-                            <div className={styles.luggageHeader}>
-                                <span>{luggage}</span>
-                                <button
-                                    type="button"
-                                    className={styles.removeButton}
-                                    onClick={() => handleRemoveLuggage(luggage)}
-                                >
-                                    <DeleteOutlineIcon />
-                                </button>
-                            </div>
-                            <textarea
-                                placeholder="Descripción de la maleta"
-                                className={styles.textarea}
-                                disabled={!pnrAdded}
-                            />
-                            <div className={styles.inlineFields}>
-                                <div className={styles.inlineField}>
-                                    <label
-                                        htmlFor={`issue-${luggage}`}
-                                        className={styles.label}
+                    {selectedLuggage.map(
+                        ({
+                            id,
+                            luggage,
+                            phone,
+                            email,
+                            flightNum,
+                            departureDate,
+                            fromAirport,
+                            toAirport,
+                            passengerName,
+                            description,
+                            issue,
+                        }) => (
+                            <div key={id} className={styles.luggageItem}>
+                                <div className={styles.luggageHeader}>
+                                    <span>
+                                        {passengerName} - {luggage}
+                                    </span>
+                                    <button
+                                        type="button"
+                                        className={styles.removeButton}
+                                        onClick={() => handleRemoveLuggage(id)}
                                     >
-                                        Problema relacionado con
-                                    </label>
-                                    <select
-                                        id={`issue-${luggage}`}
-                                        className={styles.select}
-                                    >
-                                        <option value="">
-                                            Seleccionar problema
-                                        </option>
-                                        <option value="Articulo Perdido">
-                                            Artículo Perdido
-                                        </option>
-                                        <option value="Retraso De Equipaje">
-                                            Retraso De Equipaje
-                                        </option>
-                                        <option value="Daño De Equipaje">
-                                            Daño De Equipaje
-                                        </option>
-                                        <option value="Equipaje Perdido">
-                                            Equipaje Perdido
-                                        </option>
-                                    </select>
+                                        <DeleteOutlineIcon />
+                                    </button>
                                 </div>
-                                <div className={styles.inlineField}>
-                                    <p>Teléfono: {phone}</p>
-                                    <p>Email: {email}</p>
+                                <div className={styles.luggageDetails}>
+                                    <p>
+                                        <strong>Número de Teléfono:</strong>{" "}
+                                        {phone}
+                                    </p>
+                                    <p>
+                                        <strong>Email:</strong> {email}
+                                    </p>
+                                    <p>
+                                        <strong>Número de Vuelo:</strong>{" "}
+                                        {flightNum}
+                                    </p>
+                                    <p>
+                                        <strong>Fecha de Salida:</strong>{" "}
+                                        {departureDate}
+                                    </p>
+                                    <p>
+                                        <strong>Aeropuerto de Origen:</strong>{" "}
+                                        {fromAirport}
+                                    </p>
+                                    <p>
+                                        <strong>Aeropuerto de Destino:</strong>{" "}
+                                        {toAirport}
+                                    </p>
+                                    <div className={styles.luggageField}>
+                                        <label
+                                            htmlFor={`description-${id}`}
+                                            className={styles.label}
+                                        >
+                                            Descripción
+                                        </label>
+                                        <textarea
+                                            id={`description-${id}`}
+                                            className={styles.textarea}
+                                            value={description}
+                                            onChange={(e) =>
+                                                handleDescriptionChange(
+                                                    id,
+                                                    e.target.value,
+                                                )
+                                            }
+                                        />
+                                    </div>
+                                    <div className={styles.luggageField}>
+                                        <label
+                                            htmlFor={`issue-${id}`}
+                                            className={styles.label}
+                                        >
+                                            Tipo de Problema
+                                        </label>
+                                        <select
+                                            id={`issue-${id}`}
+                                            className={styles.select}
+                                            value={issue}
+                                            onChange={(e) =>
+                                                handleIssueChange(
+                                                    id,
+                                                    e.target.value,
+                                                )
+                                            }
+                                        >
+                                            <option value="">
+                                                Seleccionar tipo
+                                            </option>
+                                            <option value="Daño">Daño</option>
+                                            <option value="Pérdida">
+                                                Pérdida
+                                            </option>
+                                            <option value="Retraso">
+                                                Retraso
+                                            </option>
+                                        </select>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        ),
+                    )}
                 </div>
 
                 <div className={styles.buttonContainer}>
-                    <button type="button" className={styles.backButton}>
-                        <ArrowBackIcon />
-                        Volver
+                    <button
+                        type="button"
+                        className={styles.button}
+                        onClick={handleCreateCases}
+                    >
+                        Crear Casos
                     </button>
-                    <button type="submit" className={styles.submitButton}>
-                        Registrar Evento
+                    <button
+                        type="button"
+                        className={styles.button}
+                        onClick={() => window.history.back()}
+                    >
+                        <ArrowBackIcon /> Volver
                     </button>
                 </div>
             </form>

@@ -1,61 +1,31 @@
-"use client"; // Marca el componente como Client Component
+// src/view/login/LoginPage.tsx
+"use client";
 
-import React, { useState } from 'react';
-import styles from './login.module.css';
-import { AuthService } from '../../data/repositories/AuthRepository';
-import { AuthAPI } from '../../data/api/AuthAPI';
+import React, { useState } from "react";
+import { useRouter } from "next/navigation";
+// import { AuthRepositoryImpl } from "@/data/repositories/AuthRepositoryImpl";
+import { Providers } from "@microsoft/mgt-element";
+import { Msal2Provider } from "@microsoft/mgt-msal2-provider";
+import { Login, Agenda, useIsSignedIn } from "@microsoft/mgt-react";
 
-const authAPI = new AuthAPI();
-const authService = new AuthService(authAPI);
+// const authRepo = new AuthRepositoryImpl();
 
-const LoginPage: React.FC = () => {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+export default function LoginPage() {
+  Providers.globalProvider = new Msal2Provider({
+    clientId: "bc659d2e-d885-4653-89a9-64a249dcad75",
+    authority:
+      "https://login.microsoftonline.com/e91262c3-f4c7-4e85-9e7c-70df74040857",
+    redirectUri: "http://localhost:3000",
+    scopes: ["user.read", "profile"],
+  });
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    try {
-      await authService.login(username, password);
-      window.location.href = '/dashboard';  
-    } catch (error) {
-      console.error('Error durante el inicio de sesión', error);
-    }
-  };
+  const [isSignedIn] = useIsSignedIn();
 
   return (
-    <div className={styles.containerLogin}>
-      <div className={styles.formContainer}>
-        <h1 className={styles.title}>Iniciar Sesión</h1>
-        <form className={styles.form} onSubmit={handleLogin}>
-          <div className={styles.inputGroup}>
-            <label htmlFor="username" className={styles.label}>Usuario</label>
-            <input
-              type="text"
-              id="username"
-              className={styles.input}
-              placeholder="Tu usuario"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div className={styles.inputGroup}>
-            <label htmlFor="password" className={styles.label}>Contraseña</label>
-            <input
-              type="password"
-              id="password"
-              className={styles.input}
-              placeholder="Tu contraseña"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <button type="submit" className={styles.button}>
-            Iniciar Sesión
-          </button>
-        </form>
-      </div>
+    <div>
+      <h1>Login Page</h1>
+
+      <Login />
     </div>
   );
-};
-
-export default LoginPage;
+}
