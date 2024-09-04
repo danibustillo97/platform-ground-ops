@@ -1,83 +1,22 @@
 "use client";
-import React, { useState, useMemo } from "react";
-import Link from "next/link";
+import React from "react";
+import { useBaggageCasesController } from "@/view/baggage/useBaggageCasesController";
 import styles from "@/view/baggage/baggage.module.css";
-import { Visibility } from "@mui/icons-material";
-import { Add } from "@mui/icons-material";
+import { Visibility, Add } from "@mui/icons-material";
+import Link from "next/link";
 
-const LostLuggageManagement: React.FC = () => {
-    const [searchTerm, setSearchTerm] = useState<string>("");
-    const [statusFilter, setStatusFilter] = useState<string>("");
-    const [startDate, setStartDate] = useState<string>("");
-    const [endDate, setEndDate] = useState<string>("");
-
-    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setSearchTerm(event.target.value.toLowerCase());
-    };
-
-    const handleStatusChange = (
-        event: React.ChangeEvent<HTMLSelectElement>,
-    ) => {
-        setStatusFilter(event.target.value);
-    };
-
-    const handleStartDateChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        setStartDate(event.target.value);
-    };
-
-    const handleEndDateChange = (
-        event: React.ChangeEvent<HTMLInputElement>,
-    ) => {
-        setEndDate(event.target.value);
-    };
-
-    const filteredData = useMemo(() => {
-        return [
-            {
-                pnr: "PNR12345",
-                name: "Juan Pérez",
-                date: "2024-07-24",
-                status: "Abierto",
-            },
-            {
-                pnr: "PNR67890",
-                name: "Ana Gómez",
-                date: "2024-07-23",
-                status: "En espera de formulario",
-            },
-            {
-                pnr: "PNR54321",
-                name: "Carlos Martínez",
-                date: "2024-07-22",
-                status: "En espera de pasajero",
-            },
-            {
-                pnr: "PNR54561",
-                name: "Oliver Bustillo",
-                date: "2024-07-29",
-                status: "Cerrado",
-            },
-        ]
-            .filter(
-                (row) =>
-                    row.pnr.toLowerCase().includes(searchTerm) ||
-                    row.name.toLowerCase().includes(searchTerm) ||
-                    row.status.toLowerCase().includes(searchTerm),
-            )
-            .filter((row) => {
-                const rowDate = new Date(row.date);
-                const start = startDate
-                    ? new Date(startDate)
-                    : new Date("1900-01-01");
-                const end = endDate ? new Date(endDate) : new Date();
-                return rowDate >= start && rowDate <= end;
-            })
-            .filter((row) =>
-                statusFilter ? row.status === statusFilter : true,
-            );
-    }, [searchTerm, statusFilter, startDate, endDate]);
+const BaggageView: React.FC = () => {
+    const {
+        searchTerm,
+        statusFilter,
+        startDate,
+        endDate,
+        filteredData,
+        setSearchTerm,
+        setStatusFilter,
+        setStartDate,
+        setEndDate,
+    } = useBaggageCasesController();
 
     return (
         <div className={styles.container}>
@@ -101,12 +40,12 @@ const LostLuggageManagement: React.FC = () => {
                     placeholder="Buscar por PNR, pasajero o estado"
                     className={styles.searchInput}
                     value={searchTerm}
-                    onChange={handleSearchChange}
+                    onChange={(e) => setSearchTerm(e.target.value)}
                 />
                 <select
                     className={styles.statusSelect}
                     value={statusFilter}
-                    onChange={handleStatusChange}
+                    onChange={(e) => setStatusFilter(e.target.value)}
                 >
                     <option value="">Todos los estados</option>
                     <option value="Abierto">Abierto</option>
@@ -125,7 +64,7 @@ const LostLuggageManagement: React.FC = () => {
                             type="date"
                             className={styles.dateInput}
                             value={startDate}
-                            onChange={handleStartDateChange}
+                            onChange={(e) => setStartDate(e.target.value)}
                         />
                     </div>
                     <div className={styles.dateFilterGroup}>
@@ -134,7 +73,7 @@ const LostLuggageManagement: React.FC = () => {
                             type="date"
                             className={styles.dateInput}
                             value={endDate}
-                            onChange={handleEndDateChange}
+                            onChange={(e) => setEndDate(e.target.value)}
                         />
                     </div>
                 </div>
@@ -144,40 +83,71 @@ const LostLuggageManagement: React.FC = () => {
                 <table className={styles.table}>
                     <thead className={styles.tableHeader}>
                         <tr>
-                            <th className={styles.tableHeaderCell}>PNR</th>
-                            <th className={styles.tableHeaderCell}>Pasajero</th>
-                            <th className={styles.tableHeaderCell}>Fecha</th>
+                            <th className={styles.tableHeaderCell}>
+                                Baggage Code
+                            </th>
+                            <th className={styles.tableHeaderCell}>Teléfono</th>
+                            <th className={styles.tableHeaderCell}>Email</th>
+                            <th className={styles.tableHeaderCell}>
+                                Nombre Pasajero
+                            </th>
+                            <th className={styles.tableHeaderCell}>
+                                Tipo de Problema
+                            </th>
                             <th className={styles.tableHeaderCell}>Estado</th>
+                            <th className={styles.tableHeaderCell}>
+                                Fecha de Creación
+                            </th>
                             <th className={styles.tableHeaderCell}>Acciones</th>
                         </tr>
                     </thead>
                     <tbody className={styles.tableBody}>
-                        {filteredData.map((row, index) => (
-                            <tr key={index}>
-                                <td className={styles.tableCell}>{row.pnr}</td>
-                                <td className={styles.tableCell}>{row.name}</td>
-                                <td className={styles.tableCell}>{row.date}</td>
-                                <td className={styles.tableCell}>
-                                    <span
-                                        className={`${styles.statusTag} ${
-                                            styles[
-                                                `status-${row.status
-                                                    .toLowerCase()
-                                                    .replace(/ /g, "-")}`
-                                            ]
-                                        }`}
-                                    >
+                        {filteredData.length > 0 ? (
+                            filteredData.map((row, index) => (
+                                <tr key={index}>
+                                    <td className={styles.tableCell}>
+                                        {row.baggage_code}
+                                    </td>
+                                    <td className={styles.tableCell}>
+                                        {row.contact.phone}
+                                    </td>
+                                    <td className={styles.tableCell}>
+                                        {row.contact.email}
+                                    </td>
+                                    <td className={styles.tableCell}>
+                                        {row.passenger_name}
+                                    </td>
+                                    <td className={styles.tableCell}>
+                                        {row.issue_type}
+                                    </td>
+                                    <td className={styles.tableCell}>
                                         {row.status}
-                                    </span>
-                                </td>
-                                <td className={styles.tableCell}>
-                                    <a href="#" className={styles.viewDetails}>
-                                        <Visibility className={styles.icon} />
-                                        Ver Detalles
-                                    </a>
+                                    </td>
+                                    <td className={styles.tableCell}>
+                                        {new Date(
+                                            row.date_create.split("T")[0],
+                                        ).toLocaleDateString()}
+                                    </td>
+                                    <td className={styles.tableCell}>
+                                        <a
+                                            href="#"
+                                            className={styles.viewDetails}
+                                        >
+                                            <Visibility
+                                                className={styles.icon}
+                                            />
+                                            Ver Detalles
+                                        </a>
+                                    </td>
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={8} className={styles.tableCell}>
+                                    No se encontraron casos de equipaje.
                                 </td>
                             </tr>
-                        ))}
+                        )}
                     </tbody>
                 </table>
             </div>
@@ -185,4 +155,4 @@ const LostLuggageManagement: React.FC = () => {
     );
 };
 
-export default LostLuggageManagement;
+export default BaggageView;

@@ -49,3 +49,30 @@ export const createBaggageCasesAPI = async (baggageCases: any[]) => {
         throw error;
     }
 };
+
+export const getBaggageCasesApi = async () => {
+    try {
+        const response = await fetch(
+            "https://e9ca-20-81-239-96.ngrok-free.app/api/baggage-case/",
+            {
+                method: "GET",
+                headers: {
+                    "ngrok-skip-browser-warning": "true",
+                    "Content-Type": "application/json",
+                },
+            }
+        );
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Datos recibidos de la API:", data);
+            return data;
+        } else {
+            console.error("Error fetching data:", response.statusText);
+            return [];
+        }
+    } catch (error) {
+        console.error("Error fetching baggage cases:", error);
+        return [];
+    }
+};

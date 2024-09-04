@@ -103,7 +103,7 @@ export const useFormBaggageController = () => {
                     toAirport: passengerInfo.To_Airport || "",
                     passengerName: passengerInfo.Pax_Name || "",
                     description: "",
-                    issue: "",
+                    issue: "Lost",
                 },
             ]);
         }
@@ -130,7 +130,6 @@ export const useFormBaggageController = () => {
     };
 
     const handleCreateCases = async () => {
-
         const formattedData = selectedLuggage.map((luggageItem) => ({
             baggage_code: luggageItem.luggage,
             contact: {
@@ -138,14 +137,14 @@ export const useFormBaggageController = () => {
                 email: luggageItem.email
             },
             flight_info: {
-                flightNumber: luggageItem.flightNum,
-                departureDate: luggageItem.departureDate,
-                fromAirport: luggageItem.fromAirport,
-                toAirport: luggageItem.toAirport
+                flightNumber: luggageItem.flightNum || "",
+                departureDate: luggageItem.departureDate || "",
+                fromAirport: luggageItem.fromAirport || "",
+                toAirport: luggageItem.toAirport || ""
             },
-            passenger_name: luggageItem.passengerName,
-            description: luggageItem.description,
-            issue_type: luggageItem.issue
+            passenger_name: luggageItem.passengerName || "",
+            description: luggageItem.description || "",
+            issue_type: luggageItem.issue || ""
         }));
 
         console.log("Datos preparados para enviar:", formattedData);
