@@ -1,8 +1,10 @@
+import { BaggageCase } from "@/domain/types/BaggageCase";
+
 // data/api/baggageAPI.ts
 export const fetchPassengerDataAPI = async (pnr: string) => {
     try {
         const response = await fetch(
-            `https://e9ca-20-81-239-96.ngrok-free.app/api/manifest/${pnr}`,
+            `https://e3e1-20-81-239-96.ngrok-free.app/api/manifest/${pnr}`,
             {
                 method: "GET",
                 headers: {
@@ -27,7 +29,7 @@ export const fetchPassengerDataAPI = async (pnr: string) => {
 export const createBaggageCasesAPI = async (baggageCases: any[]) => {
     try {
         const response = await fetch(
-            "https://e9ca-20-81-239-96.ngrok-free.app/api/baggage-case/",
+            "https://e3e1-20-81-239-96.ngrok-free.app/api/baggage-case/",
             {
                 method: "POST",
                 headers: {
@@ -53,7 +55,7 @@ export const createBaggageCasesAPI = async (baggageCases: any[]) => {
 export const getBaggageCasesApi = async () => {
     try {
         const response = await fetch(
-            "https://e9ca-20-81-239-96.ngrok-free.app/api/baggage-case/",
+            "https://e3e1-20-81-239-96.ngrok-free.app/api/baggage-case/",
             {
                 method: "GET",
                 headers: {
@@ -74,5 +76,34 @@ export const getBaggageCasesApi = async () => {
     } catch (error) {
         console.error("Error fetching baggage cases:", error);
         return [];
+    }
+};
+
+export const putBaggageCasesAPI = async (id_passenger: any, baggageCases: any) => {
+    try {
+        const response = await fetch(
+            `https://e3e1-20-81-239-96.ngrok-free.app/api/baggage-case/${id_passenger}`,
+            {
+                method: "PUT",
+                headers: {
+                    "ngrok-skip-browser-warning": "true",
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(baggageCases),
+            },
+        );
+
+        if (response.ok) {
+            const data = await response.json();
+            console.log("Datos recibidos de la API:", data);
+            return data;
+        } else {
+            const errorDetails = await response.json();
+            console.error("Detalles del error:", errorDetails);
+            throw new Error(`Error updating baggage cases, status: ${response.status}, message: ${errorDetails.message}`);
+        }
+    } catch (error) {
+        console.error("Error en la solicitud PUT:", error);
+        throw error;
     }
 };

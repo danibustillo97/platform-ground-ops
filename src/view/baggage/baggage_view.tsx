@@ -1,9 +1,12 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import { useBaggageCasesController } from "@/view/baggage/useBaggageCasesController";
 import styles from "@/view/baggage/baggage.module.css";
 import { Visibility, Add } from "@mui/icons-material";
 import Link from "next/link";
+import Overlay from "@/components/Overlay/Overlay";
+import ModalBaggage from "@/components/Modals/ModalBaggage";
+import { BaggageCase } from "@/domain/types/BaggageCase";
 
 const BaggageView: React.FC = () => {
     const {
@@ -12,10 +15,17 @@ const BaggageView: React.FC = () => {
         startDate,
         endDate,
         filteredData,
+        loading,
         setSearchTerm,
         setStatusFilter,
         setStartDate,
         setEndDate,
+        isModalOpen,
+        selectedBaggageDetails,
+        handleOpenModal,
+        handleCloseModal,
+        updatedSavedBaggageCase,
+
     } = useBaggageCasesController();
 
     return (
@@ -78,79 +88,87 @@ const BaggageView: React.FC = () => {
                     </div>
                 </div>
             </div>
-
-            <div className={styles.tableContainer}>
-                <table className={styles.table}>
-                    <thead className={styles.tableHeader}>
-                        <tr>
-                            <th className={styles.tableHeaderCell}>
-                                Baggage Code
-                            </th>
-                            <th className={styles.tableHeaderCell}>Teléfono</th>
-                            <th className={styles.tableHeaderCell}>Email</th>
-                            <th className={styles.tableHeaderCell}>
-                                Nombre Pasajero
-                            </th>
-                            <th className={styles.tableHeaderCell}>
-                                Tipo de Problema
-                            </th>
-                            <th className={styles.tableHeaderCell}>Estado</th>
-                            <th className={styles.tableHeaderCell}>
-                                Fecha de Creación
-                            </th>
-                            <th className={styles.tableHeaderCell}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody className={styles.tableBody}>
-                        {filteredData.length > 0 ? (
-                            filteredData.map((row, index) => (
-                                <tr key={index}>
-                                    <td className={styles.tableCell}>
-                                        {row.baggage_code}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        {row.contact.phone}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        {row.contact.email}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        {row.passenger_name}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        {row.issue_type}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        {row.status}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        {new Date(
-                                            row.date_create.split("T")[0],
-                                        ).toLocaleDateString()}
-                                    </td>
-                                    <td className={styles.tableCell}>
-                                        <a
-                                            href="#"
-                                            className={styles.viewDetails}
-                                        >
-                                            <Visibility
-                                                className={styles.icon}
-                                            />
-                                            Ver Detalles
-                                        </a>
+            {loading ? <Overlay /> :
+                <div className={styles.tableContainer}>
+                    <table className={styles.table}>
+                        <thead className={styles.tableHeader}>
+                            <tr>
+                                <th className={styles.tableHeaderCell}>
+                                    Baggage Code
+                                </th>
+                                <th className={styles.tableHeaderCell}>Teléfono</th>
+                                <th className={styles.tableHeaderCell}>Email</th>
+                                <th className={styles.tableHeaderCell}>
+                                    Nombre Pasajero
+                                </th>
+                                <th className={styles.tableHeaderCell}>
+                                    Tipo de Problema
+                                </th>
+                                <th className={styles.tableHeaderCell}>Estado</th>
+                                <th className={styles.tableHeaderCell}>
+                                    Fecha de Creación
+                                </th>
+                                <th className={styles.tableHeaderCell}>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody className={styles.tableBody}>
+                            {filteredData.length > 0 ? (
+                                filteredData.map((row, index) => (
+                                    <tr key={index}>
+                                        <td className={styles.tableCell}>
+                                            {row.baggage_code}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {row.contact.phone}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {row.contact.email}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {row.passenger_name}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {row.issue_type}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {row.status}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {new Date(
+                                                row.date_create.split("T")[0],
+                                            ).toLocaleDateString()}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            <a
+                                                href='#'
+                                                className={styles.viewDetails}
+                                                onClick={() => handleOpenModal(row)}
+                                            >
+                                                <Visibility
+                                                    className={styles.icon}
+                                                />
+                                                Ver Detalles
+                                            </a>
+                                        </td>
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={8} className={styles.tableCell}>
+                                        No se encontraron casos de equipaje.
                                     </td>
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={8} className={styles.tableCell}>
-                                    No se encontraron casos de equipaje.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
-                </table>
-            </div>
+                            )}
+                        </tbody>
+                    </table>
+                    {isModalOpen && selectedBaggageDetails && (
+                        <ModalBaggage
+                            isOpen={isModalOpen}
+                            onClose={handleCloseModal}
+                            details={selectedBaggageDetails} onSave={updatedSavedBaggageCase}/>
+                    )}
+                </div>
+            }
         </div>
     );
 };
