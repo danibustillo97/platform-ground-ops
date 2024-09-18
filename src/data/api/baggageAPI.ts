@@ -2,7 +2,7 @@
 export const fetchPassengerDataAPI = async (pnr: string) => {
     try {
         const response = await fetch(
-            `https://e9ca-20-81-239-96.ngrok-free.app/api/manifest/${pnr}`,
+            `https://cde7-20-81-239-96.ngrok-free.app/api/manifest/${pnr}`,
             {
                 method: "GET",
                 headers: {
@@ -27,7 +27,7 @@ export const fetchPassengerDataAPI = async (pnr: string) => {
 export const createBaggageCasesAPI = async (baggageCases: any[]) => {
     try {
         const response = await fetch(
-            "https://e9ca-20-81-239-96.ngrok-free.app/api/baggage-case/",
+            "https://cde7-20-81-239-96.ngrok-free.app/api/baggage-case/",
             {
                 method: "POST",
                 headers: {
@@ -53,7 +53,7 @@ export const createBaggageCasesAPI = async (baggageCases: any[]) => {
 export const getBaggageCasesApi = async () => {
     try {
         const response = await fetch(
-            "https://e9ca-20-81-239-96.ngrok-free.app/api/baggage-case/",
+            "https://cde7-20-81-239-96.ngrok-free.app/api/baggage-case/",
             {
                 method: "GET",
                 headers: {
