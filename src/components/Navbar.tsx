@@ -5,10 +5,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { Providers } from "@microsoft/mgt-element";
-import { Msal2Provider } from "@microsoft/mgt-msal2-provider";
-import { useIsSignedIn } from "@microsoft/mgt-react";
-import styles from "./Navbar.module.css";
+import styles from "@/components/Navbar.module.css"
 
 const Navbar: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -17,43 +14,9 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const router = useRouter();
 
-  useEffect(() => {
-    Providers.globalProvider = new Msal2Provider({
-      clientId: "bc659d2e-d885-4653-89a9-64a249dcad75",
-      authority:
-        "https://login.microsoftonline.com/e91262c3-f4c7-4e85-9e7c-70df74040857",
-      redirectUri: "http://localhost:3000",
-      scopes: ["user.read", "profile"],
-    });
-
-    const checkAuthentication = async () => {
-      const provider = Providers.globalProvider;
-      if (provider) {
-        try {
-          const isSignedIn = (await provider.getAccessToken()) !== null;
-          setIsAuthenticated(isSignedIn);
-          if (provider.graph) {
-            const userData = await provider.graph.client.api("/me").get();
-            setUserInfo(userData);
-          }
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
-      }
-    };
-
-    checkAuthentication();
-  }, [router]);
+  useEffect(() => {}, [router]);
 
   const handleLogout = async () => {
-    const provider = Providers.globalProvider;
-    if (provider && typeof provider.logout === "function") {
-      try {
-        await provider.logout();
-      } catch (error) {
-        console.error("Error logging out:", error);
-      }
-    }
     setIsAuthenticated(false);
     setUserInfo(null);
     router.push("/login");
@@ -87,37 +50,33 @@ const Navbar: React.FC = () => {
           <Link href="/baggage_gestion" className={styles.navLink}>
             Gestión de Equipajes
           </Link>
-          {isAuthenticated ? (
-            <div className={styles.dropdown}>
-              <button
-                className={styles.navLink}
-                onClick={() => setShowDropdown(!showDropdown)}
-              >
-                {userInfo?.displayName || "User"}
-              </button>
-              {showDropdown && (
-                <div className={styles.dropdownMenu}>
-                  <p>
-                    <strong>Name:</strong> {userInfo?.displayName}
-                  </p>
-                  <p>
-                    <strong>Email:</strong>{" "}
-                    {userInfo?.mail || userInfo?.userPrincipalName}
-                  </p>
-                  <button
-                    className={styles.logoutButton}
-                    onClick={handleLogout}
-                  >
-                    Logout
-                  </button>
-                </div>
-              )}
-            </div>
-          ) : (
-            <Link href="/login" className={styles.loginButton}>
-              Login
-            </Link>
-          )}
+
+          <div className={styles.dropdown}>
+            <button
+              className={styles.navLink}
+              onClick={() => setShowDropdown(!showDropdown)}
+            >
+              {userInfo?.displayName || "User"}
+            </button>
+            {showDropdown && (
+              <div className={styles.dropdownMenu}>
+                <p>
+                  <strong>Name:</strong> {userInfo?.displayName}
+                </p>
+                <p>
+                  <strong>Email:</strong>{" "}
+                  {userInfo?.mail || userInfo?.userPrincipalName}
+                </p>
+                <button className={styles.logoutButton} onClick={handleLogout}>
+                  Logout
+                </button>
+              </div>
+            )}
+          </div>
+
+          <Link href="/login" className={styles.loginButton}>
+            Login
+          </Link>
         </div>
       </div>
     </nav>

@@ -6,9 +6,11 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import Overlay from "@/components/Overlay/Overlay";
 
 const FormReclamoView: React.FC = () => {
     const {
+        loading,
         pnr,
         setPnr,
         pnrAdded,
@@ -26,12 +28,14 @@ const FormReclamoView: React.FC = () => {
         handleDescriptionChange,
         handleIssueChange,
         handleCreateCases,
+
     } = useFormBaggageController();
 
     return (
         <div className={styles.container}>
             <h1 className={styles.title}>Registro de Pérdida de Equipaje</h1>
-            <form className={styles.form}>
+            {loading ? <Overlay />:
+                <form className={styles.form}>
                 <div className={styles.formGroup}>
                     <label htmlFor="pnr" className={styles.label}>
                         PNR
@@ -250,20 +254,21 @@ const FormReclamoView: React.FC = () => {
                 <div className={styles.buttonContainer}>
                     <button
                         type="button"
-                        className={styles.button}
+                        className={styles.createButton}
                         onClick={handleCreateCases}
                     >
                         Crear Casos
                     </button>
                     <button
                         type="button"
-                        className={styles.button}
+                        className={styles.backButton}
                         onClick={() => window.history.back()}
                     >
                         <ArrowBackIcon /> Volver
                     </button>
                 </div>
             </form>
+            }
         </div>
     );
 };

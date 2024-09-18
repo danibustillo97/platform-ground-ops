@@ -4,6 +4,7 @@ import { getPassengerData, createBaggageCases } from "@/data/repositories/baggag
 import { PassengerData } from "@/domain/types/PassengerData";
 
 export const useFormBaggageController = () => {
+    const [loading, setLoading] = useState(true);
     const [pnr, setPnr] = useState("");
     const [pnrAdded, setPnrAdded] = useState(false);
     const [passengerData, setPassengerData] = useState<PassengerData[]>([]);
@@ -30,6 +31,7 @@ export const useFormBaggageController = () => {
         if (pnrAdded) {
             fetchPassengerData(pnr);
         }
+        setLoading(false);
     }, [pnrAdded, pnr]);
 
     const handleAddPnr = () => {
@@ -158,6 +160,7 @@ export const useFormBaggageController = () => {
     };
 
     return {
+        loading,
         pnr,
         setPnr,
         pnrAdded,
