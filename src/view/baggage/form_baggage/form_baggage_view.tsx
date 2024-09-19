@@ -236,12 +236,17 @@ const FormReclamoView: React.FC = () => {
                                             <option value="">
                                                 Seleccionar tipo
                                             </option>
-                                            <option value="Daño">Daño</option>
+                                            <option value="Daño">
+                                                Daño
+                                            </option>
                                             <option value="Pérdida">
                                                 Pérdida
                                             </option>
                                             <option value="Retraso">
                                                 Retraso
+                                            </option>
+                                            <option value="Sobrante">
+                                                Sobrante
                                             </option>
                                         </select>
                                     </div>

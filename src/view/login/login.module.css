@@ -3,65 +3,106 @@
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(135deg, #ffffff, #fbfbfb);
-    font-family: 'Epilogue', sans-serif;
-}
-
-.loginBox {
+    background-color: #f4f4f9;
+  }
+  
+  .container {
     background-color: #fff;
-    padding: 40px;
+    padding: 2rem;
     border-radius: 10px;
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    text-align: center;
-    width: 100%;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     max-width: 400px;
-}
-
-.logoContainer {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 20px;
-}
-
-.logo {
     width: 100%;
-    height: 80px;
-}
-
-.title {
-    font-size: 24px;
-    color: #510C76;
-    margin-bottom: 30px;
-    font-weight: 700;
-}
-
-.loginButton {
-    background-color: #510C76;
-    color: white;
-    border: none;
-    padding: 15px 20px;
+    text-align: center;
+  }
+  
+  .title {
+    margin-bottom: 1.5rem;
+    color: #510C76;;
+  }
+  
+  .formContainer {
+    margin-top: 20px;
+  }
+  
+  .inputGroup {
+    margin-bottom: 1.5rem;
+    text-align: left;
+  }
+  
+  .label {
+    font-size: 0.9rem;
+    color: #555;
+  }
+  
+  .input {
+    width: 100%;
+    padding: 10px;
+    margin-top: 5px;
     border-radius: 5px;
-    font-size: 16px;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+  }
+  
+  .input:focus {
+    border-color: #510C76;
+    outline: none;
+  }
+  
+  .button {
+    background-color: #510C76;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
-}
-
-.loginButton:hover {
-    background-color: #3d0a5b;
-}
-
-@media (max-width: 600px) {
-    .loginBox {
-        padding: 20px;
-        border-radius: 8px;
+    font-size: 1rem;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+  
+  .button:hover {
+    background-color: #3f0b5e;
+    transform: scale(1.05);
+  }
+  
+  @media (max-width: 768px) {
+    .container {
+      padding: 1.5rem;
+      max-width: 90%;
     }
-
-    .loginButton {
-        font-size: 14px;
-        padding: 10px 15px;
-    }
-
+  
     .title {
-        font-size: 20px;
+      font-size: 1.5rem;
     }
-}
+  
+    .input {
+      padding: 8px;
+      font-size: 0.9rem;
+    }
+  
+    .button {
+      padding: 8px 16px;
+      font-size: 0.9rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .container {
+      padding: 1rem;
+      max-width: 95%;
+    }
+  
+    .title {
+      font-size: 1.25rem;
+    }
+  
+    .input {
+      padding: 7px;
+      font-size: 0.85rem;
+    }
+  
+    .button {
+      padding: 7px 14px;
+      font-size: 0.85rem;
+    }
+  }

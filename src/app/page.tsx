@@ -7,7 +7,6 @@ import { useRouter } from "next/navigation";
 
 const HomePage: React.FC = () => {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
 
   return <div>Home</div>;
 };
