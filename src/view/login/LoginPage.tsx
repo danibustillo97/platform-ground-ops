@@ -11,12 +11,10 @@ import useLoginController from "./useLoginController";
 
 export default function LoginPage() {
   const {
-    user,
-    password,
-    error,
+    formData,
+    errors,
     loading,
-    handleUserChange,
-    handlePasswordChange,
+    handleChange,
     handleSubmit,
   } = useLoginController();
 
@@ -26,7 +24,6 @@ export default function LoginPage() {
         <div className={styles.pageContainer}>
           <div className={styles.container}>
             <h1 className={styles.title}>Login</h1>
-
             <div className={styles.formContainer}>
               <form onSubmit={handleSubmit}>
                 <div className={styles.inputGroup}>
@@ -37,9 +34,10 @@ export default function LoginPage() {
                     name="username"
                     id="username"
                     placeholder="usuario"
-                    value={user}
-                    onChange={handleUserChange}
+                    value={formData.username}
+                    onChange={handleChange}
                   />
+                  {errors.username && <p className={styles.error}>{errors.username}</p>}
                 </div>
                 <div className={styles.inputGroup}>
                   <label className={styles.label} htmlFor="password">Contraseña</label>
@@ -49,11 +47,11 @@ export default function LoginPage() {
                     name="password"
                     id="password"
                     placeholder="contraseña"
-                    value={password}
-                    onChange={handlePasswordChange}
+                    value={formData.password}
+                    onChange={handleChange}
                   />
+                  {errors.password && <p className={styles.error}>{errors.password}</p>}
                 </div>
-                {error && <p className={styles.error}>{error}</p>} {/* Muestra errores */}
                 <button className={styles.button} type="submit">
                   Ingresar
                 </button>

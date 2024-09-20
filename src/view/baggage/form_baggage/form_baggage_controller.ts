@@ -25,7 +25,7 @@ export const useFormBaggageController = () => {
             issue: string;
         }[]
     >([]);
-    const [formData, setFormData] = useState({ phone: "", email: "" });
+    const [formData, setFormData] = useState({ phone: "", email: "", address: ""});
 
     useEffect(() => {
         if (pnrAdded) {
@@ -65,6 +65,7 @@ export const useFormBaggageController = () => {
             setFormData({
                 phone: passengerInfo.phone || "",
                 email: passengerInfo.email || "",
+                address: passengerInfo.address || "",
             });
 
             setSelectedLuggage((prevLuggage) =>

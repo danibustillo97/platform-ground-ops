@@ -7,6 +7,8 @@ export enum Status{
 
 export interface BaggageCase {
     id: string;
+    pnr: string;
+    address?: string;
     baggage_code: string;
     contact: {
         phone: string;
@@ -18,4 +20,5 @@ export interface BaggageCase {
     issue_type: string;
     status: string;
     date_create: string; // formato '2024-08-28T01:07:00.223000'
+    last_updated: string; // formato '2024-08-28T01:07:00.223000'
 }

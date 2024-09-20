@@ -2,6 +2,6 @@
 import { UserInfo } from "@/domain/entities/User";
 
 export interface AuthRepository {
-    authenticateUser(email: string, password: string): Promise<UserInfo>;
+    authenticateUser(username: string, password: string): Promise<UserInfo>;
     logoutUser(): Promise<void>;
 }

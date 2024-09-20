@@ -250,6 +250,28 @@ const FormReclamoView: React.FC = () => {
                                             </option>
                                         </select>
                                     </div>
+                                    {issue === 'Retraso' && (
+                                        <div className = {styles.luggageField}>
+                                            <div className={styles.inlineField}>
+                                                <label htmlFor="address" className={styles.label}>
+                                                    Dirección de envío
+                                                </label>
+                                                <input
+                                                    type="text"
+                                                    id="address"
+                                                    className={styles.input}
+                                                    value={formData.address}
+                                                    onChange={(e) =>
+                                                        setFormData({
+                                                            ...formData,
+                                                            address: e.target.value,
+                                                        })
+                                                    }
+                                                    disabled={!pnrAdded}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         ),

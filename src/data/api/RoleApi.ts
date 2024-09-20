@@ -1,7 +1,7 @@
 import axios from "axios";
 import { Role } from "@/domain/entities/Role";
 
-const API_URL = "https://e9ca-20-81-239-96.ngrok-free.app/api/roles/";
+const API_URL = "https://5bb3-20-246-93-146.ngrok-free.app/api/roles/";
 
 export const RoleApi = {
     async fetchRoles(): Promise<Role[]> {

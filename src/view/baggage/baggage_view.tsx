@@ -93,6 +93,7 @@ const BaggageView: React.FC = () => {
                     <table className={styles.table}>
                         <thead className={styles.tableHeader}>
                             <tr>
+                                {/* <th className={styles.tableHeaderCell}>PNR</th> */}
                                 <th className={styles.tableHeaderCell}>
                                     Baggage Code
                                 </th>
@@ -107,6 +108,9 @@ const BaggageView: React.FC = () => {
                                 <th className={styles.tableHeaderCell}>Estado</th>
                                 <th className={styles.tableHeaderCell}>
                                     Fecha de Creación
+                                </th>
+                                <th className={styles.tableHeaderCell}>
+                                    Ultima actualización
                                 </th>
                                 <th className={styles.tableHeaderCell}>Acciones</th>
                             </tr>
@@ -137,6 +141,9 @@ const BaggageView: React.FC = () => {
                                             {new Date(
                                                 row.date_create.split("T")[0],
                                             ).toLocaleDateString()}
+                                        </td>
+                                        <td className={styles.tableCell}>
+                                            {new Date(row.last_updated).toLocaleString()}
                                         </td>
                                         <td className={styles.tableCell}>
                                             <a
