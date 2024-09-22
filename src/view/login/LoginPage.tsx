@@ -1,65 +1,99 @@
-// src/view/login/LoginPage.tsx
 "use client";
-import Overlay from "@/components/Overlay/Overlay";
-import React, { useEffect, useState } from "react";
-import styles from "@/view/login/login.module.css"
-import { useRouter } from "next/navigation";
+import React from "react";
+import { AiFillWindows } from "react-icons/ai";
 import useLoginController from "./useLoginController";
-// import { AuthRepositoryImpl } from "@/data/repositories/AuthRepositoryImpl";
-
-// const authRepo = new AuthRepositoryImpl();
+import styles from "@/view/login/login.module.css";
+import Image from "next/image";
 
 export default function LoginPage() {
-  const {
-    formData,
-    errors,
-    loading,
-    handleChange,
-    handleSubmit,
-  } = useLoginController();
+  const { formData, errors, loading, handleChange, handleSubmit } =
+    useLoginController();
+
+  const handleMicrosoftLogin = () => {
+    console.log("Iniciar sesión con Microsoft");
+  };
 
   return (
-    <>
-      {loading ? <Overlay /> :
-        <div className={styles.pageContainer}>
-          <div className={styles.container}>
-            <h1 className={styles.title}>Login</h1>
-            <div className={styles.formContainer}>
-              <form onSubmit={handleSubmit}>
-                <div className={styles.inputGroup}>
-                  <label className={styles.label} htmlFor="username">Usuario</label>
-                  <input
-                    className={styles.input}
-                    type="text"
-                    name="username"
-                    id="username"
-                    placeholder="usuario"
-                    value={formData.username}
-                    onChange={handleChange}
-                  />
-                  {errors.username && <p className={styles.error}>{errors.username}</p>}
-                </div>
-                <div className={styles.inputGroup}>
-                  <label className={styles.label} htmlFor="password">Contraseña</label>
-                  <input
-                    className={styles.input}
-                    type="password"
-                    name="password"
-                    id="password"
-                    placeholder="contraseña"
-                    value={formData.password}
-                    onChange={handleChange}
-                  />
-                  {errors.password && <p className={styles.error}>{errors.password}</p>}
-                </div>
-                <button className={styles.button} type="submit">
-                  Ingresar
-                </button>
-              </form>
-            </div>
-          </div>
+    <div className={styles.pageContainer}>
+      {loading && <div className={styles.overlay}>Cargando...</div>}
+
+      <div className={styles.outerContainer}>
+        <h1 className={styles.platformTitle}>Plataforma Ods Ground</h1>
+
+        <div className={styles.logoContainer}>
+          <Image
+            src="/images/logo.png"
+            alt="Logo de la Empresa"
+            className={styles.logo}
+            width={120}
+            height={120}
+            priority
+          />
         </div>
-      }
-    </>
+
+        <div className={styles.loginBox}>
+          <h1 className={styles.title}>Iniciar Sesión</h1>
+          <p className={styles.subtitle}>Accede con tu cuenta corporativa</p>
+
+          <form onSubmit={handleSubmit} className={styles.form}>
+            <div className={styles.inputGroup}>
+              <label htmlFor="username" className={styles.label}>
+                Usuario
+              </label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                placeholder="Ingresa tu usuario"
+                value={formData.username}
+                onChange={handleChange}
+                className={styles.input}
+              />
+              {errors.username && (
+                <p className={styles.error}>{errors.username}</p>
+              )}
+            </div>
+
+            <div className={styles.inputGroup}>
+              <label htmlFor="password" className={styles.label}>
+                Contraseña
+              </label>
+              <input
+                type="password"
+                name="password"
+                id="password"
+                placeholder="Ingresa tu contraseña"
+                value={formData.password}
+                onChange={handleChange}
+                className={styles.input}
+              />
+              {errors.password && (
+                <p className={styles.error}>{errors.password}</p>
+              )}
+            </div>
+
+            <button type="submit" className={styles.button}>
+              Ingresar
+            </button>
+
+            <button
+              type="button"
+              onClick={handleMicrosoftLogin}
+              className={styles.microsoftButton}
+            >
+              <AiFillWindows className={styles.microsoftIcon} /> Ingresar con
+              Microsoft
+            </button>
+          </form>
+
+          <footer className={styles.footer}>
+            <p>
+              © 2024 Arajet. <a href="/terminos">Términos y condiciones</a> |{" "}
+              <a href="/soporte">Soporte</a>
+            </p>
+          </footer>
+        </div>
+      </div>
+    </div>
   );
 }
