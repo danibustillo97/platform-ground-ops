@@ -1,10 +1,11 @@
 // Obtener todos los usuarios
 export const getUsers = async () => {
     try {
-        const response = await fetch("/api/users", {
+        const response = await fetch("https://5bb3-20-246-93-146.ngrok-free.app/api/users", {
             method: "GET",
             headers: {
-                "Content-Type": "application/json",
+                // "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
             },
         });
 
@@ -12,7 +13,10 @@ export const getUsers = async () => {
             throw new Error("Error al obtener los usuarios");
         }
 
-        return await response.json();
+        const res = await response.json();
+        console.log(res);
+        return res;
+
     } catch (error) {
         console.error("Error fetching users:", error);
         throw error;
@@ -22,10 +26,11 @@ export const getUsers = async () => {
 // Crear un nuevo usuario
 export const createUser = async (user: { name: string; email: string }) => {
     try {
-        const response = await fetch("/api/users", {
+        const response = await fetch("https://5bb3-20-246-93-146.ngrok-free.app/api/users", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
             },
             body: JSON.stringify(user),
         });
@@ -44,10 +49,11 @@ export const createUser = async (user: { name: string; email: string }) => {
 // Editar un usuario
 export const updateUser = async (id: number, updatedData: { name?: string; email?: string }) => {
     try {
-        const response = await fetch(`/api/users/${id}`, {
+        const response = await fetch(`https://5bb3-20-246-93-146.ngrok-free.app/api/users/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
             },
             body: JSON.stringify(updatedData),
         });
@@ -66,10 +72,11 @@ export const updateUser = async (id: number, updatedData: { name?: string; email
 // Eliminar un usuario
 export const deleteUser = async (id: number) => {
     try {
-        const response = await fetch(`/api/users/${id}`, {
+        const response = await fetch(`https://5bb3-20-246-93-146.ngrok-free.app/api/users/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
+                "ngrok-skip-browser-warning": "true",
             },
         });
 
