@@ -1,7 +1,8 @@
 // Obtener todos los usuarios
+const apiUrl = process.env.NEXT_PUBLIC_API_URL
 export const getUsers = async () => {
     try {
-        const response = await fetch("https://5bb3-20-246-93-146.ngrok-free.app/api/users", {
+        const response = await fetch(`${apiUrl}/api/users`, {
             method: "GET",
             headers: {
                 // "Content-Type": "application/json",
@@ -26,7 +27,7 @@ export const getUsers = async () => {
 // Crear un nuevo usuario
 export const createUser = async (user: { name: string; email: string }) => {
     try {
-        const response = await fetch("https://5bb3-20-246-93-146.ngrok-free.app/api/users", {
+        const response = await fetch(`${apiUrl}/api/users`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -49,7 +50,7 @@ export const createUser = async (user: { name: string; email: string }) => {
 // Editar un usuario
 export const updateUser = async (id: number, updatedData: { name?: string; email?: string }) => {
     try {
-        const response = await fetch(`https://5bb3-20-246-93-146.ngrok-free.app/api/users/${id}`, {
+        const response = await fetch(`${apiUrl}/api/users/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -72,7 +73,7 @@ export const updateUser = async (id: number, updatedData: { name?: string; email
 // Eliminar un usuario
 export const deleteUser = async (id: number) => {
     try {
-        const response = await fetch(`https://5bb3-20-246-93-146.ngrok-free.app/api/users/${id}`, {
+        const response = await fetch(`${apiUrl}/api/users/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",

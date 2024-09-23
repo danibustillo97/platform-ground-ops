@@ -1,10 +1,11 @@
 export const authUser = async (username: string, password: string | number) => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     try {
         const formBody = new URLSearchParams(); 
         formBody.append("username", username.toString());
         formBody.append("password", password.toString());
 
-        const response = await fetch("https://5bb3-20-246-93-146.ngrok-free.app/api/login/login", {
+        const response = await fetch(`${apiUrl}/api/login/login`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded", 

@@ -21,4 +21,5 @@ export interface User {
   phone: string;
   rol: string;
   estacion: string;
+  password: string;
 }
