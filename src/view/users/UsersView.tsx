@@ -7,7 +7,7 @@ import {
     createNewUser,
     updateExistingUser,
 } from "@/view/users/userController";
-import { User } from "@/domain/entities/User";
+import { User, UserCreate } from "@/domain/entities/User";
 import styles from "@/view/users/users.module.css";
 import { useRouter } from "next/navigation";
 import UserModal from "@/components/UserModal/UserModal";
@@ -19,8 +19,7 @@ const UsersView: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(true);
     const [showModal, setShowModal] = useState<boolean>(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
-    const [userForm, setUserForm] = useState<User>({
-        id: 0,
+    const [userForm, setUserForm] = useState<UserCreate>({
         name: "",
         email: "",
         phone: "",
@@ -58,12 +57,18 @@ const UsersView: React.FC = () => {
             if (editingUser) {
                 await updateExistingUser(editingUser.id, user);
             } else {
+                // const newUser: UserCreate = {
+                //     name: user.name,
+                //     email: user.email,
+                //     phone: user.phone,
+                //     rol: user.rol,
+                //     estacion: user.estacion,
+                // };
                 await createNewUser(user);
             }
             setShowModal(false);
             setEditingUser(null);
             setUserForm({
-                id: 0,
                 name: "",
                 email: "",
                 phone: "",
@@ -81,14 +86,21 @@ const UsersView: React.FC = () => {
 
     const handleEditUser = (user: User) => {
         setEditingUser(user);
-        setUserForm(user);
+        const userCreate: UserCreate = {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            rol: user.rol,
+            estacion: user.estacion,
+            password: '',
+        };
+        setUserForm(userCreate);
         setShowModal(true);
     };
 
     const handleAddUser = () => {
         setEditingUser(null);
         setUserForm({
-            id: 0,
             name: "",
             email: "",
             phone: "",

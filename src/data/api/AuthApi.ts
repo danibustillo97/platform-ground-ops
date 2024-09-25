@@ -1,5 +1,37 @@
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+export default NextAuth({
+    providers: [
+        Credentials({
+            name: "Credentials",
+            credentials: {
+                username: { label: "Username", type: "text", placeholder: "username" },
+                password: {  label: "Password", type: "password" }
+            },
+            async authorize (credentials) {
+                try {
+                    const response = await fetch(`${apiUrl}/api/login/login`, {
+                        method: "POST",
+                        headers: {
+                            "ngrok-skip-browser-warning": "true",
+                            "Content-Type": "application/x-www-form-urlencoded", 
+                        },
+                        body: .toString(),
+                    });
+
+                } catch (error) {
+                    
+                }
+            }
+        }),
+    ],
+})  
+
+
 export const authUser = async (username: string, password: string | number) => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
     try {
         const formBody = new URLSearchParams(); 
         formBody.append("username", username.toString());
@@ -8,6 +40,7 @@ export const authUser = async (username: string, password: string | number) => {
         const response = await fetch(`${apiUrl}/api/login/login`, {
             method: "POST",
             headers: {
+                "ngrok-skip-browser-warning": "true",
                 "Content-Type": "application/x-www-form-urlencoded", 
             },
             body: formBody.toString(),

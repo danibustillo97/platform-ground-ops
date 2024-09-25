@@ -1,20 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import styles from './UserModal.module.css';
-import { User } from '@/domain/entities/User';
+import { User, UserCreate } from '@/domain/entities/User';
+import { Role } from '@/domain/entities/Role';
 
 interface UserModalProps {
     isOpen: boolean;
     onClose: () => void;
     editingUser?: User | null;
     onSave: (user: User) => void;
-    userForm: User;
+    userForm: UserCreate;
 
 }
 
 const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, editingUser, onSave, userForm}: any) => {
     if(!isOpen) return null;
-    const [formState, setFormState] = useState<User>({
-        id: userForm.id || '',
+    const [roles, setRoles] = useState<Role[]>([]);
+    const [formState, setFormState] = useState<UserCreate>({
         name: userForm.name || '',
         email: userForm.email || '',
         phone: userForm.phone || '',
@@ -25,7 +26,6 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, editingUser, onS
 
     useEffect(() => {
         setFormState({
-            id: userForm.id || '',
             name: userForm.name || '',
             email: userForm.email || '',
             phone: userForm.phone || '',
@@ -34,8 +34,9 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, editingUser, onS
             password: userForm.password || '',
         });
     }, [userForm]);
+
     
-    const handleChange = (field: keyof User) => (e: React.ChangeEvent<HTMLInputElement>) =>
+    const handleChange = (field: keyof UserCreate) => (e: React.ChangeEvent<HTMLInputElement>) =>
         setFormState({ ...formState, [field]: e.target.value });
       
       const handleSubmit = (e: React.FormEvent) => {
@@ -85,9 +86,14 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, editingUser, onS
                     </div>
                     <div className={styles.userFormGroup}>
                         <label>Rol</label>
+                        <select value={formState.rol}                           
+                            className={styles.userFormInput}>
+                                <option value=""></option>
+                        </select>
+
                         <input
                             type="text"
-                            value={formState.rol}
+                            
                             onChange={handleChange('rol')}
                             className={styles.userFormInput}
                         />

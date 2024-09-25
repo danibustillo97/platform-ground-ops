@@ -33,23 +33,19 @@ const useLoginController = () => {
 
       const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        
-        console.log("Usuario y contraseña", formData);
+    
         const checkFields = validateForm();
         if (Object.keys(checkFields).length > 0) return;
-    
+        
         try {
             const response = await authUser(formData.username, formData.password);
-    
             if (response.success && response.data.access_token && response.data.tokenType) {
                 const accessToken = response.data.access_token;
                 const tokenType = response.data.tokenType;
-                const expirationTime = new Date().getTime() + 1800000;
     
                 sessionStorage.setItem('access_token', accessToken);
                 sessionStorage.setItem('token_type', tokenType);
-                sessionStorage.setItem('expiration_time', expirationTime.toString());
-    
+
                 const router = useRouter();
                 router.push('/dashboard');
     

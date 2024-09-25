@@ -39,7 +39,6 @@ export const createUser = async (user: { name: string; email: string }) => {
         if (!response.ok) {
             throw new Error("Error al crear el usuario");
         }
-
         return await response.json();
     } catch (error) {
         console.error("Error creating user:", error);
