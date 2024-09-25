@@ -22,44 +22,36 @@ export default NextAuth({
                     const res = await fetch(`${apiUrl}/api/login/login`, {
                         method: 'POST',
                         headers: {
-                            "ngrok-skip-browser-warning": "true", 
-                            'Content-Type': 'application/x-www-form-urlencoded' 
+                            "ngrok-skip-browser-warning": "true",
+                            'Content-Type': 'application/x-www-form-urlencoded'
                         },
                         body: body.toString(),
                     });
 
                     const data = await res.json();
 
-                   
-                    if (!res.ok) {
-                        return {
-                            success: false,
-                            errors: data.detail || [{ msg: "Error en la autenticación" }]
-                        };
+
+                    if (!res.ok || !data) {
+                        return null;
                     }
-                        
-                    if (data) {
-                        return data; 
-                    } else {
-                        return {
-                            success: false,
-                            errors: data.detail || [{ msg: "Usuario o Contraseña Incorrecta" }]
-                        };
-                    }
+
+
+                    return data;
+
                 } catch (error) {
-                    
+
                     throw new Error(error instanceof Error ? error.message : 'Authentication failed');
                 }
             }
-            
+
         }),
     ],
-})  
+})
 
 
 export const authUser = async (username: string, password: string | number) => {
     try {
-        const formBody = new URLSearchParams(); 
+        const formBody = new URLSearchParams();
         formBody.append("username", username.toString());
         formBody.append("password", password.toString());
 
@@ -67,7 +59,7 @@ export const authUser = async (username: string, password: string | number) => {
             method: "POST",
             headers: {
                 "ngrok-skip-browser-warning": "true",
-                "Content-Type": "application/x-www-form-urlencoded", 
+                "Content-Type": "application/x-www-form-urlencoded",
             },
             body: formBody.toString(),
         });
