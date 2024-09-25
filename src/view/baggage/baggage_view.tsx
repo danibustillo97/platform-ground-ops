@@ -93,7 +93,7 @@ const BaggageView: React.FC = () => {
                     <table className={styles.table}>
                         <thead className={styles.tableHeader}>
                             <tr>
-                                <th className={styles.tableHeaderCell}>PNR</th>
+                                {/* <th className={styles.tableHeaderCell}>PNR</th> */}
                                 <th className={styles.tableHeaderCell}>
                                     Baggage Code
                                 </th>

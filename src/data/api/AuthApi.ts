@@ -9,23 +9,49 @@ export default NextAuth({
             name: "Credentials",
             credentials: {
                 username: { label: "Username", type: "text", placeholder: "username" },
-                password: {  label: "Password", type: "password" }
+                password: { label: "Password", type: "password" }
             },
-            async authorize (credentials) {
+
+            async authorize(credentials: any) {
                 try {
-                    const response = await fetch(`${apiUrl}/api/login/login`, {
-                        method: "POST",
-                        headers: {
-                            "ngrok-skip-browser-warning": "true",
-                            "Content-Type": "application/x-www-form-urlencoded", 
-                        },
-                        body: .toString(),
+                    const body = new URLSearchParams({
+                        username: credentials?.username,
+                        password: credentials?.password,
                     });
 
+                    const res = await fetch(`${apiUrl}/api/login/login`, {
+                        method: 'POST',
+                        headers: {
+                            "ngrok-skip-browser-warning": "true", 
+                            'Content-Type': 'application/x-www-form-urlencoded' 
+                        },
+                        body: body.toString(),
+                    });
+
+                    const data = await res.json();
+
+                   
+                    if (!res.ok) {
+                        return {
+                            success: false,
+                            errors: data.detail || [{ msg: "Error en la autenticación" }]
+                        };
+                    }
+                        
+                    if (data) {
+                        return data; 
+                    } else {
+                        return {
+                            success: false,
+                            errors: data.detail || [{ msg: "Usuario o Contraseña Incorrecta" }]
+                        };
+                    }
                 } catch (error) {
                     
+                    throw new Error(error instanceof Error ? error.message : 'Authentication failed');
                 }
             }
+            
         }),
     ],
 })  
