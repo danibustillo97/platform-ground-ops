@@ -13,14 +13,16 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const isLoginPage = pathname === "/login";
 
   return (
+    <SessionAuthProvider>
     <html lang="en">
       <body>
         {!isLoginPage && <Navbar />}
         <main>
-          <SessionAuthProvider>{children} </SessionAuthProvider>
+          {children} 
         </main>
       </body>
     </html>
+    </SessionAuthProvider>
   );
 };
 

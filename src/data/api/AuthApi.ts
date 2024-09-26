@@ -4,11 +4,16 @@ import Credentials from "next-auth/providers/credentials";
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
 
-interface User {
+interface User{
+    id: string;
     access_token: string;
 }
 
 export default NextAuth({
+    pages: {
+        signIn: "/login",
+    },
+        
     providers: [
         Credentials({
             name: "Credentials",
@@ -29,6 +34,7 @@ export default NextAuth({
                         "ngrok-skip-browser-warning": "true",
                     },
                     body: body.toString(),
+                    credentials: 'include',
                 });
 
                 const data = await res.json();
@@ -36,9 +42,18 @@ export default NextAuth({
                 if (data.error) { throw data; }
 
 
-                return data;
+                return { id: data.id, access_token: data.access_token }
             },
         }),
     ],
 
+    callbacks: { 
+        jwt: async ({ token, user }) => {
+          return { ...token, ...user };
+        },
+        session: async ({ session, token }) => {
+          session.user = token as any;
+          return session;
+        },
+      },
 });
