@@ -7,21 +7,25 @@ import {
     createNewUser,
     updateExistingUser,
 } from "@/view/users/userController";
-import { User } from "@/domain/entities/User";
+import { User, UserCreate } from "@/domain/entities/User";
 import styles from "@/view/users/users.module.css";
+import { useRouter } from "next/navigation";
+import UserModal from "@/components/UserModal/UserModal";
+import { updateUser } from "@/data/api/userApi";
 
 const UsersView: React.FC = () => {
+    const router = useRouter();
     const [usersData, setUsersData] = useState<User[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [showModal, setShowModal] = useState<boolean>(false);
     const [editingUser, setEditingUser] = useState<User | null>(null);
-    const [userForm, setUserForm] = useState<User>({
-        id: 0,
+    const [userForm, setUserForm] = useState<UserCreate>({
         name: "",
         email: "",
         phone: "",
         rol: "",
         estacion: "",
+        password: "",
     });
 
     useEffect(() => {
@@ -48,44 +52,67 @@ const UsersView: React.FC = () => {
         }
     };
 
-    const handleSaveUser = async () => {
-        if (editingUser) {
-            // Editar usuario
-            await updateExistingUser(editingUser.id, userForm);
-        } else {
-            // Crear usuario
-            await createNewUser(userForm);
+    const handleSaveUser = async (user: User) => {
+        try {
+            if (editingUser) {
+                await updateExistingUser(editingUser.id, user);
+            } else {
+                // const newUser: UserCreate = {
+                //     name: user.name,
+                //     email: user.email,
+                //     phone: user.phone,
+                //     rol: user.rol,
+                //     estacion: user.estacion,
+                // };
+                await createNewUser(user);
+            }
+            setShowModal(false);
+            setEditingUser(null);
+            setUserForm({
+                name: "",
+                email: "",
+                phone: "",
+                rol: "",
+                estacion: "",
+                password: "",
+            });
+            fetchUsers(); // Solo llama a fetchUsers después de guardar.
+        } catch (error) {
+            console.error("Error al guardar el usuario:", error);
         }
-        setShowModal(false);
-        setEditingUser(null);
-        setUserForm({
-            id: 0,
-            name: "",
-            email: "",
-            phone: "",
-            rol: "",
-            estacion: "",
-        });
-        fetchUsers();
     };
+
+    
 
     const handleEditUser = (user: User) => {
         setEditingUser(user);
-        setUserForm(user);
+        const userCreate: UserCreate = {
+            name: user.name,
+            email: user.email,
+            phone: user.phone,
+            rol: user.rol,
+            estacion: user.estacion,
+            password: '',
+        };
+        setUserForm(userCreate);
         setShowModal(true);
     };
 
     const handleAddUser = () => {
         setEditingUser(null);
         setUserForm({
-            id: 0,
             name: "",
             email: "",
             phone: "",
             rol: "",
             estacion: "",
+            password: "",
         });
         setShowModal(true);
+    };
+
+    const handleRedirect = () => {
+        router.push('/users/roles');
     };
 
     const handleCloseModal = () => {
@@ -103,6 +130,10 @@ const UsersView: React.FC = () => {
             <div className={styles.userActionsContainer}>
                 <button className={styles.addButton} onClick={handleAddUser}>
                     Agregar Usuario
+                </button>
+
+                <button className={styles.addButton} onClick={handleRedirect}>
+                    Roles
                 </button>
             </div>
             <div className={styles.userTableContainer}>
@@ -152,101 +183,17 @@ const UsersView: React.FC = () => {
                     <p>No se encontraron usuarios.</p>
                 )}
             </div>
-
             {showModal && (
-                <div className={styles.modal}>
-                    <div className={styles.modalContent}>
-                        <h2>
-                            {editingUser ? "Editar Usuario" : "Agregar Usuario"}
-                        </h2>
-                        <div className={styles.userFormGroup}>
-                            <label>Nombre</label>
-                            <input
-                                type="text"
-                                value={userForm.name}
-                                onChange={(e) =>
-                                    setUserForm({
-                                        ...userForm,
-                                        name: e.target.value,
-                                    })
-                                }
-                                className={styles.userFormInput}
-                            />
-                        </div>
-                        <div className={styles.userFormGroup}>
-                            <label>Email</label>
-                            <input
-                                type="email"
-                                value={userForm.email}
-                                onChange={(e) =>
-                                    setUserForm({
-                                        ...userForm,
-                                        email: e.target.value,
-                                    })
-                                }
-                                className={styles.userFormInput}
-                            />
-                        </div>
-                        <div className={styles.userFormGroup}>
-                            <label>Teléfono</label>
-                            <input
-                                type="text"
-                                value={userForm.phone}
-                                onChange={(e) =>
-                                    setUserForm({
-                                        ...userForm,
-                                        phone: e.target.value,
-                                    })
-                                }
-                                className={styles.userFormInput}
-                            />
-                        </div>
-                        <div className={styles.userFormGroup}>
-                            <label>Rol</label>
-                            <input
-                                type="text"
-                                value={userForm.rol}
-                                onChange={(e) =>
-                                    setUserForm({
-                                        ...userForm,
-                                        rol: e.target.value,
-                                    })
-                                }
-                                className={styles.userFormInput}
-                            />
-                        </div>
-                        <div className={styles.userFormGroup}>
-                            <label>Estación</label>
-                            <input
-                                type="text"
-                                value={userForm.estacion}
-                                onChange={(e) =>
-                                    setUserForm({
-                                        ...userForm,
-                                        estacion: e.target.value,
-                                    })
-                                }
-                                className={styles.userFormInput}
-                            />
-                        </div>
-                        <div className={styles.modalActions}>
-                            <button
-                                className={styles.cancelButton}
-                                onClick={handleCloseModal}
-                            >
-                                Cancelar
-                            </button>
-                            <button
-                                className={styles.submitButton}
-                                onClick={handleSaveUser}
-                            >
-                                {editingUser ? "Guardar Cambios" : "Agregar"}
-                            </button>
-                        </div>
-                    </div>
-                </div>
+                <UserModal
+                    isOpen={showModal}
+                    onClose={handleCloseModal}
+                    userForm={userForm}
+                    onSave={handleSaveUser}
+                    editingUser={editingUser}
+                />
             )}
-        </div>
+
+            </div>
     );
 };
 

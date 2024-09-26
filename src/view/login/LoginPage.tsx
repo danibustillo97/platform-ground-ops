@@ -4,6 +4,7 @@ import { AiFillWindows } from "react-icons/ai";
 import useLoginController from "./useLoginController";
 import styles from "@/view/login/login.module.css";
 import Image from "next/image";
+import Overlay from "@/components/Overlay/Overlay";
 
 export default function LoginPage() {
   const { formData, errors, loading, handleChange, handleSubmit } =
@@ -15,7 +16,7 @@ export default function LoginPage() {
 
   return (
     <div className={styles.pageContainer}>
-      {loading && <div className={styles.overlay}>Cargando...</div>}
+      {loading && <Overlay/>}
 
       <div className={styles.outerContainer}>
         <h1 className={styles.platformTitle}>Plataforma Ods Ground</h1>

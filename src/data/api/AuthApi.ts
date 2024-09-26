@@ -1,13 +1,65 @@
+import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
+
+const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+
+export default NextAuth({
+    providers: [
+        Credentials({
+            name: "Credentials",
+            credentials: {
+                username: { label: "Username", type: "text", placeholder: "username" },
+                password: { label: "Password", type: "password" }
+            },
+
+            async authorize(credentials: any) {
+                try {
+                    const body = new URLSearchParams({
+                        username: credentials?.username,
+                        password: credentials?.password,
+                    });
+
+                    const res = await fetch(`${apiUrl}/api/login/login`, {
+                        method: 'POST',
+                        headers: {
+                            "ngrok-skip-browser-warning": "true",
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: body.toString(),
+                    });
+
+                    const data = await res.json();
+
+
+                    if (!res.ok || !data) {
+                        return null;
+                    }
+
+
+                    return data;
+
+                } catch (error) {
+
+                    throw new Error(error instanceof Error ? error.message : 'Authentication failed');
+                }
+            }
+
+        }),
+    ],
+})
+
+
 export const authUser = async (username: string, password: string | number) => {
     try {
-        const formBody = new URLSearchParams(); 
+        const formBody = new URLSearchParams();
         formBody.append("username", username.toString());
         formBody.append("password", password.toString());
 
-        const response = await fetch("https://5bb3-20-246-93-146.ngrok-free.app/api/login/login", {
+        const response = await fetch(`${apiUrl}/api/login/login`, {
             method: "POST",
             headers: {
-                "Content-Type": "application/x-www-form-urlencoded", 
+                "ngrok-skip-browser-warning": "true",
+                "Content-Type": "application/x-www-form-urlencoded",
             },
             body: formBody.toString(),
         });
