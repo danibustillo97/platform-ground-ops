@@ -10,17 +10,12 @@ export default function LoginPage() {
   const { formData, errors, loading, handleChange, handleSubmit } =
     useLoginController();
 
-  const handleMicrosoftLogin = () => {
-    console.log("Iniciar sesión con Microsoft");
-  };
-
   return (
     <div className={styles.pageContainer}>
-      {loading && <Overlay/>}
+      {loading && <Overlay />}
 
       <div className={styles.outerContainer}>
         <h1 className={styles.platformTitle}>Plataforma Ods Ground</h1>
-
         <div className={styles.logoContainer}>
           <Image
             src="/images/logo.png"
@@ -76,12 +71,7 @@ export default function LoginPage() {
             <button type="submit" className={styles.button}>
               Ingresar
             </button>
-
-            <button
-              type="button"
-              onClick={handleMicrosoftLogin}
-              className={styles.microsoftButton}
-            >
+            <button type="button" className={styles.microsoftButton}>
               <AiFillWindows className={styles.microsoftIcon} /> Ingresar con
               Microsoft
             </button>
