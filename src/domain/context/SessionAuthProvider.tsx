@@ -6,7 +6,7 @@ interface Props {
 }
 
 const SessionAuthProvider = ({ children }: Props) => {
-    return <SessionProvider baseUrl={'https://localhost:3000'} basePath={process.env.NEXTAUTH_URL}>{children}</SessionProvider>;
+    return <SessionProvider>{children}</SessionProvider>;
 };
 
 export default SessionAuthProvider;

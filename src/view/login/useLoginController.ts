@@ -30,8 +30,9 @@ const useLoginController = () => {
 
         try {
             // Intentar iniciar sesión usando las credenciales
+            
             const res = await signIn('credentials', {
-                redirect: false,
+                callbackUrl: "/dashboard",
                 username: formData.username,
                 password: formData.password,
             });
@@ -43,9 +44,8 @@ const useLoginController = () => {
 
             if (res?.error) {
                 setErrors({ general: 'Credenciales incorrectas' });
-            } else {
-                // Redirecciona al dashboard en caso de éxito
-                router.push('/dashboard');
+            } else if (res.url){
+                router.push("/dashboard");
             }
         } catch (error) {
             setErrors({ general: 'Error en la autenticación' });

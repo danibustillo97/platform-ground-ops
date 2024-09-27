@@ -5,7 +5,8 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import styles from "@/components/Navbar.module.css"
+import styles from "@/components/Navbar.module.css";
+import { signIn, signOut, useSession } from "next-auth/react"; // Import signIn
 
 const Navbar: React.FC = () => {
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -14,11 +15,14 @@ const Navbar: React.FC = () => {
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const router = useRouter();
 
-  useEffect(() => {}, [router]);
-
   const handleLogout = async () => {
     setIsAuthenticated(false);
     setUserInfo(null);
+    await signOut();
+    router.push("/login");
+  };
+
+  const handleLogin = async () => {
     router.push("/login");
   };
 
@@ -74,9 +78,9 @@ const Navbar: React.FC = () => {
             )}
           </div>
 
-          <Link href="/login" className={styles.loginButton}>
-            Login
-          </Link>
+          <button className={styles.loginButton} onClick={handleLogin}>
+              Login
+            </button>
         </div>
       </div>
     </nav>
