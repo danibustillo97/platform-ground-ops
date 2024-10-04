@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styles from "./Modal.module.css";
-import { BaggageCase, Status } from "@/domain/types/BaggageCase";
+import { BaggageCase, Status } from "@/types/BaggageCase";
 import useModalBaggageController from "./useModalBaggageController";
 
 interface ModalBaggageProps {

@@ -1,14 +1,11 @@
-// app/page.tsx
 
-"use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+const HomePage = () => {
+  return (
+    <div>
+      <h1>Home Page</h1>
 
-const HomePage: React.FC = () => {
-  const router = useRouter();
-
-  return <div>Home</div>;
+    </div>
+  );
 };
-
 export default HomePage;

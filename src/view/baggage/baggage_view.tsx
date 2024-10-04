@@ -6,7 +6,7 @@ import { Visibility, Add } from "@mui/icons-material";
 import Link from "next/link";
 import Overlay from "@/components/Overlay/Overlay";
 import ModalBaggage from "@/components/Modals/ModalBaggage";
-import { BaggageCase } from "@/domain/types/BaggageCase";
+import { BaggageCase } from "@/types/BaggageCase";
 
 const BaggageView: React.FC = () => {
     const {

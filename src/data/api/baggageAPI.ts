@@ -1,7 +1,7 @@
-import { BaggageCase } from "@/domain/types/BaggageCase";
+import { BaggageCase } from "@/types/BaggageCase";
 
 // data/api/baggageAPI.ts
-const apiURL = process.env.NEXT_PUBLIC_API_URL;
+const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 export const fetchPassengerDataAPI = async (pnr: string) => {
     try {
         const response = await fetch(
@@ -10,7 +10,7 @@ export const fetchPassengerDataAPI = async (pnr: string) => {
                 method: "GET",
                 headers: {
                     "ngrok-skip-browser-warning": "true",
-                    "Content-Type": "application/json",
+                    "Content-Type": "application/json",  
                 },
             }
         );

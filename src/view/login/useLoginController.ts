@@ -15,7 +15,7 @@ const useLoginController = () => {
         setErrors(formErrors);
         return formErrors;
     };
-  
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -29,26 +29,22 @@ const useLoginController = () => {
         setLoading(true);
 
         try {
-            // Intentar iniciar sesión usando las credenciales
-            
             const res = await signIn('credentials', {
-                callbackUrl: "/dashboard",
-                username: formData.username,
+                email: formData.username, 
                 password: formData.password,
+                redirect: false,
             });
 
-            if (!res) {
-                setErrors({ general: 'No se pudo conectar con el servidor.' });
+            if (res?.error) {
+                setErrors({ general: res.error });
                 return;
             }
 
-            if (res?.error) {
-                setErrors({ general: 'Credenciales incorrectas' });
-            } else if (res.url){
-                router.push("/dashboard");
-            }
+            router.push('/dashboard'); 
+
         } catch (error) {
-            setErrors({ general: 'Error en la autenticación' });
+            console.error(error);
+            setErrors({ general: 'Ocurrió un error inesperado' });
         } finally {
             setLoading(false);
         }

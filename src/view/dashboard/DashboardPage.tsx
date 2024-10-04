@@ -15,7 +15,7 @@ import {
 } from "chart.js";
 import { SvgIcon } from "@mui/material";
 import { Luggage, CheckCircle, HourglassEmpty } from "@mui/icons-material";
-// import ProtectedRoute from "@/components/ProtectedRoute";
+
 
 Chart.register(
   PieController,

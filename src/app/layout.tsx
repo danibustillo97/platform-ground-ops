@@ -1,29 +1,30 @@
-"use client";
+"use client"; // Asegúrate de incluir esto al principio
 
-import React, { Suspense } from "react";
-import Navbar from "@/components/Navbar";
-import "@/styles/globals.css";
+import type { Metadata } from "next";
+import localFont from "next/font/local";
+import "./globals.css";
+import { SessionProvider } from "next-auth/react"; // Importa SessionProvider
 import { usePathname } from "next/navigation";
-import Overlay from "@/components/Overlay/Overlay";
-import SessionAuthProvider from "@/domain/context/SessionAuthProvider";
+import Navbar from "@/components/nav/Navbar";
 
-const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export default function RootLayout({
+  children,
+}: Readonly<{
+  children: React.ReactNode;
+}>) {
   const pathname = usePathname();
-
   const isLoginPage = pathname === "/login";
 
   return (
-    <SessionAuthProvider>
-    <html lang="en">
-      <body>
-        {!isLoginPage && <Navbar />}
-        <main>
-          {children} 
-        </main>
-      </body>
-    </html>
-    </SessionAuthProvider>
+    <SessionProvider>
+      <html lang="en">
+        <body>
+          {!isLoginPage && <Navbar />}
+          <main>
+            {children}
+          </main>
+        </body>
+      </html>
+    </SessionProvider>
   );
-};
-
-export default Layout;
+}
