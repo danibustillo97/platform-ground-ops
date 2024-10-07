@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import Styles from "@/view/users/roles/rolesView.module.css";
-import { Role } from "@/domain/entities/Role";
+import { Role } from "@/entities/Role";
 import { RoleRepositoryImpl } from "@/data/repositories/RoleRepositoryImpl";
 
 const roleRepository = new RoleRepositoryImpl();

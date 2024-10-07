@@ -1,5 +1,5 @@
 // Obtener todos los usuarios
-const apiUrl = process.env.NEXT_PUBLIC_API_URL
+const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
 export const getUsers = async () => {
     try {
         const response = await fetch(`${apiUrl}/api/users`, {

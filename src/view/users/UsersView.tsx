@@ -7,7 +7,7 @@ import {
     createNewUser,
     updateExistingUser,
 } from "@/view/users/userController";
-import { User, UserCreate } from "@/domain/entities/User";
+import { User, UserCreate } from "@/entities/User";
 import styles from "@/view/users/users.module.css";
 import { useRouter } from "next/navigation";
 import UserModal from "@/components/UserModal/UserModal";

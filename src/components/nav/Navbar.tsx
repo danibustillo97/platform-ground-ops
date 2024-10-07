@@ -22,6 +22,10 @@ const Navbar: React.FC = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
+  const toggleDropdown = () => {
+    setShowDropdown(!showDropdown);
+  };
+
   return (
     <nav className={styles.navBar}>
       <div className={styles.navContainer}>
@@ -49,24 +53,17 @@ const Navbar: React.FC = () => {
                 Gestión de Equipajes
               </Link>
               <div className={styles.dropdown}>
-                <button
-                  className={styles.navLink}
-                  onClick={() => setShowDropdown(!showDropdown)}
-                >
+                <button className={styles.userButton} onClick={toggleDropdown}>
                   {session.user.email || "User"}
                 </button>
                 {showDropdown && (
                   <div className={styles.dropdownMenu}>
                     <div className={styles.userInfo}>
-                      <p>
-                        <strong>Name:</strong> {session.user.email}
-                      </p>
-                      <p>
-                        <strong>Email:</strong> {session.user.email}
-                      </p>
+                      <p><strong>Nombre:</strong> {session.user.email || "Desconocido"}</p>
+                      <p><strong>Email:</strong> {session.user.email || "Desconocido"}</p>
                     </div>
                     <button className={styles.logoutButton} onClick={handleLogout}>
-                      Logout
+                      Cerrar Sesión
                     </button>
                   </div>
                 )}
@@ -74,7 +71,7 @@ const Navbar: React.FC = () => {
             </>
           ) : (
             <Link href="/login" className={styles.loginButton}>
-              Login
+              Iniciar Sesión
             </Link>
           )}
         </div>

@@ -1,63 +1,42 @@
-@import url('https://fonts.googleapis.com/css2?family=Dim:wght@300&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
-.topBar {
-    background-color: #510C76;
-    color: white;
-    padding: 3px 16px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
-    border-bottom: 1px solid #eee;
-}
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
 
-.topLink {
-    color: white;
-    text-decoration: none;
-    padding: 0 10px;
-    font-size: 12px;
-    font-weight: 600;
-}
 
-.topLink:hover {
-    text-decoration: underline;
-}
-
-.separator {
-    padding: 0 8px;
-}
 
 .navBar {
-    background-color: white;
+    background-color: #ffffff;
     height: 80px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-bottom: 30px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     display: flex;
     align-items: center;
+    padding: 0 20px;
+
+    font-family: "Inter", sans-serif;
+}
+
+.navBar:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
 .navContainer {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 16px;
     width: 100%;
 }
 
 .navItems {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: 20px;
     transition: all 0.3s ease;
-}
-
-.navItems.open {
-    display: flex;
 }
 
 .menuToggle {
     background: none;
     border: none;
-    font-size: 24px;
+    font-size: 20px;
     color: #510C76;
     cursor: pointer;
     display: none;
@@ -66,33 +45,37 @@
 .navLink {
     color: #510C76;
     text-decoration: none;
-    padding: 0 10px;
-    font-weight: 800;
-    font-size: 13px;
+    padding: 12px 20px;
+    border-radius: 25px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    font-weight: 400;
+    font-family: "Inter", sans-serif !important; 
 }
 
 .navLink:hover {
-    box-shadow: 0 2px 0px rgba(38, 0, 84, 0.1);
+    background-color: rgba(81, 12, 118, 0.1);
+    color: #333;
 }
 
 .loginButton {
     background-color: #510C76;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 30px;
     cursor: pointer;
-    padding: 8px 16px;
+    padding: 12px 20px;
+    font-weight: 700;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .loginButton:hover {
     background-color: #3a0e56;
+    transform: scale(1.05);
 }
 
 .logo {
-    display: inline-block;
     max-width: 100%;
     height: auto;
-    margin-top: 8px;
     width: 120px;
 }
 
@@ -100,32 +83,58 @@
     position: relative;
 }
 
+.userButton {
+    background-color: transparent;
+    border: none;
+    color: #ffffff;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 14px;
+    background-color: #510C76;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: inset;
+}
+
 .dropdownMenu {
     position: absolute;
     background: white;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    border-radius: 4px;
-    padding: 10px;
-    margin-top: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    padding: 15px;
+    margin-top: 18px;
     z-index: 1000;
+    min-width: 220px;
+    margin-left: -180px;
 }
 
-.dropdownMenu p {
-    margin: 0;
+.userInfo {
+    margin-bottom: 10px;
+    font-size: 14px;
+    color: #333;
+}
+
+.userInfo p{
+    margin-top: 10px;
+    font-family: "Inter", sans-serif;
 }
 
 .logoutButton {
-    background-color: #f44336;
+    background-color: #510c76;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 30px;
     cursor: pointer;
-    padding: 8px 16px;
-    margin-top: 8px;
+    padding: 10px 20px;
+    font-weight: 700;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    margin-top: 20px;
+    width: 100%;
 }
 
 .logoutButton:hover {
     background-color: #d32f2f;
+    transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
@@ -134,9 +143,18 @@
         gap: 0;
         background-color: white;
         width: 100%;
+        position: absolute;
+        top: 80px;
+        left: 0;
+        transition: max-height 0.3s ease;
+        overflow: hidden;
     }
 
     .menuToggle {
         display: block;
+    }
+
+    .navItems.open {
+        max-height: 500px; /* Ajusta según el contenido */
     }
 }

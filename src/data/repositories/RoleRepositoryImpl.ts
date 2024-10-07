@@ -1,5 +1,5 @@
 import { RoleRepository } from "@/domain/repositories/RoleRepository";
-import { Role } from "@/domain/entities/Role";
+import { Role } from "@/entities/Role";
 import { RoleApi } from "@/data/api/RoleApi";
 
 export class RoleRepositoryImpl implements RoleRepository {

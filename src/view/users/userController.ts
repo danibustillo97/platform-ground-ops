@@ -1,6 +1,6 @@
 // src/controllers/userController.ts
 import { getUsers, createUser, updateUser, deleteUser } from "@/data/api/userApi";
-import { User } from "@/domain/entities/User";
+import { User } from "@/entities/User";
 
 export const fetchAllUsers = async (): Promise<User[]> => {
     try {

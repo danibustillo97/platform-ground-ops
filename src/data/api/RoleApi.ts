@@ -1,7 +1,7 @@
 import axios from "axios";
-import { Role } from "@/domain/entities/Role";
+import { Role } from "@/entities/Role";
 
-const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/roles/`;
+const API_URL = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/roles/`;
 
 export const RoleApi = {
     async fetchRoles(): Promise<Role[]> {

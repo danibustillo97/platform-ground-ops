@@ -152,9 +152,9 @@ const BaggageView: React.FC = () => {
                                                 onClick={() => handleOpenModal(row)}
                                             >
                                                 <Visibility
-                                                    className={styles.icon}
+                                                    className={styles.edit}
                                                 />
-                                                Ver Detalles
+                                                Editar
                                             </a>
                                         </td>
                                     </tr>

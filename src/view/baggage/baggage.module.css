@@ -6,6 +6,7 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     margin: auto;
     max-width: 1200px;
+    margin-top: 50px    ;
 }
 
 
@@ -22,12 +23,11 @@
     color: #510c76;
 }
 
-.addButton {
+.addButton {    
     display: flex;
     align-items: center;
     padding: 0.5rem 1rem;
     background-color: #9bbe68;
-    /* Color más suave */
     color: #ffffff;
     border-radius: 4px;
     text-decoration: none;

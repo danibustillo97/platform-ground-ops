@@ -38,28 +38,28 @@
 }
 
 .addRoleButton {
-    background-color: #9BBE68;
+    background-color: #510C76;
 }
 
 .addRoleButton:hover {
-    background-color: #8A9A5B;
+    background-color: #510C76;
 }
 
 .editButton {
-    background-color: #74C4D6;
+    background-color: #510C76;
 }
 
 .editButton:hover {
-    background-color: #60A3B8;
+    background-color: #510C76;
 }
 
 .deleteButton {
-    background-color: #FF4E00;
-    border: 1px solid #FF4E00;
+    background-color: #ce0000;
+    border: 1px solid #ce0000;
 }
 
 .deleteButton:hover {
-    background-color: #FF3A00;
+    background-color: #ce0000;
 }
 
 .tableContainer {
