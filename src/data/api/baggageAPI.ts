@@ -1,8 +1,8 @@
 import { BaggageCase } from "@/types/BaggageCase";
 
-// data/api/baggageAPI.ts
 const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
-export const fetchPassengerDataAPI = async (pnr: string) => {
+
+export const fetchPassengerDataAPI = async (pnr: string, token: string) => {
     try {
         const response = await fetch(
             `${apiURL}/api/manifest/${pnr}`,
@@ -10,15 +10,14 @@ export const fetchPassengerDataAPI = async (pnr: string) => {
                 method: "GET",
                 headers: {
                     "ngrok-skip-browser-warning": "true",
-                    "Content-Type": "application/json",  
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,  
                 },
             }
         );
-
         if (!response.ok) {
             throw new Error(`Error fetching data, status: ${response.status}`);
         }
-
         const data = await response.json();
         return data;
     } catch (error) {
@@ -27,7 +26,7 @@ export const fetchPassengerDataAPI = async (pnr: string) => {
     }
 };
 
-export const createBaggageCasesAPI = async (baggageCases: any[]) => {
+export const createBaggageCasesAPI = async (baggageCases: any[], token: string) => {
     try {
         const response = await fetch(
             `${apiURL}/api/baggage-case/`,
@@ -36,15 +35,14 @@ export const createBaggageCasesAPI = async (baggageCases: any[]) => {
                 headers: {
                     "ngrok-skip-browser-warning": "true",
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,  
                 },
                 body: JSON.stringify(baggageCases),
             }
         );
-
         if (!response.ok) {
             throw new Error(`Error creating baggage cases, status: ${response.status}`);
         }
-
         const data = await response.json();
         return data;
     } catch (error) {
@@ -53,7 +51,7 @@ export const createBaggageCasesAPI = async (baggageCases: any[]) => {
     }
 };
 
-export const getBaggageCasesApi = async () => {
+export const getBaggageCasesApi = async (token: string) => {
     try {
         const response = await fetch(
             `${apiURL}/api/baggage-case/`,
@@ -62,13 +60,12 @@ export const getBaggageCasesApi = async () => {
                 headers: {
                     "ngrok-skip-browser-warning": "true",
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,  
                 },
             }
         );
-
         if (response.ok) {
             const data = await response.json();
-            console.log("Datos recibidos de la API:", data);
             return data;
         } else {
             console.error("Error fetching data:", response.statusText);
@@ -80,7 +77,7 @@ export const getBaggageCasesApi = async () => {
     }
 };
 
-export const putBaggageCasesAPI = async (id_passenger: any, baggageCases: any) => {
+export const putBaggageCasesAPI = async (id_passenger: any, baggageCases: any, token: string) => {
     try {
         const response = await fetch(
             `${apiURL}/api/baggage-case/${id_passenger}`,
@@ -89,18 +86,16 @@ export const putBaggageCasesAPI = async (id_passenger: any, baggageCases: any) =
                 headers: {
                     "ngrok-skip-browser-warning": "true",
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,  
                 },
                 body: JSON.stringify(baggageCases),
             },
         );
-
         if (response.ok) {
             const data = await response.json();
-            console.log("Datos recibidos de la API:", data);
             return data;
         } else {
             const errorDetails = await response.json();
-            console.error("Detalles del error:", errorDetails);
             throw new Error(`Error updating baggage cases, status: ${response.status}, message: ${errorDetails.message}`);
         }
     } catch (error) {

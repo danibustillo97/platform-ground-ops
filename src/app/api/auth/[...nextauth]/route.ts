@@ -1,7 +1,12 @@
-import NextAuth from "next-auth";
+import NextAuth, { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-const handler = NextAuth({
+interface User {
+    access_token: string;
+    error?: string;
+}
+
+const authOptions: NextAuthOptions = {
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -9,47 +14,63 @@ const handler = NextAuth({
                 email: { label: "Email", type: "email", placeholder: "test@test.com" },
                 password: { label: "Password", type: "password" },
             },
-            async authorize(credentials, req) {
+            async authorize(credentials) {
                 const res = await fetch(
                     `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login/login`,
                     {
                         method: "POST",
                         body: new URLSearchParams({
                             grant_type: 'password',
-                            username: credentials?.email || '', 
+                            username: credentials?.email || '',
                             password: credentials?.password || '',
-                            scope: '',  
-                            client_id: '',  
-                            client_secret: '',  
                         }),
                         headers: {
                             "Content-Type": "application/x-www-form-urlencoded",
-                            "ngrok-skip-browser-warning": "true",  
+                            "ngrok-skip-browser-warning": "true",
                         },
                     }
                 );
 
-                const user = await res.json();
-                console.log(user.data);
+                const user: User = await res.json();
 
-                if (!res.ok || user.error) {
+                if (!res.ok || !user.access_token) {
                     throw new Error(user.error || 'Authorization failed');
                 }
 
-                return user;
+                return user as NextAuthUser;
             },
         }),
     ],
-
+    session: {
+        strategy: "jwt",
+    },
     callbacks: {
         async jwt({ token, user }) {
-          return { ...token, ...user };
+            if (user) {
+                token.access_token = user.access_token;
+                
+            }
+            return token;
         },
         async session({ session, token }) {
-          session.user = token as any;
-          return session;
+            session.user.access_token = token.access_token as string;
+     
+            return session;
         },
-      },
-});
+    },
+    cookies: {
+        sessionToken: {
+            name: `next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                secure: process.env.NODE_ENV === "production",
+                sameSite: "lax",
+                path: "/",
+            },
+        },
+    },
+};
+
+const handler = NextAuth(authOptions);
 
 export { handler as GET, handler as POST };

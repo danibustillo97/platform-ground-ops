@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
+import { getSession } from "next-auth/react";
 import { getPassengerData, createBaggageCases } from "@/data/repositories/baggageRepository";
 import { PassengerData } from "@/domain/types/PassengerData";
 
@@ -10,22 +11,20 @@ export const useFormBaggageController = () => {
     const [passengerData, setPassengerData] = useState<PassengerData[]>([]);
     const [selectedPassenger, setSelectedPassenger] = useState<string>("");
     const [luggageList, setLuggageList] = useState<string[]>([]);
-    const [selectedLuggage, setSelectedLuggage] = useState<
-        {
-            id: string;
-            luggage: string;
-            phone: string;
-            email: string;
-            flightNum: string;
-            departureDate: string;
-            fromAirport: string;
-            toAirport: string;
-            passengerName: string;
-            description: string;
-            issue: string;
-        }[]
-    >([]);
-    const [formData, setFormData] = useState({ phone: "", email: "", address: ""});
+    const [selectedLuggage, setSelectedLuggage] = useState<{
+        id: string;
+        luggage: string;
+        phone: string;
+        email: string;
+        flightNum: string;
+        departureDate: string;
+        fromAirport: string;
+        toAirport: string;
+        passengerName: string;
+        description: string;
+        issue: string;
+    }[]>([]);
+    const [formData, setFormData] = useState({ phone: "", email: "", address: "" });
 
     useEffect(() => {
         if (pnrAdded) {
@@ -42,24 +41,22 @@ export const useFormBaggageController = () => {
 
     const fetchPassengerData = async (pnr: string) => {
         try {
-            const data = await getPassengerData(pnr);
-            setPassengerData(data);
+            const session = await getSession();
+            const token = session?.user.access_token;
+            if (token) {
+                const data = await getPassengerData(pnr, token);
+                setPassengerData(data);
+            }
+
         } catch (error) {
-            console.error(
-                "Error fetching passenger data from repository",
-                error,
-            );
+            console.error("Error fetching passenger data from repository", error);
         }
     };
 
     const handlePassengerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const passenger = e.target.value;
         setSelectedPassenger(passenger);
-
-        const passengerInfo = passengerData.find(
-            (p) => p.Pax_Name === passenger,
-        );
-
+        const passengerInfo = passengerData.find((p) => p.Pax_Name === passenger);
         if (passengerInfo) {
             setLuggageList(passengerInfo.Bag_Tags || []);
             setFormData({
@@ -67,32 +64,20 @@ export const useFormBaggageController = () => {
                 email: passengerInfo.email || "",
                 address: passengerInfo.address || "",
             });
-
             setSelectedLuggage((prevLuggage) =>
                 prevLuggage.map((item) =>
                     item.passengerName === passengerInfo.Pax_Name
-                        ? {
-                            ...item,
-                            ...passengerInfo,
-                            passengerName: passengerInfo.Pax_Name,
-                        }
-                        : item,
-                ),
+                        ? { ...item, ...passengerInfo, passengerName: passengerInfo.Pax_Name }
+                        : item
+                )
             );
         }
     };
 
     const handleLuggageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const luggage = e.target.value;
-        const passengerInfo = passengerData.find(
-            (p) => p.Pax_Name === selectedPassenger,
-        );
-
-        if (
-            luggage &&
-            !selectedLuggage.some((item) => item.luggage === luggage) &&
-            passengerInfo
-        ) {
+        const passengerInfo = passengerData.find((p) => p.Pax_Name === selectedPassenger);
+        if (luggage && !selectedLuggage.some((item) => item.luggage === luggage) && passengerInfo) {
             setSelectedLuggage([
                 ...selectedLuggage,
                 {
@@ -119,20 +104,22 @@ export const useFormBaggageController = () => {
     const handleDescriptionChange = (id: string, value: string) => {
         setSelectedLuggage(
             selectedLuggage.map((item) =>
-                item.id === id ? { ...item, description: value } : item,
-            ),
+                item.id === id ? { ...item, description: value } : item
+            )
         );
     };
 
     const handleIssueChange = (id: string, value: string) => {
         setSelectedLuggage(
             selectedLuggage.map((item) =>
-                item.id === id ? { ...item, issue: value } : item,
-            ),
+                item.id === id ? { ...item, issue: value } : item
+            )
         );
     };
 
     const handleCreateCases = async () => {
+        const session = await getSession();
+        const token = session?.user.access_token;
         const formattedData = selectedLuggage.map((luggageItem) => ({
             baggage_code: luggageItem.luggage,
             contact: {
@@ -152,11 +139,15 @@ export const useFormBaggageController = () => {
 
         console.log("Datos preparados para enviar:", formattedData);
 
-        try {
-            const response = await createBaggageCases(formattedData);
-            console.log('Success:', response);
-        } catch (error) {
-            console.error('Error al crear casos de equipaje:', error);
+        if (token) {
+            try {
+                const response = await createBaggageCases(formattedData, token);
+                console.log('Success:', response);
+            } catch (error) {
+                console.error('Error al crear casos de equipaje:', error);
+            }
+        } else {
+            console.error('Token no disponible. No se puede realizar la operación.');
         }
     };
 

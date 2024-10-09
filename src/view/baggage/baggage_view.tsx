@@ -25,7 +25,6 @@ const BaggageView: React.FC = () => {
         handleOpenModal,
         handleCloseModal,
         updatedSavedBaggageCase,
-
     } = useBaggageCasesController();
 
     return (
