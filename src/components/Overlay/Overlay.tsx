@@ -1,5 +1,5 @@
 //Cargador
-import React, { useState } from "react";
+import React from "react";
 import styles from "./Overlay.module.css";
 
 
@@ -13,3 +13,5 @@ const Overlay: React.FC = () => {
 }
 
 export default Overlay;
+
+

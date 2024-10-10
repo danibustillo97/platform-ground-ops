@@ -3,9 +3,9 @@
 import React from "react";
 import { AiFillWindows } from "react-icons/ai";
 import useLoginController from "./useLoginController";
-import styles from "@/view/login/login.module.css";
+import styles from "./login.module.css";
 import Image from "next/image";
-import Alert from "@/components/Alerts/Alert"; // Asegúrate de ajustar la ruta
+import Alert from "../../components/Alerts/Alert";
 
 export default function LoginPage() {
     const { formData, errors, loading, handleChange, handleSubmit } = useLoginController();

@@ -1,4 +1,4 @@
-import FligtsPage from "@/view/fligths/fligths_view"
+import FligtsPage from "../../view/fligths/fligths_view"
 
 const FligtsViews: React.FC = () => {
     return <>

@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { getSession } from "next-auth/react";
-import { getPassengerData, createBaggageCases } from "@/data/repositories/baggageRepository";
-import { PassengerData } from "@/domain/types/PassengerData";
+import { getPassengerData, createBaggageCases } from "../../../data/repositories/baggageRepository";
+import { PassengerData } from "../../../domain/types/PassengerData";
 
 export const useFormBaggageController = () => {
     const [loading, setLoading] = useState(true);

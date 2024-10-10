@@ -1,16 +1,16 @@
 // next-auth.d.ts
-import NextAuth, { DefaultSession } from "next-auth";
+// import NextAuth, { DefaultSession } from "next-auth";
 
-declare module "next-auth" {
-  interface Session {
-    user: {
-      access_token: string;
-      id: string;
-    } & DefaultSession["user"];
-  }
+// declare module "next-auth" {
+//   interface Session {
+//     user: {
+//       access_token: string;
+//       id: string;
+//     } & DefaultSession["user"];
+//   }
 
-  interface User {
-    access_token: string;
-    id: string;
-  }
-}
+//   interface User {
+//     access_token: string;
+//     id: string;
+//   }
+// }

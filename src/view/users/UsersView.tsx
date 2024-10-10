@@ -11,7 +11,7 @@ import { User, UserCreate } from "@/entities/User";
 import styles from "@/view/users/users.module.css";
 import { useRouter } from "next/navigation";
 import UserModal from "@/components/UserModal/UserModal";
-import { updateUser } from "@/data/api/userApi";
+
 
 const UsersView: React.FC = () => {
     const router = useRouter();

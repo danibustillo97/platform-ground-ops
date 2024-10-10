@@ -1,4 +1,4 @@
-import UsersView from "@/view/users/UsersView"; 
+import UsersView from "../../view/users/UsersView"; 
 
 
 const Users: React.FC = () => {

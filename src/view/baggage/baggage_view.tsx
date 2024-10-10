@@ -1,12 +1,12 @@
 "use client";
-import React, { useState } from "react";
-import { useBaggageCasesController } from "@/view/baggage/useBaggageCasesController";
-import styles from "@/view/baggage/baggage.module.css";
+import React from "react";
+import { useBaggageCasesController } from "./useBaggageCasesController";
+import styles from "./baggage.module.css";
 import { Visibility, Add } from "@mui/icons-material";
 import Link from "next/link";
 import Overlay from "@/components/Overlay/Overlay";
-import ModalBaggage from "@/components/Modals/ModalBaggage";
-import { BaggageCase } from "@/types/BaggageCase";
+import ModalBaggage from "../../components/Modals/ModalBaggage";
+ 
 
 const BaggageView: React.FC = () => {
     const {

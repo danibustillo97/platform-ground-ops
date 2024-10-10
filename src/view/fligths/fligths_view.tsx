@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import styles from './FlightsTable.module.css';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import OTPForm from '@/components/otpForms/OTPForm';
+
 
 interface Flight {
     carrier_name: string;
@@ -34,12 +34,11 @@ const FlightsPage = () => {
         trc: { name: '', phone: '' },
     });
     const [isContactFormVisible, setIsContactFormVisible] = useState(false);
+    const [otpSubmitted, setOtpSubmitted] = useState(false);
+    const [counterSetup, setCounterSetup] = useState<File | null>(null);
     const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-    const handleOTPSubmit = (otp: string, selectedFlight: Flight | null) => {
-        console.log('OTP:', otp);
-        console.log('Vuelo seleccionado:', selectedFlight);
-    };
+  console.log(otpSubmitted)
 
     useEffect(() => {
         const fetchFlights = async () => {
@@ -98,6 +97,7 @@ const FlightsPage = () => {
             trc: { name: '', phone: '' },
         });
         setIsContactFormVisible(false);
+        setOtpSubmitted(false);
     };
 
     const handleContactChange = (role: keyof ContactInfo, field: 'name' | 'phone', value: string) => {
@@ -112,6 +112,28 @@ const FlightsPage = () => {
 
     const toggleContactForm = () => {
         setIsContactFormVisible(!isContactFormVisible);
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setCounterSetup(file);
+        }
+    };
+
+    const handleCounterSetupUpload = async () => {
+        if (counterSetup) {
+            const formData = new FormData();
+            formData.append('counterSetup', counterSetup);
+
+            // Implementar lógica para subir el archivo
+            const response = await fetch(`${apiURL}/api/upload`, {
+                method: 'POST',
+                body: formData,
+            });
+            // Manejar la respuesta del servidor
+            console.log(await response.json());
+        }
     };
 
     return (
@@ -133,7 +155,8 @@ const FlightsPage = () => {
                     </thead>
                     <tbody>
                         {sortedFlights.map((flight, index) => (
-                            <tr key={index}
+                            <tr
+                                key={index}
                                 onClick={() => handleFlightSelection(flight)}
                                 className={selectedFlight === flight ? styles.selected : ''}>
                                 <td>{flight.itinerary[0].station_iata}</td>
@@ -153,7 +176,7 @@ const FlightsPage = () => {
             {selectedFlight && (
                 <>
                     <div className={styles.detailsContainer}>
-                        <h2>Detalles del Vuelo: {selectedFlight.flight_number}</h2>
+                        <h2 className={styles.formContactTitle}>Detalles del Vuelo: {selectedFlight.flight_number}</h2>
                         <button onClick={toggleContactForm} className={styles.toggleButton}>
                             {isContactFormVisible ? 'Ocultar Formulario' : 'Ver Formulario'}
                             <span className={`${styles.toggleIcon} ${isContactFormVisible ? styles.open : ''}`}>
@@ -202,32 +225,26 @@ const FlightsPage = () => {
                                         value={contactInfo.trc.phone}
                                         onChange={(e) => handleContactChange('trc', 'phone', e.target.value)} />
                                 </label>
-                                
                             </div>
                         )}
+                        {/* <OTPForm onSubmit={handleOTPSubmit} /> */}
                     </div>
-
-
-                </>
-
-
-            )}
-
-            {selectedFlight && (
-                <>
-                    <div className={styles.detailsContainer}>
-                        <h2>Detalles del Vuelo: {selectedFlight.flight_number}</h2>
-                        <button onClick={toggleContactForm} className={styles.toggleButton}>
-                            {isContactFormVisible ? 'Ocultar Formulario' : 'Ver Formulario'}
-                            <span className={`${styles.toggleIcon} ${isContactFormVisible ? styles.open : ''}`}>
-                                <ExpandMoreIcon />
-                            </span>
+                    <div className={styles.counterSetupContainer}>
+                        <h3 className={styles.counterTitle}>Configuración del Counter:</h3>
+                        <input
+                            type="file"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                            className={styles.fileInput}
+                        />
+                        <button
+                            onClick={handleCounterSetupUpload}
+                            className={styles.uploadButton}
+                        >
+                            Subir Configuración
                         </button>
-
-                        {isContactFormVisible && (
-                            <OTPForm flights={flights} onSubmit={handleOTPSubmit} />
-                        )}
                     </div>
+
                 </>
             )}
         </div>

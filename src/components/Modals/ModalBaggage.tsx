@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import styles from "./Modal.module.css";
 import { BaggageCase, Status } from "@/types/BaggageCase";
 import useModalBaggageController from "./useModalBaggageController";
@@ -11,7 +11,7 @@ interface ModalBaggageProps {
 }
 
 const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, onSave }) => {
-  if (!isOpen) return null;
+  // Mover la llamada al hook fuera de la condición
   const {
     phone,
     email,
@@ -22,6 +22,9 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
     handleSubmit,
   } = useModalBaggageController(details, onSave);
 
+  // Verificar si el modal debe estar abierto
+  if (!isOpen) return null;
+
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
@@ -31,7 +34,7 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
             <strong>Baggage Code:</strong> {details.baggage_code}
           </p>
           <p>
-            <strong>Telefono:</strong>
+            <strong>Teléfono:</strong>
             <input
               type="phone"
               value={phone}

@@ -4,13 +4,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import styles from "@/components/nav/Navbar.module.css";
+import styles from "./Navbar.module.css";
 import { signOut, useSession } from "next-auth/react";
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
-  const [showDropdown, setShowDropdown] = useState<boolean>(false);
-  const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -18,13 +18,8 @@ const Navbar: React.FC = () => {
     router.push("/login");
   };
 
-  const toggleMenu = () => {
-    setIsMenuOpen(!isMenuOpen);
-  };
-
-  const toggleDropdown = () => {
-    setShowDropdown(!showDropdown);
-  };
+  const toggleMenu = () => setIsMenuOpen(prev => !prev);
+  const toggleDropdown = () => setShowDropdown(prev => !prev);
 
   return (
     <nav className={styles.navBar}>
@@ -43,24 +38,19 @@ const Navbar: React.FC = () => {
         <div className={`${styles.navItems} ${isMenuOpen ? styles.open : ""}`}>
           {session?.user ? (
             <>
-              <Link href="/dashboard" className={styles.navLink}>
-                Dashboard
-              </Link>
-              <Link href="/users" className={styles.navLink}>
-                Usuarios
-              </Link>
-              <Link href="/baggage_gestion" className={styles.navLink}>
-                Gestión de Equipajes
-              </Link>
+              <Link href="/dashboard" className={styles.navLink}>Dashboard</Link>
+              <Link href="/users" className={styles.navLink}>Usuarios</Link>
+              <Link href="/baggage_gestion" className={styles.navLink}>Gestión de Equipajes</Link>
+              <Link href="/flights" className={styles.navLink}>Vuelos</Link>
               <div className={styles.dropdown}>
                 <button className={styles.userButton} onClick={toggleDropdown}>
-                  {session.user.email || "User"}
+                  {session.user?.email || "User"}
                 </button>
                 {showDropdown && (
                   <div className={styles.dropdownMenu}>
                     <div className={styles.userInfo}>
-                      <p><strong>Nombre:</strong> {session.user.email || "Desconocido"}</p>
-                      <p><strong>Email:</strong> {session.user.email || "Desconocido"}</p>
+                      <p><strong>Nombre:</strong> {session.user?.email || "Desconocido"}</p>
+                      <p><strong>Email:</strong> {session.user?.email || "Desconocido"}</p>
                     </div>
                     <button className={styles.logoutButton} onClick={handleLogout}>
                       Cerrar Sesión
@@ -70,9 +60,7 @@ const Navbar: React.FC = () => {
               </div>
             </>
           ) : (
-            <Link href="/login" className={styles.loginButton}>
-              Iniciar Sesión
-            </Link>
+            <Link href="/login" className={styles.loginButton}>Iniciar Sesión</Link>
           )}
         </div>
       </div>

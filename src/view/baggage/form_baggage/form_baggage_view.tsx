@@ -17,7 +17,6 @@ const FormReclamoView: React.FC = () => {
         handleAddPnr,
         passengerData,
         selectedPassenger,
-        setSelectedPassenger,
         luggageList,
         selectedLuggage,
         formData,
