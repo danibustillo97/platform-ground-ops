@@ -27,12 +27,16 @@ function RedirectHandler() {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname(); 
+  const isLoginPage = pathname === "/login";
+
   return (
     <SessionProvider>
       <RedirectHandler />
       <html lang="es">
         <body>
-          <Navbar />
+         
+          {!isLoginPage && <Navbar />}
           <main>{children}</main>
         </body>
       </html>
