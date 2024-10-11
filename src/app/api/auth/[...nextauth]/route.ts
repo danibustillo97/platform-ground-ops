@@ -1,7 +1,6 @@
 import NextAuth, { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-
 interface AuthUser {
     id: string;
     access_token: string;
@@ -15,6 +14,9 @@ interface ExtendedNextAuthUser extends NextAuthUser {
 }
 
 const authOptions: NextAuthOptions = {
+    // Agregar el secreto aquí
+    secret: process.env.NEXTAUTH_SECRET, // Asegúrate de definir esta variable de entorno
+
     providers: [
         CredentialsProvider({
             name: "Credentials",
@@ -40,7 +42,6 @@ const authOptions: NextAuthOptions = {
                         }
                     );
             
-                   
                     if (!res.ok) {
                         console.error('Error en la respuesta:', res.status, res.statusText);
                         throw new Error('Error en la autenticación');
@@ -64,8 +65,6 @@ const authOptions: NextAuthOptions = {
                     throw new Error('Authorization failed');
                 }
             }
-            
-            
         }),
     ],
     session: {
