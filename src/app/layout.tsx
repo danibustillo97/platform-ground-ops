@@ -4,10 +4,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Navbar from "../components/nav/Navbar";
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';  
-
-import "./globals.css";
+import './globals.css';
 
 function RedirectHandler() {
   const { data: session, status } = useSession();
@@ -18,12 +15,14 @@ function RedirectHandler() {
 
   useEffect(() => {
     if (status === "loading") return;
-    
-    if (session && (isLoginPage || isHomePage)) {
-      router.push("/dashboard");
-    }
-    if (!session && !isLoginPage) {
-      router.push("/login");
+
+    if (typeof window !== "undefined") {
+      if (session && (isLoginPage || isHomePage)) {
+        router.push("/dashboard");
+      }
+      if (!session && !isLoginPage) {
+        router.push("/login");
+      }
     }
   }, [session, status, pathname, router, isLoginPage, isHomePage]);
 
@@ -34,12 +33,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname(); 
   const isLoginPage = pathname === "/login";
 
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      require('bootstrap/dist/js/bootstrap.bundle.min.js');
+    }
+  }, []);
+
   return (
     <SessionProvider>
       <RedirectHandler />
       <html lang="es">
         <body>
-         
           {!isLoginPage && <Navbar />}
           <main>{children}</main>
         </body>
