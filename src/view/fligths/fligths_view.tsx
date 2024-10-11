@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from './FlightsTable.module.css';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-
 
 interface Flight {
     carrier_name: string;
@@ -34,11 +34,9 @@ const FlightsPage = () => {
         trc: { name: '', phone: '' },
     });
     const [isContactFormVisible, setIsContactFormVisible] = useState(false);
-    const [otpSubmitted, setOtpSubmitted] = useState(false);
+    const [, setOtpSubmitted] = useState(false);
     const [counterSetup, setCounterSetup] = useState<File | null>(null);
     const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-  console.log(otpSubmitted)
 
     useEffect(() => {
         const fetchFlights = async () => {
@@ -90,6 +88,7 @@ const FlightsPage = () => {
         : [];
 
     const handleFlightSelection = (flight: Flight) => {
+        // Cambia la lógica de comparación a usar flight_number
         setSelectedFlight(flight === selectedFlight ? null : flight);
         setContactInfo({
             serviceLeader: { name: '', phone: '' },
@@ -126,31 +125,29 @@ const FlightsPage = () => {
             const formData = new FormData();
             formData.append('counterSetup', counterSetup);
 
-            // Implementar lógica para subir el archivo
             const response = await fetch(`${apiURL}/api/upload`, {
                 method: 'POST',
                 body: formData,
             });
-            // Manejar la respuesta del servidor
             console.log(await response.json());
         }
     };
 
     return (
-        <div className={styles.container}>
+        <div className="container">
             <h1 className={styles.title}>Lista de Vuelos desde {originStation}</h1>
             <div className={styles.tableWrapper}>
-                <table className={styles.flightsTable}>
-                    <thead>
+                <table className={`table table-striped table-bordered ${styles.flightsTable}`}>
+                    <thead className="table-light">
                         <tr>
-                            <th onClick={() => handleSort('itinerary.station_iata')}>Estación</th>
-                            <th onClick={() => handleSort('flight_number')}>Número de Vuelo</th>
-                            <th onClick={() => handleSort('carrier_name')}>Aerolínea</th>
-                            <th onClick={() => handleSort('itinerary.scheduled_departure_date')}>Fecha de Salida</th>
-                            <th onClick={() => handleSort('itinerary.scheduled_departure_time')}>Hora de Salida</th>
-                            <th onClick={() => handleSort('itinerary.flight_status')}>Estado del Vuelo</th>
-                            <th onClick={() => handleSort('itinerary.terminal')}>Terminal</th>
-                            <th onClick={() => handleSort('itinerary.gate')}>Puerta</th>
+                            <th onClick={() => handleSort('itinerary.station_iata')} style={{ cursor: 'pointer' }}>Estación</th>
+                            <th onClick={() => handleSort('flight_number')} style={{ cursor: 'pointer' }}>Número de Vuelo</th>
+                            <th onClick={() => handleSort('carrier_name')} style={{ cursor: 'pointer' }}>Aerolínea</th>
+                            <th onClick={() => handleSort('itinerary.scheduled_departure_date')} style={{ cursor: 'pointer' }}>Fecha de Salida</th>
+                            <th onClick={() => handleSort('itinerary.scheduled_departure_time')} style={{ cursor: 'pointer' }}>Hora de Salida</th>
+                            <th onClick={() => handleSort('itinerary.flight_status')} style={{ cursor: 'pointer' }}>Estado del Vuelo</th>
+                            <th onClick={() => handleSort('itinerary.terminal')} style={{ cursor: 'pointer' }}>Terminal</th>
+                            <th onClick={() => handleSort('itinerary.gate')} style={{ cursor: 'pointer' }}>Puerta</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -158,7 +155,8 @@ const FlightsPage = () => {
                             <tr
                                 key={index}
                                 onClick={() => handleFlightSelection(flight)}
-                                className={selectedFlight === flight ? styles.selected : ''}>
+                                className={selectedFlight === flight ? styles.selected : ''} // Aquí se aplica la clase CSS para resaltar
+                            >
                                 <td>{flight.itinerary[0].station_iata}</td>
                                 <td>{flight.flight_number}</td>
                                 <td>{flight.carrier_name}</td>
@@ -175,76 +173,71 @@ const FlightsPage = () => {
 
             {selectedFlight && (
                 <>
-                    <div className={styles.detailsContainer}>
-                        <h2 className={styles.formContactTitle}>Detalles del Vuelo: {selectedFlight.flight_number}</h2>
-                        <button onClick={toggleContactForm} className={styles.toggleButton}>
-                            {isContactFormVisible ? 'Ocultar Formulario' : 'Ver Formulario'}
-                            <span className={`${styles.toggleIcon} ${isContactFormVisible ? styles.open : ''}`}>
-                                <ExpandMoreIcon />
-                            </span>
-                        </button>
-                        {isContactFormVisible && (
-                            <div className={styles.contactForm}>
-                                <h3>Contactos:</h3>
-                                <label>
-                                    Líder Servicio Al Pasajero:
-                                    <input
-                                        type="text"
-                                        placeholder="Nombre"
-                                        value={contactInfo.serviceLeader.name}
-                                        onChange={(e) => handleContactChange('serviceLeader', 'name', e.target.value)} />
-                                    <input
-                                        type="text"
-                                        placeholder="Teléfono"
-                                        value={contactInfo.serviceLeader.phone}
-                                        onChange={(e) => handleContactChange('serviceLeader', 'phone', e.target.value)} />
-                                </label>
-                                <label>
-                                    Líder Rampa:
-                                    <input
-                                        type="text"
-                                        placeholder="Nombre"
-                                        value={contactInfo.rampLeader.name}
-                                        onChange={(e) => handleContactChange('rampLeader', 'name', e.target.value)} />
-                                    <input
-                                        type="text"
-                                        placeholder="Teléfono"
-                                        value={contactInfo.rampLeader.phone}
-                                        onChange={(e) => handleContactChange('rampLeader', 'phone', e.target.value)} />
-                                </label>
-                                <label>
-                                    TRC:
-                                    <input
-                                        type="text"
-                                        placeholder="Nombre"
-                                        value={contactInfo.trc.name}
-                                        onChange={(e) => handleContactChange('trc', 'name', e.target.value)} />
-                                    <input
-                                        type="text"
-                                        placeholder="Teléfono"
-                                        value={contactInfo.trc.phone}
-                                        onChange={(e) => handleContactChange('trc', 'phone', e.target.value)} />
-                                </label>
-                            </div>
-                        )}
-                        {/* <OTPForm onSubmit={handleOTPSubmit} /> */}
+                    <div className={`${styles.detailsContainer} card mt-4`}>
+                        <div className="card-body">
+                            <h2 className={styles.formContactTitle}>Detalles del Vuelo: {selectedFlight.flight_number}</h2>
+                            <button onClick={toggleContactForm} className= {`btn btn-outline-primary mb-2 ${styles.btn_details}`}>
+                                {isContactFormVisible ? 'Ocultar Formulario' : 'Ver Formulario'}
+                                <span className={`${styles.toggleIcon} ${isContactFormVisible ? styles.open : ''}`}>
+                                    <ExpandMoreIcon />
+                                </span>
+                            </button>
+                            {isContactFormVisible && (
+                                <div className={styles.contactForm}>
+                                    <h3>Contactos:</h3>
+                                    <label>
+                                        Líder Servicio Al Pasajero:
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Nombre"
+                                            value={contactInfo.serviceLeader.name}
+                                            onChange={(e) => handleContactChange('serviceLeader', 'name', e.target.value)} />
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Teléfono"
+                                            value={contactInfo.serviceLeader.phone}
+                                            onChange={(e) => handleContactChange('serviceLeader', 'phone', e.target.value)} />
+                                    </label>
+                                    <label>
+                                        Líder Rampa:
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Nombre"
+                                            value={contactInfo.rampLeader.name}
+                                            onChange={(e) => handleContactChange('rampLeader', 'name', e.target.value)} />
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Teléfono"
+                                            value={contactInfo.rampLeader.phone}
+                                            onChange={(e) => handleContactChange('rampLeader', 'phone', e.target.value)} />
+                                    </label>
+                                    <label>
+                                        TRC:
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Nombre"
+                                            value={contactInfo.trc.name}
+                                            onChange={(e) => handleContactChange('trc', 'name', e.target.value)} />
+                                        <input
+                                            type="text"
+                                            className="form-control"
+                                            placeholder="Teléfono"
+                                            value={contactInfo.trc.phone}
+                                            onChange={(e) => handleContactChange('trc', 'phone', e.target.value)} />
+                                    </label>
+                                    <div className="mt-3">
+                                        <input type="file" onChange={handleFileChange} />
+                                        <button onClick={handleCounterSetupUpload} className= {`btn  mt-2 ${styles.uploadButton}`}>Subir Configuración del Counter</button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
-                    <div className={styles.counterSetupContainer}>
-                        <h3 className={styles.counterTitle}>Configuración del Counter:</h3>
-                        <input
-                            type="file"
-                            accept="image/*"
-                            onChange={handleFileChange}
-                            className={styles.fileInput}
-                        />
-                        <button
-                            onClick={handleCounterSetupUpload}
-                            className={styles.uploadButton}
-                        >
-                            Subir Configuración
-                        </button>
-                    </div>
-
                 </>
             )}
         </div>

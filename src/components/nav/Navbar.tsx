@@ -4,12 +4,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import styles from "./Navbar.module.css";
+import styles from "./Navbar.module.css"; // Asegúrate de que esta línea sea correcta
 import { signOut, useSession } from "next-auth/react";
 
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [editableName, setEditableName] = useState(session?.user?.email || ""); // Estado para el nombre editable
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -18,6 +19,13 @@ const Navbar: React.FC = () => {
   };
 
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
+  
+  const handleMouseEnter = () => setShowDropdown(true);
+  const handleMouseLeave = () => setShowDropdown(false);
+
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setEditableName(e.target.value); // Actualiza el nombre editable
+  };
 
   return (
     <nav className={`navbar navbar-expand-lg navbar-light bg-light ${styles.navBar}`}>
@@ -39,7 +47,7 @@ const Navbar: React.FC = () => {
           data-bs-toggle="collapse"
           data-bs-target="#navbarNav"
           aria-controls="navbarNav"
-          aria-expanded="false"
+          aria-expanded={false}
           aria-label="Toggle navigation"
         >
           <span className="navbar-toggler-icon"></span>
@@ -70,25 +78,32 @@ const Navbar: React.FC = () => {
                   </Link>
                 </li>
 
-                <li className={`nav-item dropdown ${showDropdown ? "show" : ""}`}>
+                <li
+                  className={`nav-item dropdown ${showDropdown ? "show" : ""}`}
+                  onMouseEnter={handleMouseEnter}
+                  onMouseLeave={handleMouseLeave}
+                >
                   <button
                     className={`nav-link dropdown-toggle ${styles.userButton}`}
                     id="navbarDropdown"
                     role="button"
-                    data-bs-toggle="dropdown"
                     aria-expanded={showDropdown}
                     onClick={toggleDropdown}
                   >
                     {session.user?.email || "User"}
                   </button>
                   <ul
-                    className={`dropdown-menu dropdown-menu-end ${showDropdown ? "show" : ""}`}
+                    className={`dropdown-menu dropdown-menu-end ${showDropdown ? "show" : ""} ${styles.customDropdown}`}
                     aria-labelledby="navbarDropdown"
                   >
                     <li>
-                      <p className="dropdown-item">
-                        <strong>Nombre:</strong> {session.user?.email || "Desconocido"}
-                      </p>
+                      <input
+                        type="text"
+                        value={editableName}
+                        onChange={handleNameChange}
+                        className={`dropdown-item ${styles.inputField}`}
+                        placeholder="Nombre"
+                      />
                     </li>
                     <li>
                       <p className="dropdown-item">
