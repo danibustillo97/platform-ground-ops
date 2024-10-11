@@ -1,160 +1,110 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
-@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap');
-
-
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
 .navBar {
-    background-color: #ffffff;
-    height: 80px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-    display: flex;
-    align-items: center;
-    padding: 0 20px;
-
-    font-family: "Inter", sans-serif;
+  background-color: #ffffff;
+  height: 80px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-family: "Inter", sans-serif;
 }
 
 .navBar:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
 }
 
-.navContainer {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    width: 100%;
-}
-
-.navItems {
-    display: flex;
-    align-items: center;
-    gap: 20px;
-    transition: all 0.3s ease;
-}
-
-.menuToggle {
-    background: none;
-    border: none;
-    font-size: 20px;
-    color: #510C76;
-    cursor: pointer;
-    display: none;
-}
-
-.navLink {
-    color: #510C76;
-    text-decoration: none;
-    padding: 12px 20px;
-    border-radius: 25px;
-    transition: background-color 0.3s ease, color 0.3s ease;
-    font-weight: 400;
-    font-family: "Inter", sans-serif !important; 
-}
-
-.navLink:hover {
-    background-color: rgba(81, 12, 118, 0.1);
-    color: #333;
-}
-
-.loginButton {
-    background-color: #510C76;
-    color: white;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    padding: 12px 20px;
-    font-weight: 700;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-}
-
-.loginButton:hover {
-    background-color: #3a0e56;
-    transform: scale(1.05);
+.navBar .navbar-toggler {
+  border: none;
 }
 
 .logo {
-    max-width: 100%;
-    height: auto;
-    width: 120px;
+  max-width: 100%;
+  height: auto;
+  width: 120px;
 }
 
-.dropdown {
-    position: relative;
+.navLink {
+  color: #510C76;
+  text-decoration: none;
+  padding: 12px 20px;
+  border-radius: 25px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  font-weight: 500;
+}
+
+.navLink:hover {
+  background-color: rgba(81, 12, 118, 0.1);
+  color: #333;
 }
 
 .userButton {
-    background-color: transparent;
-    border: none;
-    color: #ffffff;
-    font-weight: 700;
-    cursor: pointer;
-    font-size: 14px;
-    background-color: #510C76;
-    padding: 10px 15px;
-    border-radius: 5px;
-    box-shadow: inset;
+  background-color: transparent;
+  border: none;
+  color: #ffffff;
+  font-weight: 600;
+  cursor: pointer;
+  font-size: 14px;
+  background-color: #510C76;
+  padding: 10px 15px;
+  border-radius: 25px;
+  transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
-.dropdownMenu {
-    position: absolute;
-    background: white;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 8px;
-    padding: 15px;
-    margin-top: 18px;
-    z-index: 1000;
-    min-width: 220px;
-    margin-left: -180px;
+.userButton:hover {
+  background-color: #3a0e56;
+  transform: scale(1.05);
 }
 
-.userInfo {
-    margin-bottom: 10px;
-    font-size: 14px;
-    color: #333;
+.dropdown-menu {
+  background: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  margin-top: 10px;
 }
 
-.userInfo p{
-    margin-top: 10px;
-    font-family: "Inter", sans-serif;
+.dropdown-item {
+  font-size: 14px;
+  color: #333;
+  padding: 10px;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(81, 12, 118, 0.1);
+  color: #510C76;
 }
 
 .logoutButton {
-    background-color: #510c76;
-    color: white;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    padding: 10px 20px;
-    font-weight: 700;
-    transition: background-color 0.3s ease, transform 0.3s ease;
-    margin-top: 20px;
-    width: 100%;
+  background-color: #510c76;
+  color: white;
+  border: none;
+  border-radius: 30px;
+  cursor: pointer;
+  padding: 10px 20px;
+  font-weight: 700;
+  transition: background-color 0.3s ease, transform 0.3s ease;
+  margin-top: 10px;
+  width: 100%;
 }
 
 .logoutButton:hover {
-    background-color: #d32f2f;
-    transform: scale(1.05);
+  background-color: #d32f2f;
+  transform: scale(1.05);
 }
 
 @media (max-width: 768px) {
-    .navItems {
-        flex-direction: column;
-        gap: 0;
-        background-color: white;
-        width: 100%;
-        position: absolute;
-        top: 80px;
-        left: 0;
-        transition: max-height 0.3s ease;
-        overflow: hidden;
-    }
+  .navLink {
+    padding: 10px;
+  }
 
-    .menuToggle {
-        display: block;
-    }
+  .userButton {
+    padding: 8px 12px;
+  }
 
-    .navItems.open {
-        max-height: 500px; /* Ajusta según el contenido */
-    }
+  .dropdown-menu {
+    margin-left: -100px;
+  }
 }
