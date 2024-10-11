@@ -1,14 +1,18 @@
 "use client";
+
 import React from "react";
 import { useBaggageCasesController } from "./useBaggageCasesController";
-import styles from "./baggage.module.css";
 import { Visibility, Add } from "@mui/icons-material";
 import Link from "next/link";
 import Overlay from "@/components/Overlay/Overlay";
 import ModalBaggage from "../../components/Modals/ModalBaggage";
- 
+import 'bootstrap/dist/css/bootstrap.min.css';
+import styles from "./baggage.module.css";
+import { signOut, useSession } from "next-auth/react";
 
 const BaggageView: React.FC = () => {
+const session = useSession()
+
     const {
         searchTerm,
         statusFilter,
@@ -27,154 +31,148 @@ const BaggageView: React.FC = () => {
         updatedSavedBaggageCase,
     } = useBaggageCasesController();
 
+    const getStatusBadge = (status: string) => {
+        switch (status) {
+            case "Abierto":
+                return "badge bg-success text-dark"; // Amarillo
+            case "En espera de pasajero":
+                return "badge bg-info"; // Azul claro
+            case "En espera de formulario":
+                return "badge bg-warning"; // Gris
+            case "Cerrado":
+                return "badge bg-danger"; // Verde
+            default:
+                return "badge warning";
+        }
+    };
+
     return (
-        <div className={styles.container}>
-            <div className={styles.header}>
-                <h1 className={styles.title}>Gestión de Equipajes Rezagados</h1>
+        <div className={`mt-5 ${styles.container}`}>
+            {/* Sección del Título y Botón */}
+            <header className={`${styles.header}`}>
+                <div className="row d-flex justify-content-between align-items-center">
+                    <div className="col-md-6">
+                        <h1 className={`h4 text-start mb-3 ${styles.title}`}>Agente: <span>{`${session.data?.user.name || "Cargando"}`}</span></h1>
 
-                <Link
-                    href="/baggage_gestion/baggage_form_reclamo"
-                    className={styles.addButton}
-                >
-                    <Add className={styles.addIcon} />
-                    <span className={styles.addButtonText}>
-                        Añadir Nuevo Caso
-                    </span>
-                </Link>
-            </div>
-
-            <div className={styles.filters}>
-                <input
-                    type="text"
-                    placeholder="Buscar por PNR, pasajero o estado"
-                    className={styles.searchInput}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <select
-                    className={styles.statusSelect}
-                    value={statusFilter}
-                    onChange={(e) => setStatusFilter(e.target.value)}
-                >
-                    <option value="">Todos los estados</option>
-                    <option value="Abierto">Abierto</option>
-                    <option value="En espera de pasajero">
-                        En espera de pasajero
-                    </option>
-                    <option value="En espera de Formulario">
-                        En espera de Formulario
-                    </option>
-                    <option value="Cerrado">Cerrado</option>
-                </select>
-                <div className={styles.dateFilters}>
-                    <div className={styles.dateFilterGroup}>
-                        <label className={styles.dateLabel}>Desde:</label>
-                        <input
-                            type="date"
-                            className={styles.dateInput}
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                        />
                     </div>
-                    <div className={styles.dateFilterGroup}>
-                        <label className={styles.dateLabel}>Hasta:</label>
-                        <input
-                            type="date"
-                            className={styles.dateInput}
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                        />
+
+                    <div className="col-md-6 text-end">
+                        <Link href="/baggage_gestion/baggage_form_reclamo" className={`btn ${styles.addButton}`}>
+                            <Add className={`me-2`} />
+                            Añadir Nuevo Caso
+                        </Link>
                     </div>
                 </div>
+            </header>
+
+            {/* Sección de Filtros en una sola columna */}
+            <div className={`row mb-4 ${styles.filters}`}>
+                <div className="col-md-3 mb-3">
+                    <input
+                        type="text"
+                        placeholder="Buscar por PNR, pasajero o estado"
+                        className="form-control"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                    />
+                </div>
+                <div className="col-md-3 mb-3">
+                    <select
+                        className="form-select"
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                    >
+                        <option value="">Todos los estados</option>
+                        <option value="Abierto">Abierto</option>
+                        <option value="En espera de pasajero">En espera de pasajero</option>
+                        <option value="En espera de formulario">En espera de formulario</option>
+                        <option value="Cerrado">Cerrado</option>
+                    </select>
+                </div>
+                <div className="col-md-3 mb-3">
+                    <label className="form-label">Desde:</label>
+                    <input
+                        type="date"
+                        className="form-control"
+                        value={startDate}
+                        onChange={(e) => setStartDate(e.target.value)}
+                    />
+                </div>
+                <div className="col-md-3 mb-3">
+                    <label className="form-label">Hasta:</label>
+                    <input
+                        type="date"
+                        className="form-control"
+                        value={endDate}
+                        onChange={(e) => setEndDate(e.target.value)}
+                    />
+                </div>
             </div>
-            {loading ? <Overlay /> :
-                <div className={styles.tableContainer}>
-                    <table className={`table table-striped table-bordered caption-top ${styles.table}`}>
-                        <thead className={styles.tableHeader}>
+
+            {/* Sección de Tabla */}
+            <div className={`table-responsive ${styles.tableContainer}`}>
+                {loading ? (
+                    <Overlay />
+                ) : (
+                    <table className={`table table-striped table-bordered ${styles.baggage_table}`}>
+                        <thead className={`bg-primary text-white ${styles.tableHeader}`}>
                             <tr>
-                                {/* <th className={styles.tableHeaderCell}>PNR</th> */}
-                                <th className={styles.tableHeaderCell}>
-                                    Baggage Code
-                                </th>
-                                <th className={styles.tableHeaderCell}>Teléfono</th>
-                                <th className={styles.tableHeaderCell}>Email</th>
-                                <th className={styles.tableHeaderCell}>
-                                    Nombre Pasajero
-                                </th>
-                                <th className={styles.tableHeaderCell}>
-                                    Tipo de Problema
-                                </th>
-                                <th className={styles.tableHeaderCell}>Estado</th>
-                                <th className={styles.tableHeaderCell}>
-                                    Fecha de Creación
-                                </th>
-                                <th className={styles.tableHeaderCell}>
-                                    Ultima actualización
-                                </th>
-                                <th className={styles.tableHeaderCell}>Acciones</th>
+                                <th>Baggage Code</th>
+                                <th>Teléfono</th>
+                                <th>Email</th>
+                                <th>Nombre Pasajero</th>
+                                <th>Tipo de Problema</th>
+                                <th>Estado</th>
+                                <th>Fecha de Creación</th>
+                                <th>Última Actualización</th>
+                                <th>Acciones</th>
                             </tr>
                         </thead>
-                        <tbody className={styles.tableBody}>
+                        <tbody>
                             {filteredData.length > 0 ? (
                                 filteredData.map((row, index) => (
                                     <tr key={index}>
-                                        <td className={styles.tableCell}>
-                                            {row.baggage_code}
+                                        <td>{row.baggage_code}</td>
+                                        <td>{row.contact.phone}</td>
+                                        <td>{row.contact.email}</td>
+                                        <td>{row.passenger_name}</td>
+                                        <td>{row.issue_type}</td>
+                                        <td>
+                                            <span className={`badge ${getStatusBadge(row.status)}`}>
+                                                {row.status}
+                                            </span>
                                         </td>
-                                        <td className={styles.tableCell}>
-                                            {row.contact.phone}
-                                        </td>
-                                        <td className={styles.tableCell}>
-                                            {row.contact.email}
-                                        </td>
-                                        <td className={styles.tableCell}>
-                                            {row.passenger_name}
-                                        </td>
-                                        <td className={styles.tableCell}>
-                                            {row.issue_type}
-                                        </td>
-                                        <td className={styles.tableCell}>
-                                            {row.status}
-                                        </td>
-                                        <td className={styles.tableCell}>
-                                            {new Date(
-                                                row.date_create.split("T")[0],
-                                            ).toLocaleDateString()}
-                                        </td>
-                                        <td className={styles.tableCell}>
-                                            {new Date(row.last_updated).toLocaleString()}
-                                        </td>
-                                        <td className={styles.tableCell}>
-                                            <a
-                                                href='#'
-                                                className={styles.viewDetails}
+                                        <td>{new Date(row.date_create.split("T")[0]).toLocaleDateString()}</td>
+                                        <td>{new Date(row.last_updated).toLocaleString()}</td>
+                                        <td>
+                                            <button
+                                                className="btn btn-outline-primary btn-sm"
                                                 onClick={() => handleOpenModal(row)}
                                             >
-                                                <Visibility
-                                                    className={styles.edit}
-                                                />
-                                                Editar
-                                            </a>
+                                                <Visibility className="me-1" />
+                                                Ver Detalles
+                                            </button>
                                         </td>
                                     </tr>
                                 ))
                             ) : (
                                 <tr>
-                                    <td colSpan={8} className={styles.tableCell}>
-                                        No se encontraron casos de equipaje.
-                                    </td>
+                                    <td colSpan={9} className="text-center">No se encontraron casos de equipaje.</td>
                                 </tr>
                             )}
                         </tbody>
                     </table>
-                    {isModalOpen && selectedBaggageDetails && (
-                        <ModalBaggage
-                            isOpen={isModalOpen}
-                            onClose={handleCloseModal}
-                            details={selectedBaggageDetails} onSave={updatedSavedBaggageCase}/>
-                    )}
-                </div>
-            }
+                )}
+            </div>
+
+            {isModalOpen && (
+                <ModalBaggage
+                    isOpen={isModalOpen}
+                    onClose={handleCloseModal}
+                    details={selectedBaggageDetails}
+                    onSave={updatedSavedBaggageCase}
+                />
+            )}
         </div>
     );
 };

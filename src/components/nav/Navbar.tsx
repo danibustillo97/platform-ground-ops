@@ -97,13 +97,9 @@ const Navbar: React.FC = () => {
                     aria-labelledby="navbarDropdown"
                   >
                     <li>
-                      <input
-                        type="text"
-                        value={editableName}
-                        onChange={handleNameChange}
-                        className={`dropdown-item ${styles.inputField}`}
-                        placeholder="Nombre"
-                      />
+                    <p className="dropdown-item">
+                        <strong>Email:</strong> {session.user?.name || "Desconocido"}
+                      </p>
                     </li>
                     <li>
                       <p className="dropdown-item">

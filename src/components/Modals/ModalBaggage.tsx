@@ -6,12 +6,14 @@ import useModalBaggageController from "./useModalBaggageController";
 interface ModalBaggageProps {
   isOpen: boolean;
   onClose: () => void;
-  details: BaggageCase;
+  details: BaggageCase | null; // Permitir que details sea null
   onSave: (updatedDetails: BaggageCase) => void;
 }
 
 const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, onSave }) => {
-  // Mover la llamada al hook fuera de la condición
+  // Si details es null, no se puede utilizar
+  if (!details) return null;
+
   const {
     phone,
     email,
@@ -28,17 +30,19 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
   return (
     <div className={styles.modalOverlay} onClick={onClose}>
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
-        <h2>Información</h2>
+        <h2 className={styles.modalTitle}>Información de Equipaje</h2>
         <form onSubmit={handleSubmit}>
           <p>
-            <strong>Baggage Code:</strong> {details.baggage_code}
+            <strong>Código de Equipaje:</strong> {details.baggage_code}
           </p>
           <p>
             <strong>Teléfono:</strong>
             <input
-              type="phone"
+              type="tel" // Cambiado a 'tel' para un mejor manejo de números de teléfono
               value={phone}
               onChange={handlePhoneChange}
+              required // Asegura que el campo no esté vacío
+              className={styles.input} // Aplicar clase de módulo
             />
           </p>
           <p>
@@ -50,6 +54,8 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
               type="email"
               value={email}
               onChange={handleEmailChange}
+              required // Asegura que el campo no esté vacío
+              className={styles.input} // Aplicar clase de módulo
             />
           </p>
           <p>
@@ -60,6 +66,7 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
             <select
               value={status}
               onChange={handleStatusChange}
+              className={styles.select} // Aplicar clase de módulo
             >
               {Object.values(Status).map((statusOption) => (
                 <option key={statusOption} value={statusOption}>
@@ -71,12 +78,14 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
           <p>
             <strong>Fecha de Creación:</strong> {new Date(details.date_create.split("T")[0]).toLocaleDateString()}
           </p>
-          <button type="submit" className={styles.saveButton}>
-            Actualizar
-          </button>
-          <button type="button" onClick={onClose} className={styles.closeButton}>
-            Cerrar
-          </button>
+          <div className={styles.buttonGroup}>
+            <button type="submit" className={`${styles.button} ${styles.saveButton}`}>
+              Actualizar
+            </button>
+            <button type="button" onClick={onClose} className={`${styles.button} ${styles.closeButton}`}>
+              Cerrar
+            </button>
+          </div>
         </form>
       </div>
     </div>

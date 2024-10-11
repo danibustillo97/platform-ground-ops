@@ -16,11 +16,11 @@ export const useBaggageCasesController = () => {
     useEffect(() => {
         const fetchBaggageCases = async () => {
             const session = await getSession(); 
-            const token = session?.user.access_token;
-            if (token) {
+            const token = session?.user.access_token as string;
+
                 const data = await getBaggageCasesApi(token);
                 setBaggageCases(data);
-            }
+            
             setLoading(false);
         };
         fetchBaggageCases();

@@ -1,220 +1,127 @@
-/* General styles for the container */
 .container {
-    padding: 2rem;
-    background-color: #f8f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin: auto;
-    max-width: 1200px;
-    margin-top: 50px    ;
+    background-color: #f8f9fa; /* Fondo suave */
+    border-radius: 8px; /* Bordes suaves */
+    padding: 30px; /* Espaciado interior */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
 }
 
-
 .header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.5rem;
+    margin-bottom: 20px; /* Margen inferior */
 }
 
 .title {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #510c76;
+    font-size: 1rem; /* Tamaño de fuente más grande */
+    font-weight: bold; /* Negrita para el título */
+    color: #343a40; /* Color oscuro */
 }
 
-.addButton {    
-    display: flex;
-    align-items: center;
-    padding: 0.5rem 1rem;
-    background-color: #9bbe68;
-    color: #ffffff;
-    border-radius: 4px;
-    text-decoration: none;
-    font-size: 1rem;
-    font-weight: 600;
-    border: 1px solid #9bbe68;
+.addButton {
+    transition: background-color 0.3s, transform 0.3s; /* Transiciones suaves */
+    font-size: 0.8rem; /* Aumentar el tamaño del botón */
+    padding: 2px 15px;
+    background: #510c76;
+    color: white;
 }
 
-.addIcon {
-    margin-right: 0.5rem;
+.addButton:hover {
+    background-color: #510c76b9; /* Color al pasar el mouse */
+    transform: scale(1.05); /* Aumento al pasar el mouse */
+    color: white;
 }
-
-.addButtonText {
-    font-weight: 600;
-}
-
 
 .filters {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    margin-bottom: 1.5rem;
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #dee2e6;
-    white-space: nowrap;
-    font-size: 0.8rem;
-    background-color: #510c76 !important;
-    color: #ffffff !important;
-    border-radius: 10px;
+    background-color: #ffffff; /* Fondo blanco para filtros */
+    border-radius: 8px; /* Bordes suaves */
+    padding: 20px; /* Espaciado interior */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
 }
 
-.searchInput {
-    flex: 1;
-    padding: 0.5rem;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.statusSelect {
-    padding: 0.5rem;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-    font-size: 1rem;
-}
-
-.dateFilters {
-    display: flex;
-    gap: 1rem;
-}
-
-.dateFilterGroup {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.dateLabel {
-    font-weight: 600;
-}
-
-.dateInput {
-    padding: 0.5rem;
-    border: 1px solid #ced4da;
-    border-radius: 4px;
-}
-
-/* Table styles */
 .tableContainer {
-    margin-top: 1.5rem;
-    overflow-x: auto;
-}
-
-.table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: #ffffff;
-    border-radius: 8px;
-    overflow: hidden;
+    background-color: #ffffff; /* Fondo blanco para tabla */
+    border-radius: 8px; /* Bordes suaves */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    overflow-x: auto; /* Permitir desplazamiento horizontal */
 }
 
 .tableHeader {
-    background-color: #510c76 !important;
-    color: #ffffff;
+    background-color: #007bff; /* Color de fondo de la tabla */
 }
 
-.tableHeaderCell {
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #dee2e6;
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f2f2f2; /* Fondo alternado para filas */
+}
+
+.table td,
+.table th {
+    vertical-align: middle; /* Alineación vertical media */
+}
+
+.badge {
+    font-size: 0.9em; /* Tamaño de fuente para badge */
+}
+
+.table td {
+    padding: 15px; /* Espaciado interior de las celdas */
+}
+
+.btn-outline-primary {
+    color: #007bff; /* Color del texto del botón */
+    border-color: #007bff; /* Color del borde del botón */
+}
+
+.btn-outline-primary:hover {
+    background-color: #007bff; /* Fondo azul al pasar el mouse */
+    color: white; /* Texto blanco al pasar el mouse */
+}
+
+.baggage_table {
     white-space: nowrap;
-    font-size: 0.8rem;
-    background-color: #510c76 !important;
-    color: #ffffff !important;
 }
 
-.tableBody {
-    font-size: 0.9rem;
-}
-
-.tableCell {
-    padding: 1rem;
-    border-bottom: 1px solid #e9ecef;
-    padding: 10px;
-    text-align: left;
-    border-bottom: 1px solid #dee2e6;
-    white-space: nowrap;
-    font-size: 0.8rem;
-
-}
-
-.statusTag {
-    display: inline-block;
-    padding: 0.25rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.9rem;
-    color: #ffffff;
-}
-
-.status-abierto {
-    background-color: #9bbe68;
-}
-
-.status-en-espera-de-pasajero {
-    background-color: #ffc400;
-    color: black;
-}
-
-.status-en-espera-de-formulario {
-    background-color: #ff4e00;
-    color: black;
-}
-
-.status-cerrado {
-    background-color: #c70000;
-}
-
-.viewDetails {
-    display: flex;
-    align-items: center;
-    color: #510c76;
-    text-decoration: none;
-    font-weight: 600;
-}
-
-.viewDetails .icon {
-    margin-right: 0.5rem;
-}
-
-/* Responsive Styles */
-@media (max-width: 768px) {
-    .filters {
-        flex-direction: column;
-        gap: 0.5rem;
+/* Media Queries para Responsividad */
+@media (max-width: 1200px) {
+    .container {
+        padding: 20px; /* Menos espaciado en pantallas más pequeñas */
     }
 
-    .dateFilters {
-        flex-direction: column;
-        gap: 0.5rem;
-    }
-}
-
-@media(max-width: 570px) {
     .header {
-        flex-flow: column;
+        margin-bottom: 15px; /* Menos margen en pantallas más pequeñas */
+    }
 
+    .addButton {
+        font-size: 0.75rem; /* Tamaño más pequeño en pantallas más pequeñas */
     }
 
     .title {
-        font-size: 1.3rem;
-        padding: 0px 0px 15px 0px;
+        font-size: 0.9rem; /* Tamaño de fuente más pequeño */
     }
 }
 
+@media (max-width: 768px) {
+    .container {
+        padding: 15px; /* Menos espaciado en pantallas más pequeñas */
+    }
 
-@media(max-width: 960px) {
     .filters {
+        padding: 15px; /* Menos espaciado en filtros */
+    }
 
-        display: flex;
-        flex-wrap: wrap;
-        gap: 1.5rem;
-        row-gap: 1.5rem;
-        column-gap: 1.5rem;
-        margin-bottom: 1.5rem;
-        font-size: 1rem;
+    .table td,
+    .table th {
+        padding: 10px; /* Menos espaciado en las celdas */
+    }
 
+    .addButton {
+        width: 100%; /* Botón ocupa el ancho completo */
+    }
+}
 
+@media (max-width: 576px) {
+    .title {
+        font-size: 1rem; /* Ajustar el tamaño del título en móviles */
+    }
+
+    .table {
+        font-size: 0.8rem; /* Tamaño de fuente más pequeño para la tabla */
     }
 }
