@@ -1,121 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+/* Navbar.module.css */
 
+/* Estilo para la barra de navegación */
 .navBar {
-  background-color: #ffffff; /* Color de fondo */
-  height: 80px; /* Altura de la barra de navegación */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Sombra */
-  display: flex;
-  align-items: center;
-  justify-content: space-between; /* Espacio entre elementos */
-  padding: 0 20px; /* Espaciado */
-  font-family: "Inter", sans-serif; /* Fuente */
+  background-color: #f8f9fa; /* Color de fondo de la navbar */
+  border-bottom: 1px solid #dee2e6; /* Línea debajo de la navbar */
 }
 
-.navBar:hover {
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15); /* Efecto hover */
-}
-
-.navBar .navbar-toggler {
-  border: none; /* Sin borde */
-}
-
-.logo {
-  max-width: 100%; /* Ancho máximo */
-  height: auto; /* Altura automática */
-  width: 120px; /* Ancho fijo */
-}
-
-.navLinks {
-  display: flex; /* Flexbox para alinear los enlaces */
-  list-style: none; /* Sin viñetas */
-  padding: 0; /* Sin padding */
-  margin: 0; /* Sin margen */
-}
-
-.navLink {
-  color: #510C76; /* Color del texto */
-  text-decoration: none; /* Sin subrayado */
-  padding: 12px 20px; /* Espaciado */
-  border-radius: 25px; /* Bordes redondeados */
-  transition: background-color 0.3s ease, color 0.3s ease; /* Transiciones suaves */
-  font-weight: 500; /* Grosor de la fuente */
-}
-
-.navLink:hover {
-  background-color: rgba(81, 12, 118, 0.1); /* Color de fondo al pasar el mouse */
-  color: #333; /* Color del texto al pasar el mouse */
-}
-
-/* Estilos para el botón de usuario */
-.userButton {
-  background-color: #510C76; /* Color de fondo */
-  color: white; /* Color del texto */
-  font-weight: 600; /* Grosor de la fuente */
-  cursor: pointer; /* Cursor de mano */
-  font-size: 14px; /* Tamaño de la fuente */
-  padding: 10px 15px; /* Espaciado interno */
-  border-radius: 25px; /* Bordes redondeados */
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Transiciones suaves */
-}
-
-.userButton:hover {
-  background-color: #3a0e56; /* Color de fondo al pasar el mouse */
-  transform: scale(1.05); /* Aumentar tamaño al pasar el mouse */
-}
-
-/* Estilos personalizados para el menú desplegable */
-.dropdown {
-  background: #ffffff; /* Color de fondo del menú */
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Sombra */
-  border-radius: 8px; /* Bordes redondeados */
-  margin-top: 10px; /* Margen superior */
-  position: absolute; /* Posicionamiento absoluto */
-  z-index: 1000; /* Asegura que esté por encima de otros elementos */
-}
-
-.dropdown-item {
-  font-size: 14px; /* Tamaño de la fuente */
-  color: #ffffff; /* Color del texto */
-  padding: 10px; /* Espaciado interno */
-  border-radius: 5px; /* Bordes redondeados */
-  transition: background-color 0.3s ease; /* Transiciones suaves */
-}
-
-.dropdown-item:hover {
-  background-color: rgba(81, 12, 118, 0.1); /* Color de fondo al pasar el mouse */
-  color: #510C76; /* Color del texto al pasar el mouse */
-}
-
-/* Estilos para el botón de cerrar sesión */
-.logoutButton {
-  background-color: #510c76; /* Color de fondo del botón */
-  color: white; /* Color del texto */
-  border: none; /* Sin borde */
-  border-radius: 30px; /* Bordes redondeados */
-  cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
-  padding: 10px; /* Espaciado interno */
-  font-weight: 700; /* Grosor del texto */
-  transition: background-color 0.3s ease, transform 0.3s ease; /* Transiciones suaves */
-  margin-top: 10px; /* Margen superior */
-  width: 100%; /* Ancho completo */
-}
-
-.logoutButton:hover {
-  background-color: #d32f2f; /* Color al pasar el mouse */
-}
-
-/* Estilo para el contenedor del dropdown */
-.dropdown-container {
-  position: relative; /* Para posicionar el dropdown en relación al contenedor */
-}
-
-/* Estilos para ocultar el dropdown por defecto */
+/* Estilo para el menú desplegable */
 .customDropdown {
-  display: none; /* Ocultar el menú por defecto */
+  background-color: white; /* Cambia el color de fondo */
+  border-radius: 0.25rem; /* Bordes redondeados */
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); /* Sombra para dar profundidad */
 }
 
-/* Estilo para mostrar el dropdown al activarlo */
-.dropdown-container.show .customDropdown {
-  display: block; /* Mostrar el menú desplegable */
+/* Estilo para los elementos del menú */
+.dropdown-item {
+  padding: 10px 20px; /* Añade padding para mejor espacio */
+}
+
+/* Mejora el efecto hover en los elementos */
+.dropdown-item:hover {
+  background-color: #f8f9fa; /* Color de fondo en hover */
+}
+
+/* Estilo para el botón de usuario */
+.userButton {
+  background-color: transparent; /* Sin fondo para el botón */
+  border: none; /* Sin borde */
+  color: inherit; /* Hereda el color del texto */
+}
+
+/* Estilo para el logotipo */
+.logo {
+  max-width: 100%; /* Asegura que el logo no exceda su contenedor */
 }

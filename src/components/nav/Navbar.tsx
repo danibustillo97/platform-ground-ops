@@ -98,7 +98,7 @@ const Navbar: React.FC = () => {
                   >
                     <li>
                     <p className="dropdown-item">
-                        <strong>Email:</strong> {session.user?.name || "Desconocido"}
+                        <strong>Email:</strong> {session.user?.email || "Desconocido"}
                       </p>
                     </li>
                     <li>

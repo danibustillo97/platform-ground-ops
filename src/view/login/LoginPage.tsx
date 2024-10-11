@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import React from "react";
 import { AiFillWindows } from "react-icons/ai";
@@ -33,12 +33,12 @@ export default function LoginPage() {
 
                     <form onSubmit={handleSubmit} className={styles.form}>
                         <div className={styles.inputGroup}>
-                            <label htmlFor="username" className={styles.label}>Usuario</label>
+                            <label htmlFor="email" className={styles.label}>Email</label>
                             <input
                                 type="text"
-                                name="username"
-                                id="username"
-                                placeholder="Ingresa tu usuario"
+                                name="username" // Cambiado a username, asegúrate de que tu backend lo acepte
+                                id="username" 
+                                placeholder="Ingresa tu email"
                                 value={formData.username}
                                 onChange={handleChange}
                                 className={styles.input}
