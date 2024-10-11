@@ -17,7 +17,7 @@
 }
 
 .button {
-    background-color: #FF4E00;
+    background-color: #ff0400;
     color: white;
     border: none;
     border-radius: 4px;
@@ -29,7 +29,7 @@
 }
 
 .button:hover {
-    background-color: #FF3A00;
+    background-color: #ff0400;
     transform: scale(1.05);
 }
 
@@ -74,27 +74,40 @@
 }
 
 .tableHeader {
-    background-color: #510C76;
+    background: #510C76 !important;
     color: white;
+    font-size: 0.9rem;
 }
 
 .tableHeaderCell {
+    background: #510C76 !important;
     padding: 12px;
     text-align: left;
     border-bottom: 1px solid #E5E5E5;
+    color: white !important;
 }
 
 .tableBody {
     background-color: #FFFFFF;
+    padding: 8px !important;
+    overflow: hidden !important;
+    border-collapse: separate !important;
 }
 
 .tableCell {
-    padding: 12px;
+    padding: 8px !important;
     border-bottom: 1px solid #E5E5E5;
+    font-size: 0.9rem;
+    overflow: hidden !important;
+    border-collapse: collapse !important;
+    
 }
 
 .tableCell button {
     margin-right: 5px;
+    padding: 5px;
+    overflow: hidden;
+    border-collapse: separate;
 }
 
 .modal {

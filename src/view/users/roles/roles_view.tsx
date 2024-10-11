@@ -111,7 +111,7 @@ const RolesView: React.FC = () => {
             </div>
 
             <div className={Styles.tableContainer}>
-                <table className={Styles.table}>
+                <table className={` ${Styles.table} table table-striped table-bordered`}>
                     <thead className={Styles.tableHeader}>
                         <tr>
                             <th className={Styles.tableHeaderCell}>Rol</th>

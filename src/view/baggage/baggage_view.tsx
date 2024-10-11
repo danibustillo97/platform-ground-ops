@@ -89,7 +89,7 @@ const BaggageView: React.FC = () => {
             </div>
             {loading ? <Overlay /> :
                 <div className={styles.tableContainer}>
-                    <table className={styles.table}>
+                    <table className={`table table-striped table-bordered caption-top ${styles.table}`}>
                         <thead className={styles.tableHeader}>
                             <tr>
                                 {/* <th className={styles.tableHeaderCell}>PNR</th> */}

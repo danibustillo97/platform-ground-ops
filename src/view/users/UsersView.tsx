@@ -138,7 +138,7 @@ const UsersView: React.FC = () => {
             </div>
             <div className={styles.userTableContainer}>
                 {usersData && usersData.length > 0 ? (
-                    <table className={styles.userTable}>
+                    <table className={`table table-striped table-bordered caption-top ${styles.userTable}`}>
                         <thead>
                             <tr>
                                 <th>ID</th>

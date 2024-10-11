@@ -1,15 +1,16 @@
 .userManagementContainer {
     padding: 20px;
     background-color: #f7f7f7;
-    border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    height: 100vh;
 }
 
 .userManagementHeader {
-    font-size: 24px;
+    font-size: 1.5rem;
     font-weight: 600;
     color: #510c76;
     margin-bottom: 20px;
+    font-family: "Inter", sans-serif;
 }
 
 .userActionsContainer {
@@ -23,7 +24,8 @@
 .manageRolesButton {
     display: flex;
     align-items: center;
-    padding: 10px 15px;
+    padding: 5px 8px;
+    font-size: 0.9rem !important;
     background-color: #510c76;
     color: white;
     border: none;
@@ -48,12 +50,20 @@
     background-color: white;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     border-radius: 8px;
+    overflow: hidden;
+    
 }
 
-.userTable th,
-.userTable td {
-    padding: 12px 15px;
+.userTable th{
+    padding: 8px 10px;
     text-align: left;
+    font-size: 0.9rem;
+}
+.userTable td {
+    padding: 8px 10px;
+    text-align: left;
+    font-size: 0.8rem;
+    color: #343a40;
 }
 
 .userTable th {
@@ -70,7 +80,7 @@
 .userDeleteButton {
     display: flex;
     align-items: center;
-    padding: 8px 12px;
+    padding: 3px 7px;
     border: none;
     border-radius: 4px;
     cursor: pointer;
@@ -79,7 +89,7 @@
 }
 
 .userEditButton {
-    background-color: #4caf50;
+    background-color: #510c76;
     color: white;
 }
 
@@ -89,7 +99,7 @@
 }
 
 .userEditButton:hover {
-    background-color: #388e3c;
+    background-color: #510c76;
 }
 
 .userDeleteButton:hover {
@@ -97,3 +107,19 @@
 }
 
 
+@media (max-width: 480px) {
+    .userTable th{
+        padding: 8px 10px;
+        text-align: left;
+        font-size: 0.8rem;
+        white-space: nowrap;
+    }
+    .userTable td {
+        padding: 8px 10px;
+        text-align: left;
+        font-size: 0.7rem;
+        color: #343a40;
+        white-space: nowrap;
+    }
+
+}
