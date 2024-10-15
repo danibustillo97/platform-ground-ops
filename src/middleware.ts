@@ -6,7 +6,7 @@ export async function middleware(req: NextRequest) {
     
     if (!token) {
         // Redirigir a la página de inicio de sesión si no hay token
-        return NextResponse.redirect(new URL("/api/auth/signin", req.url));
+        return NextResponse.redirect(new URL("/login", req.url));
     }
 
     // Continuar con la solicitud
