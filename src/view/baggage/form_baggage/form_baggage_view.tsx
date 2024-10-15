@@ -6,7 +6,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import Overlay from "@/components/Overlay/Overlay";
+
 
 const FormReclamoView: React.FC = () => {
     const {
@@ -33,7 +33,7 @@ const FormReclamoView: React.FC = () => {
     return (
         <div className={styles.container}>
             <h1 className={styles.title}>Registro de Pérdida de Equipaje</h1>
-            {loading ? <Overlay />:
+            {loading ? <h1>Loading</h1>:
                 <form className={styles.form}>
                 <div className={styles.formGroup}>
                     <label htmlFor="pnr" className={styles.label}>
