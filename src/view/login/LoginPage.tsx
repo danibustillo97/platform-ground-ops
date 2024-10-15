@@ -36,7 +36,7 @@ export default function LoginPage() {
                             <label htmlFor="email" className={styles.label}>Email</label>
                             <input
                                 type="text"
-                                name="username" // Cambiado a username, asegúrate de que tu backend lo acepte
+                                name="username" 
                                 id="username" 
                                 placeholder="Ingresa tu email"
                                 value={formData.username}

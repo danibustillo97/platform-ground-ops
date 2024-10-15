@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/812ceba5-c5ae-4d5b-b2d9-7f8cb5b1d390/resourceGroups/Arajet-Operation-OdsGrounds-Dev/providers/Microsoft.Web/sites/arajet-app-odsgrounds-dev",
+    "appService.deploySubpath": "."
+}
