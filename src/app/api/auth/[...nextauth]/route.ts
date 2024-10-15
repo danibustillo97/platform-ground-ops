@@ -1,7 +1,6 @@
 import NextAuth, { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
-
 interface AuthUser {
     id: string;
     access_token: string;
@@ -40,33 +39,26 @@ const authOptions: NextAuthOptions = {
                             },
                         }
                     );
-            
-                   
+
                     if (!res.ok) {
-                        console.error('Error en la respuesta:', res.status, res.statusText);
                         throw new Error('Error en la autenticación');
                     }
-            
-                    const data: AuthUser = await res.json();
 
+                    const data: AuthUser = await res.json();
                     if (!data.access_token) {
                         throw new Error('Access token no recibido');
                     }
-            
+
                     return {
                         id: data.id, 
                         access_token: data.access_token,
                         email: credentials?.email,
                         name: data.name 
                     } as ExtendedNextAuthUser; 
-            
                 } catch (error) {
-                    console.error('Error en authorize:', error);
                     throw new Error('Authorization failed');
                 }
             }
-            
-            
         }),
     ],
     session: {
