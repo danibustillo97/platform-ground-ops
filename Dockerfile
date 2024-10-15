@@ -1,46 +1,34 @@
-# Etapa 1: Dependencias en una imagen pequeña
-FROM node:18-alpine AS deps
+# Etapa 1: Construcción
+FROM node:18-alpine AS builder
+
+# Configuración del directorio de trabajo
 WORKDIR /app
 
-
+# Copiar archivos de configuración
 COPY package.json package-lock.json ./
 
+# Instalar dependencias
+RUN npm install
 
-RUN npm ci --omit=dev
-
-
-FROM node:18-alpine AS builder
-WORKDIR /app
-
-
-COPY --from=deps /app/node_modules ./node_modules
-
-
+# Copiar el resto del código
 COPY . .
+RUN ls -R /app
 
 
-ENV NODE_ENV=production
-
-
+# Ejecutar la construcción de la aplicación
 RUN npm run build
 
+# Etapa 2: Imagen final
+FROM node:18-alpine
 
-FROM node:18-alpine AS runner
+# Configuración del directorio de trabajo
 WORKDIR /app
 
+# Copiar dependencias de la etapa de construcción
+COPY --from=builder /app ./
 
-ENV NODE_ENV=production  
-ENV PORT=3000
-
-
-COPY --from=builder /app/public ./public
-COPY --from=builder /app/.next ./.next
-COPY --from=builder /app/package.json ./
-
-
-
-
+# Exponer el puerto que usa la aplicación
 EXPOSE 3000
 
-
+# Comando para iniciar la aplicación
 CMD ["npm", "start"]

@@ -4,7 +4,6 @@ import React from "react";
 import { useBaggageCasesController } from "./useBaggageCasesController";
 import { Visibility, Add } from "@mui/icons-material";
 import Link from "next/link";
-import Overlay from "@/components/Overlay/Overlay";
 import ModalBaggage from "../../components/Modals/ModalBaggage";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from "./baggage.module.css";
@@ -112,7 +111,7 @@ const session = useSession()
             {/* Sección de Tabla */}
             <div className={`table-responsive ${styles.tableContainer}`}>
                 {loading ? (
-                    <Overlay />
+                    <h1>Cargando....</h1>
                 ) : (
                     <table className={`table table-striped table-bordered ${styles.baggage_table}`}>
                         <thead className={`bg-primary text-white ${styles.tableHeader}`}>
