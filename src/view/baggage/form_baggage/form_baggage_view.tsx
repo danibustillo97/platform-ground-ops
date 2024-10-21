@@ -268,12 +268,12 @@ const FormReclamoView: React.FC = () => {
                                     {issue === 'Daño' && (
                                         <div className = {styles.luggageField}>
                                             <div className={styles.inlineField}>
-                                                <label htmlFor="multimedia" className={styles.label}>
-                                                    Archivos Subidos
+                                                <label htmlFor="img_url" className={styles.label}>
+                                                    Subir Pruebas (Url)
                                                 </label>
                                                 <input
-                                                    type="file"
-                                                    id="multimedia"
+                                                    type="text"
+                                                    id="img_url"
                                                     className={styles.input}
                                                     value={formData.address}
                                                     onChange={(e) =>

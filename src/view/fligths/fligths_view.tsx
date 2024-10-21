@@ -88,7 +88,6 @@ const FlightsPage = () => {
         : [];
 
     const handleFlightSelection = (flight: Flight) => {
-        // Cambia la lógica de comparación a usar flight_number
         setSelectedFlight(flight === selectedFlight ? null : flight);
         setContactInfo({
             serviceLeader: { name: '', phone: '' },
@@ -146,7 +145,6 @@ const FlightsPage = () => {
                             <th onClick={() => handleSort('itinerary.scheduled_departure_date')} style={{ cursor: 'pointer' }}>Fecha de Salida</th>
                             <th onClick={() => handleSort('itinerary.scheduled_departure_time')} style={{ cursor: 'pointer' }}>Hora de Salida</th>
                             <th onClick={() => handleSort('itinerary.flight_status')} style={{ cursor: 'pointer' }}>Estado del Vuelo</th>
-                            <th onClick={() => handleSort('itinerary.terminal')} style={{ cursor: 'pointer' }}>Terminal</th>
                             <th onClick={() => handleSort('itinerary.gate')} style={{ cursor: 'pointer' }}>Puerta</th>
                         </tr>
                     </thead>
@@ -155,7 +153,7 @@ const FlightsPage = () => {
                             <tr
                                 key={index}
                                 onClick={() => handleFlightSelection(flight)}
-                                className={selectedFlight === flight ? styles.selected : ''} // Aquí se aplica la clase CSS para resaltar
+                                className={selectedFlight === flight ? styles.selected : ''} 
                             >
                                 <td>{flight.itinerary[0].station_iata}</td>
                                 <td>{flight.flight_number}</td>
@@ -163,7 +161,6 @@ const FlightsPage = () => {
                                 <td>{flight.itinerary[0].scheduled_departure_date}</td>
                                 <td>{flight.itinerary[0].scheduled_departure_time}</td>
                                 <td>{flight.itinerary[0].flight_status}</td>
-                                <td>{flight.itinerary[0].terminal}</td>
                                 <td>{flight.itinerary[0].gate}</td>
                             </tr>
                         ))}

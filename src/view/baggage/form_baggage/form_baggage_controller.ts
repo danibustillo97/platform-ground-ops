@@ -120,22 +120,33 @@ export const useFormBaggageController = () => {
     const handleCreateCases = async () => {
         const session = await getSession();
         const token = session?.user.access_token;
-        const formattedData = selectedLuggage.map((luggageItem) => ({
-            baggage_code: luggageItem.luggage,
-            contact: {
-                phone: luggageItem.phone,
-                email: luggageItem.email
-            },
-            flight_info: {
-                flightNumber: luggageItem.flightNum || "",
-                departureDate: luggageItem.departureDate || "",
-                fromAirport: luggageItem.fromAirport || "",
-                toAirport: luggageItem.toAirport || ""
-            },
-            passenger_name: luggageItem.passengerName || "",
-            description: luggageItem.description || "",
-            issue_type: luggageItem.issue || ""
-        }));
+
+        const formattedData = selectedLuggage.map((luggageItem) => {
+
+            const pruebasUrl = luggageItem.issue === 'Daño' ? formData.address : null; 
+            const direccionEnvio = luggageItem.issue === 'Retraso' ? formData.address : null;
+
+            return {
+                baggage_code: luggageItem.luggage,
+                contact: {
+                    phone: luggageItem.phone,
+                    email: luggageItem.email
+                },
+                flight_info: {
+                    flightNumber: luggageItem.flightNum || "",
+                    departureDate: luggageItem.departureDate || "",
+                    fromAirport: luggageItem.fromAirport || "",
+                    toAirport: luggageItem.toAirport || ""
+                },
+                passenger_name: luggageItem.passengerName || "",
+                description: luggageItem.description || "",
+                issue_type: luggageItem.issue || "",
+                direccion_envio: direccionEnvio || "Null", 
+                pruebas_url: pruebasUrl || "Null", 
+                created_agente_name: session?.user.name || "",
+                
+            };
+        });
 
         console.log("Datos preparados para enviar:", formattedData);
 
@@ -150,6 +161,7 @@ export const useFormBaggageController = () => {
             console.error('Token no disponible. No se puede realizar la operación.');
         }
     };
+
 
     return {
         loading,

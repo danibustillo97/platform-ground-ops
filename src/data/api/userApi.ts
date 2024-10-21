@@ -5,8 +5,8 @@ export const getUsers = async () => {
         const response = await fetch(`${apiUrl}/api/users`, {
             method: "GET",
             headers: {
-                // "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
+                "Content-Type": "application/json",
+
             },
         });
 
