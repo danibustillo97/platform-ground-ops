@@ -21,4 +21,5 @@ export interface BaggageCase {
     status: string;
     date_create: string; 
     last_updated: string; 
+    number_ticket_zendesk:string
 }

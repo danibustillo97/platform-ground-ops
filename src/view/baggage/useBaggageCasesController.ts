@@ -74,6 +74,7 @@ export const useBaggageCasesController = () => {
             issue_type: updatedDetails.issue_type,
             status: updatedDetails.status,
             date_create: updatedDetails.date_create,
+            number_ticket_zendesk: updatedDetails.number_ticket_zendesk
         };
     
         if (token) {

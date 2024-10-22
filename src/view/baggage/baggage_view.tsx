@@ -117,6 +117,7 @@ const session = useSession()
                         <thead className={`bg-primary text-white ${styles.tableHeader}`}>
                             <tr>
                                 <th>Baggage Code</th>
+                                <th>Zendezk Ticket Code</th>
                                 <th>Teléfono</th>
                                 <th>Email</th>
                                 <th>Nombre Pasajero</th>
@@ -132,6 +133,7 @@ const session = useSession()
                                 filteredData.map((row, index) => (
                                     <tr key={index}>
                                         <td>{row.baggage_code}</td>
+                                        <td>{row.number_ticket_zendesk}</td>
                                         <td>{row.contact.phone}</td>
                                         <td>{row.contact.email}</td>
                                         <td>{row.passenger_name}</td>
