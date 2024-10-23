@@ -1,35 +1,38 @@
-/* components/Loading.module.css */
-.container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.5);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    color: rgb(0, 0, 0);
-    font-size: 1.5rem;
-  }
+.overlay {
+  position: fixed; /* Fijo para que ocupe toda la pantalla */
   
-  .spinner {
-    border: 8px solid #f3f3f3; /* Color de fondo */
-    border-top: 8px solid #3498db; /* Color del spinner */
-    border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    animation: spin 1s linear infinite;
+  width: 100%; /* Ocupa el 100% del ancho */
+  height: 100%; /* Ocupa el 100% de la altura */
+  background-color: rgba(227, 4, 4, 0.8); /* Fondo blanco con un poco de transparencia */
+  display: flex; /* Utiliza flexbox para centrar */
+  justify-content: center; /* Centrar horizontalmente */
+  align-items: center; /* Centrar verticalmente */
+  z-index: 9999; /* Asegúrate de que esté por encima de otros elementos */
+  animation: fadeIn 0.5s; /* Animación de desvanecimiento */
+}
+
+.spinnerBorder {
+  width: 4rem; /* Tamaño del spinner */
+  height: 3rem; /* Tamaño del spinner */
+  border-width: 0.25em; /* Grosor del borde */
+  animation: spin 1s linear infinite; /* Animación de giro */
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Sombra alrededor del spinner */
+}
+
+@keyframes fadeIn {
+  from {
+      opacity: 0; /* Comienza invisible */
   }
-  
-  .message {
-    margin-top: 16px;
-    font-size: 18px;
-    color: #333;
+  to {
+      opacity: 1; /* Termina visible */
   }
-  
-  @keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
+}
+
+@keyframes spin {
+  from {
+      transform: rotate(0deg); /* Comienza sin rotación */
   }
-  
+  to {
+      transform: rotate(360deg); /* Termina con una rotación completa */
+  }
+}

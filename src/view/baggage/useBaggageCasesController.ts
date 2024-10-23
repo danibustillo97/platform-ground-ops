@@ -1,6 +1,6 @@
 import { useState, useEffect, useMemo } from "react";
-import { getSession } from "next-auth/react"; 
-import { getBaggageCasesApi, putBaggageCasesAPI } from "@/data/api/baggageAPI";
+import { getSession } from "next-auth/react";
+import { getBaggageCasesApi, putBaggageCasesAPI } from "@/data/api/baggageAPI"; 
 import { BaggageCase } from "@/domain/types/BaggageCase";
 
 export const useBaggageCasesController = () => {
@@ -15,13 +15,10 @@ export const useBaggageCasesController = () => {
 
     useEffect(() => {
         const fetchBaggageCases = async () => {
-            const session = await getSession(); 
+            const session = await getSession();
             const token = session?.user.access_token as string;
-
-                const data = await getBaggageCasesApi(token);
-                console.log(data)
-                setBaggageCases(data);
-            
+            const data = await getBaggageCasesApi(token);
+            setBaggageCases(data);
             setLoading(false);
         };
         fetchBaggageCases();
@@ -32,22 +29,17 @@ export const useBaggageCasesController = () => {
         const end = endDate || new Date().toISOString().split('T')[0];
         return baggageCases
             .filter((row) => {
-                const pnr = row.baggage_code?.toLowerCase() || "";
-                const name = row.passenger_name?.toLowerCase() || "";
-                const status = row.status?.toLowerCase() || "";
-                const matchesSearchTerm = searchTerm === "" ||
-                    pnr.includes(searchTerm.toLowerCase()) ||
-                    name.includes(searchTerm.toLowerCase()) ||
-                    status.includes(searchTerm.toLowerCase());
-                const matchesStatusFilter = statusFilter === "" ||
-                    status.includes(statusFilter.toLowerCase());
-                return matchesSearchTerm && matchesStatusFilter;
-            })
-            .filter((row) => {
-                const rowDate = row.date_create.split('T')[0];
-                return rowDate >= start && rowDate <= end;
+                const matchesSearchTerm =
+                    searchTerm === "" ||
+                    row.pnr?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    row.passenger_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    row.status?.toLowerCase().includes(searchTerm.toLowerCase());
+                const matchesStatusFilter = statusFilter === "" || row.status?.toLowerCase().includes(statusFilter.toLowerCase());
+                const matchesDateRange =
+                    new Date(row.date_create) >= new Date(start) && new Date(row.date_create) <= new Date(end);
+                return matchesSearchTerm && matchesStatusFilter && matchesDateRange;
             });
-    }, [baggageCases, searchTerm, statusFilter, startDate, endDate]);
+    }, [searchTerm, statusFilter, startDate, endDate, baggageCases]);
 
     const handleOpenModal = (details: BaggageCase) => {
         setSelectedBaggageDetails(details);
@@ -59,36 +51,27 @@ export const useBaggageCasesController = () => {
         setSelectedBaggageDetails(null);
     };
 
-    const updatedSavedBaggageCase = async (updatedDetails: BaggageCase) => {
-        const session = await getSession(); 
-        const token = session?.user.access_token; 
-        const formattedData = {
-            id: updatedDetails.id,
-            baggage_code: updatedDetails.baggage_code,
-            contact: {
-                phone: updatedDetails.contact.phone,
-                email: updatedDetails.contact.email,
-            },
-            flight_info: updatedDetails.flight_info,
-            passenger_name: updatedDetails.passenger_name,
-            description: updatedDetails.description,
-            issue_type: updatedDetails.issue_type,
-            status: updatedDetails.status,
-            date_create: updatedDetails.date_create,
-            number_ticket_zendesk: updatedDetails.number_ticket_zendesk
-        };
-    
-        if (token) {
-            try {
-                await putBaggageCasesAPI(updatedDetails.id, formattedData, token);
-            } catch (error) {
-                console.error('Error al actualizar el caso de equipaje:', error);
-            }
-        } else {
-            console.error('Token no disponible');
-        }
+    const updatedSavedBaggageCase = async (updatedCase: BaggageCase) => {
+        const session = await getSession(); // Obtener el token de la sesión
+        const token = session?.user.access_token as string; // Asegúrate de que el token esté disponible
+
+        await putBaggageCasesAPI(updatedCase.id, updatedCase, token); // Llamar con los tres argumentos
+
+        setBaggageCases((prevState) =>
+            prevState.map((caseItem) =>
+                caseItem.id === updatedCase.id ? updatedCase : caseItem
+            )
+        );
+        handleCloseModal();
     };
-    
+
+    // const handleDeleteSelected = async (selectedCases: BaggageCase[]) => {
+    //     const ids = selectedCases.map((c) => c.id);
+    //     await deleteBaggageCasesAPI(ids);
+    //     setBaggageCases((prevState) =>
+    //         prevState.filter((caseItem) => !ids.includes(caseItem.id))
+    //     );
+    // };
 
     return {
         searchTerm,
@@ -106,5 +89,6 @@ export const useBaggageCasesController = () => {
         handleOpenModal,
         handleCloseModal,
         updatedSavedBaggageCase,
+        // handleDeleteSelected,
     };
 };

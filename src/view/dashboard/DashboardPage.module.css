@@ -1,106 +1,68 @@
-.dashboardContainer {
-    background-color: #f5f5f5;
-    min-height: 100vh;
-    padding: 40px 20px;
-}
 
 .innerContainer {
-    max-width: 1200px;
-    margin: 0 auto;
-    background-color: #ffffff;
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-}
-
-.header {
-    font-size: 2.5rem;
-    font-weight: bold;
-    color: #510C76;
-    margin-bottom: 30px;
-    text-align: center;
-}
-
-.gridContainer {
-    display: grid;
-    gap: 20px;
-}
-
-.gridContainerMd {
-    grid-template-columns: repeat(3, 1fr);
-    margin-bottom: 40px;
-}
-
-.gridContainerCharts {
-    grid-template-columns: 1fr 1fr;
-}
-
-@media (max-width: 768px) {
-
-    .gridContainerMd,
-    .gridContainerCharts {
-        grid-template-columns: 1fr;
-    }
-}
-
-.card {
-    background-color: #510C76;
-    color: #ffffff;
     padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  
+  .cardContainer {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap; 
+    justify-content: space-between; 
+  }
+
+  .card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 16px;
+    flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: calc(33% - 20px);
+    margin: 10px;
     text-align: center;
-    min-height: 120px;
-    transition: transform 0.3s, box-shadow 0.3s;
+    transition: transform 0.2s;
+    display: flex; /* Habilita flexbox */
+    flex-direction: row; /* Alinea en fila */
+    align-items: center; /* Centra verticalmente */
+    overflow: hidden; /* Evita el desbordamiento */
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+/* Icono y texto ocupan espacio de forma dinámica */
+
+.cardIcon{
+    flex: 1; /* Permite que el icono se ajuste */
+    font-size: 50px; 
+    color: #510c76b9;/* Ajusta el tamaño del ícono si es necesario */
+} 
+.cardText{
+    flex: 1; /* Permite que el icono se ajuste */
+    font-size: 60px; /* Ajusta el tamaño del ícono si es necesario */
 }
 
-.cardRecovered {
-    background-color: #9BBE68;
-}
-
-.cardInProgress {
-    background-color: #FFC400;
-}
-
-.cardIcon {
-    font-size: 2.5rem;
-}
-
-.cardText {
-    font-size: 1.8rem;
-    font-weight: bold;
-    margin-top: 10px;
-}
+/* Textos ocupan el espacio restante */
 
 .cardSubtext {
-    font-size: 1rem;
-    margin-top: 5px;
+    flex: 2; /* Permite que los textos se ajusten */
+    text-align: left; /* Alinea el texto a la izquierda */
+    overflow: hidden; /* Evita el desbordamiento */
+    white-space: nowrap; /* Evita que el texto se divida en múltiples líneas */
+    text-overflow: ellipsis; /* Muestra puntos suspensivos si hay desbordamiento */
 }
 
-.chartContainer {
-    background-color: #ffffff;
-    padding: 20px;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.chartTitle {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #510C76;
-    margin-bottom: 15px;
-}
-
-.canvasWrapper {
-    position: relative;
-    width: 100%;
-    height: 300px;
-}
+  
+  .chartBoxContainer{
+    display: flex;
+  }
+  .chartContainer {
+ 
+    margin-top: 20px; 
+    width: 100%; 
+  }
+  
+  /* Responsividad para móviles */
+  @media (max-width: 768px) {
+    .card {
+      flex: 1 1 100%; /* Ocupa el 100% del ancho en móviles */
+      margin: 10px 0; /* Espacio vertical en móviles */
+    }
+  }
+  
