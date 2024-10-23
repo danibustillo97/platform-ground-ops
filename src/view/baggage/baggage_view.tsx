@@ -10,7 +10,7 @@ import styles from "./baggage.module.css";
 import { signOut, useSession } from "next-auth/react";
 
 const BaggageView: React.FC = () => {
-const session = useSession()
+    const session = useSession()
 
     const {
         searchTerm,
@@ -116,6 +116,7 @@ const session = useSession()
                     <table className={`table table-striped table-bordered ${styles.baggage_table}`}>
                         <thead className={`bg-primary text-white ${styles.tableHeader}`}>
                             <tr>
+                                <th>Pnr</th>
                                 <th>Baggage Code</th>
                                 <th>Zendezk Ticket Code</th>
                                 <th>Teléfono</th>
@@ -132,6 +133,7 @@ const session = useSession()
                             {filteredData.length > 0 ? (
                                 filteredData.map((row, index) => (
                                     <tr key={index}>
+                                        <td>{row.pnr}</td>
                                         <td>{row.baggage_code}</td>
                                         <td>{row.number_ticket_zendesk}</td>
                                         <td>{row.contact.phone}</td>

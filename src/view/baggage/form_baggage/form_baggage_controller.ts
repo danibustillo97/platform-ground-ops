@@ -122,12 +122,12 @@ export const useFormBaggageController = () => {
         const token = session?.user.access_token;
 
         const formattedData = selectedLuggage.map((luggageItem) => {
-
-            const pruebasUrl = luggageItem.issue === 'Daño' ? formData.address : null; 
+            const pruebasUrl = luggageItem.issue === 'Daño' ? formData.address : null;
             const direccionEnvio = luggageItem.issue === 'Retraso' ? formData.address : null;
 
             return {
                 baggage_code: luggageItem.luggage,
+                pnr: pnr,
                 contact: {
                     phone: luggageItem.phone,
                     email: luggageItem.email
@@ -141,10 +141,9 @@ export const useFormBaggageController = () => {
                 passenger_name: luggageItem.passengerName || "",
                 description: luggageItem.description || "",
                 issue_type: luggageItem.issue || "",
-                direccion_envio: direccionEnvio || "Null", 
-                pruebas_url: pruebasUrl || "Null", 
+                direccion_envio: direccionEnvio || "Null",
+                pruebas_url: pruebasUrl || "Null",
                 created_agente_name: session?.user.name || "",
-                
             };
         });
 
@@ -154,13 +153,15 @@ export const useFormBaggageController = () => {
             try {
                 const response = await createBaggageCases(formattedData, token);
                 console.log('Success:', response);
-            } catch (error) {
+                console.log("Datos enviados:", formattedData);
+            } catch (error) {   
                 console.error('Error al crear casos de equipaje:', error);
             }
         } else {
             console.error('Token no disponible. No se puede realizar la operación.');
         }
     };
+
 
 
     return {

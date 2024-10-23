@@ -1,36 +1,64 @@
-/* Navbar.module.css */
-
-/* Estilo para la barra de navegación */
-.navBar {
-  background-color: #f8f9fa; /* Color de fondo de la navbar */
-  border-bottom: 1px solid #dee2e6; /* Línea debajo de la navbar */
+/* ESTILOS DE LOS ICONOS */
+.iconLogout{
+  padding: 2px;
+  color: #007bff;
+  font-size: 1.5rem;
 }
 
-/* Estilo para el menú desplegable */
-.customDropdown {
-  background-color: white; /* Cambia el color de fondo */
-  border-radius: 0.25rem; /* Bordes redondeados */
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15); /* Sombra para dar profundidad */
+
+
+
+/* ------------------------------------------- */
+
+.header {
+  background-color: #f8f9fa; 
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Estilo para los elementos del menú */
-.dropdown-item {
-  padding: 10px 20px; /* Añade padding para mejor espacio */
+.navbar {
+  padding: 10px 20px;
 }
 
-/* Mejora el efecto hover en los elementos */
-.dropdown-item:hover {
-  background-color: #f8f9fa; /* Color de fondo en hover */
+.navbar-brand {
+  font-size: 1.5rem;
+  color: #343a40; 
 }
 
-/* Estilo para el botón de usuario */
-.userButton {
-  background-color: transparent; /* Sin fondo para el botón */
-  border: none; /* Sin borde */
-  color: inherit; /* Hereda el color del texto */
+.navLink {
+  display: flex;
+  justify-content: space-between;
+  border-radius: 10px;
+  padding: 15px;
+  background-color: #510c760c !important;
+  margin: 0px 5px;
 }
 
-/* Estilo para el logotipo */
-.logo {
-  max-width: 100%; /* Asegura que el logo no exceda su contenedor */
+.navLink.active {
+  color: #510c76c6 !important; 
+
 }
+
+
+.navLink:hover {
+  color: #510c76c6 !important;
+
+}
+
+.dropdown-menu {
+  border-radius: 0.5rem; 
+}
+
+.notification-badge {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: translate(50%, -50%);
+}
+
+.avatar {
+  width: 30px;  
+  height: 30px; 
+  border-radius: 50%;
+  object-fit: cover; 
+}
+

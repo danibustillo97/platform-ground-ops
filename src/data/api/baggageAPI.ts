@@ -39,11 +39,13 @@ export const createBaggageCasesAPI = async (baggageCases: any[], token: string) 
                 },
                 body: JSON.stringify(baggageCases),
             }
+            
         );
         if (!response.ok) {
             throw new Error(`Error creating baggage cases, status: ${response.status}`);
         }
         const data = await response.json();
+        console.log("caso creado:", response );
         return data;
     } catch (error) {
         console.error("Error creating baggage cases", error);

@@ -19,6 +19,7 @@ export const useBaggageCasesController = () => {
             const token = session?.user.access_token as string;
 
                 const data = await getBaggageCasesApi(token);
+                console.log(data)
                 setBaggageCases(data);
             
             setLoading(false);
