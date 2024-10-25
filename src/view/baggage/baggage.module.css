@@ -33,7 +33,9 @@
     background-color: #ffffff; /* Fondo blanco para filtros */
     border-radius: 8px; /* Bordes suaves */
     padding: 20px; /* Espaciado interior */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    justify-content: space-around;
+    align-items: flex-end; /* Sombra suave */
 }
 
 .tableContainer {

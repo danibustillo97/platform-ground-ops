@@ -132,7 +132,7 @@
                         />
                     </div>
                     <div className="col-md-3 mb-3">
-                        <label className="form-label">Hasta:</label>
+                        <label className={`form-label${styles.formsLabel}`}>Hasta:</label>
                         <input
                             type="date"
                             className="form-control"

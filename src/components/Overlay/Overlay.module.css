@@ -10,7 +10,8 @@
 .spinnerFlight {
   font-size: 5rem;
   color: #510c76b9; 
-  animation: takeOff 1.5s ease-in-out infinite, scale 1.5s ease-in-out infinite;
+  animation: takeOff 1.5s ease-in-out infinite; 
+  transform: rotate(315deg); 
   margin-bottom: 0.5rem; 
 }
 
@@ -32,27 +33,25 @@
   border: none; 
 }
 
-
 @keyframes takeOff {
   0% {
-      transform: translateY(0);
+      transform: translateY(0) rotate(315deg);
   }
 
   50% {
-      transform: translateY(-300px); 
+      transform: translateY(-300px) rotate(315deg); 
   }
-  60%{
-    transform: translateY(-100px); 
+  60% {
+    transform: translateY(-100px) rotate(315deg); 
   }
-
-  70%{
-    transform: translateY(-120px); 
+  70% {
+    transform: translateY(-120px) rotate(315deg); 
   }
   80% {
-    transform: translateY(180px); 
+    transform: translateY(180px) rotate(315deg); 
   }
   100% {
-      transform: translateY(0);
+      transform: translateY(0) rotate(315deg); 
   }
 }
 
@@ -64,12 +63,3 @@
       opacity: 0.5; 
   }
 }
-
-/* @keyframes scale {
-  0%, 100% {
-      transform: scale(1);
-  }
-  50% {
-      transform: scale(1.1);
-  }
-} */

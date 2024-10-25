@@ -11,13 +11,14 @@ import { User, UserCreate } from "@/entities/User";
 import styles from "@/view/users/users.module.css";
 import { useRouter } from "next/navigation";
 import UserModal from "@/components/UserModal/UserModal";
-
+import OverlayComponent  from "@/components/Overlay/Overlay";
 
 const UsersView: React.FC = () => {
     const router = useRouter();
     const [usersData, setUsersData] = useState<User[] | null>(null);
     const [loading, setLoading] = useState<boolean>(true);
     const [showModal, setShowModal] = useState<boolean>(false);
+    
     const [editingUser, setEditingUser] = useState<User | null>(null);
     const [userForm, setUserForm] = useState<UserCreate>({
         name: "",
@@ -120,12 +121,10 @@ const UsersView: React.FC = () => {
         setEditingUser(null);
     };
 
-    if (loading) {
-        return <div>Cargando usuarios...</div>;
-    }
 
     return (
-        <div className={styles.userManagementContainer}>
+        loading ? <OverlayComponent /> :( 
+            <div className={styles.userManagementContainer}>
             <h1 className={styles.userManagementHeader}>Gestión de Usuarios</h1>
             <div className={styles.userActionsContainer}>
                 <button className={styles.addButton} onClick={handleAddUser}>
@@ -194,6 +193,7 @@ const UsersView: React.FC = () => {
             )}
 
             </div>
+        )
     );
 };
 
