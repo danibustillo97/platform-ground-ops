@@ -1,13 +1,13 @@
-"use client"; // Agrega esto al inicio de tu archivo
+"use client";
 import React from "react";
-import styles from "@/view/dashboard/DashboardPage.module.css"; // Importa tus estilos aquí
+import styles from "@/components/Overlay/Overlay.module.css"; 
+import { MdFlight } from "react-icons/md";
 
-const Overlay = () => {
+const Overlay: React.FC = () => {
     return (
-        <div className={styles.overlay}>
-            <div className={styles.spinnerBorder} role="status">
-                <span className={styles.visuallyHidden}>Loading...</span>
-            </div>
+        <div className={`${styles.spinnerContainer}`} role="status">
+            <MdFlight className={styles.spinnerFlight} />
+            <small className={styles.spinnerText}><h1>Cargando</h1></small>
         </div>
     );
 };

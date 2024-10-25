@@ -1,38 +1,75 @@
-.overlay {
-  position: fixed; /* Fijo para que ocupe toda la pantalla */
-  
-  width: 100%; /* Ocupa el 100% del ancho */
-  height: 100%; /* Ocupa el 100% de la altura */
-  background-color: rgba(227, 4, 4, 0.8); /* Fondo blanco con un poco de transparencia */
-  display: flex; /* Utiliza flexbox para centrar */
-  justify-content: center; /* Centrar horizontalmente */
-  align-items: center; /* Centrar verticalmente */
-  z-index: 9999; /* Asegúrate de que esté por encima de otros elementos */
-  animation: fadeIn 0.5s; /* Animación de desvanecimiento */
+.spinnerContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: rgba(243, 243, 243, 0.5); 
 }
 
-.spinnerBorder {
-  width: 4rem; /* Tamaño del spinner */
-  height: 3rem; /* Tamaño del spinner */
-  border-width: 0.25em; /* Grosor del borde */
-  animation: spin 1s linear infinite; /* Animación de giro */
-  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3); /* Sombra alrededor del spinner */
+.spinnerFlight {
+  font-size: 5rem;
+  color: #510c76b9; 
+  animation: takeOff 1.5s ease-in-out infinite, scale 1.5s ease-in-out infinite;
+  margin-bottom: 0.5rem; 
 }
 
-@keyframes fadeIn {
-  from {
-      opacity: 0; /* Comienza invisible */
+.spinnerText {
+  font-size: 1.5rem;
+  color: white;
+  font-weight: 700;
+  position: relative; 
+  display: inline-block;
+  margin: 0; 
+  padding: 0.5rem;
+  background: linear-gradient(to left, #000000, #510c76d7);
+  -webkit-background-clip: text; 
+  background-clip: text;
+  color: transparent; 
+}
+
+.spinnerText h1 {
+  border: none; 
+}
+
+
+@keyframes takeOff {
+  0% {
+      transform: translateY(0);
   }
-  to {
-      opacity: 1; /* Termina visible */
+
+  50% {
+      transform: translateY(-300px); 
+  }
+  60%{
+    transform: translateY(-100px); 
+  }
+
+  70%{
+    transform: translateY(-120px); 
+  }
+  80% {
+    transform: translateY(180px); 
+  }
+  100% {
+      transform: translateY(0);
   }
 }
 
-@keyframes spin {
-  from {
-      transform: rotate(0deg); /* Comienza sin rotación */
+@keyframes fadeInOut {
+  0%, 100% {
+      opacity: 1;
   }
-  to {
-      transform: rotate(360deg); /* Termina con una rotación completa */
+  50% {
+      opacity: 0.5; 
   }
 }
+
+/* @keyframes scale {
+  0%, 100% {
+      transform: scale(1);
+  }
+  50% {
+      transform: scale(1.1);
+  }
+} */
