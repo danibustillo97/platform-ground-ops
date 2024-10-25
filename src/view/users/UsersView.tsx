@@ -12,6 +12,11 @@ import { FaPlus } from "react-icons/fa";
 import { AiOutlineUserDelete } from "react-icons/ai";
 import { LiaUserEditSolid } from "react-icons/lia";
 
+// Función para generar un ID único (ejemplo simple)
+const generateUniqueId = (): number => {
+    return Math.floor(Math.random() * 1000000); // Simple implementación
+};
+
 const UsersView: React.FC = () => {
     const router = useRouter();
     const [usersData, setUsersData] = useState<User[] | null>(null);
@@ -27,6 +32,9 @@ const UsersView: React.FC = () => {
         estacion: "",
         password: "",
     });
+
+
+   const  updatedate = new Date();
 
     useEffect(() => {
         fetchUsers();
@@ -52,12 +60,18 @@ const UsersView: React.FC = () => {
         }
     };
 
-    const handleSaveUser = async (user: User) => {
+    const handleSaveUser = async (user: UserCreate) => {
         try {
+            const userToSave: User = {
+                id: editingUser ? editingUser.id : generateUniqueId(),
+                ...user,
+                updatedAt: updatedate.toString(), // Asegúrate de incluir updatedAt
+            };
+
             if (editingUser) {
-                await updateExistingUser(editingUser.id, user);
+                await updateExistingUser(editingUser.id, userToSave);
             } else {
-                await createNewUser(user);
+                await createNewUser(userToSave);
             }
             setShowModal(false);
             setEditingUser(null);
@@ -83,7 +97,7 @@ const UsersView: React.FC = () => {
             phone: user.phone,
             rol: user.rol,
             estacion: user.estacion,
-            password: '',
+            password: '', // No mostrar la contraseña
         };
         setUserForm(userCreate);
         setShowModal(true);
@@ -141,7 +155,6 @@ const UsersView: React.FC = () => {
                                                         <button className="btn btn-outline-dark btn-sm" onClick={() => handleEditUser(user)}>
                                                             <span className="fab fa-twitter"></span> <LiaUserEditSolid /> Edit
                                                         </button>
-
                                                     </div>
                                                     <div className="col-md-6">
                                                         <button className="btn btn-danger btn-sm" onClick={() => handleDelete(user.id)}>
@@ -153,7 +166,7 @@ const UsersView: React.FC = () => {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            ))} 
                         </div>
                     ) : (
                         <p>No se encontraron usuarios.</p>
