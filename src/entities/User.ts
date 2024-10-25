@@ -12,10 +12,11 @@ export interface UserCreate {
   rol: string;
   estacion: string;
   password: string;
+
 }
 
 export interface User{
-  updatedAt: string;
+  
   id: number;
   name: string;
   email: string;

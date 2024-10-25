@@ -65,7 +65,7 @@ const UsersView: React.FC = () => {
             const userToSave: User = {
                 id: editingUser ? editingUser.id : generateUniqueId(),
                 ...user,
-                updatedAt: updatedate.toString(), // Asegúrate de incluir updatedAt
+          
             };
 
             if (editingUser) {
