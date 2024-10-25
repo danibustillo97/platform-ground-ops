@@ -55,7 +55,7 @@ const Navbar: React.FC = () => {
               href="/dashboard" 
               className={`nav-link ${styles.navLink} ${currentPath === "/dashboard" ? styles.active : ""}`}
             >
-              <FaHome />
+              <FaHome /> Dashboard
             </Link>
           </li>
           <li className="nav-item">
