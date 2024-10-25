@@ -1,125 +1,52 @@
 .userManagementContainer {
     padding: 20px;
-    background-color: #f7f7f7;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    height: 100vh;
 }
 
 .userManagementHeader {
-    font-size: 1.5rem;
-    font-weight: 600;
-    color: #510c76;
+    text-align: center;
     margin-bottom: 20px;
-    font-family: "Inter", sans-serif;
+    font-size: 2rem;
+    color: #333;
 }
 
-.userActionsContainer {
-    display: flex;
-    justify-content: flex-end;
+.searchInput {
     margin-bottom: 20px;
-    gap: 10px;
-}
-
-.addButton,
-.manageRolesButton {
-    display: flex;
-    align-items: center;
-    padding: 5px 8px;
-    font-size: 0.9rem !important;
-    background-color: #510c76;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-    transition: background-color 0.3s ease;
-}
-
-.addButton:hover,
-.manageRolesButton:hover {
-    background-color: #3b0a59;
-}
-
-.userTableContainer {
-    overflow-x: auto;
-}
-
-.userTable {
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
     width: 100%;
-    border-collapse: collapse;
-    background-color: white;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
+}
+
+.userCardsContainer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.cardProfile {
+    border-radius: 10px;
     overflow: hidden;
-    
 }
 
-.userTable th{
-    padding: 8px 10px;
-    text-align: left;
-    font-size: 0.9rem;
-}
-.userTable td {
-    padding: 8px 10px;
-    text-align: left;
-    font-size: 0.8rem;
-    color: #343a40;
+.cardHeader {
+    height: 150px;
+    background-size: cover;
+    background-position: bottom;
+    background-attachment: unset;
 }
 
-.userTable th {
-    background-color: #510c76;
-    color: white;
+.cardProfileImg {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    margin-top: -40px;
+    border: 3px solid white;
 }
 
-.containerAction {
-    display: flex;
-    gap: 8px;
+.card-body {
+    text-align: center;
 }
 
-.userEditButton,
-.userDeleteButton {
-    display: flex;
-    align-items: center;
-    padding: 3px 7px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: background-color 0.3s ease;
-}
-
-.userEditButton {
-    background-color: #510c76;
-    color: white;
-}
-
-.userDeleteButton {
-    background-color: #f44336;
-    color: white;
-}
-
-.userEditButton:hover {
-    background-color: #510c76;
-}
-
-.userDeleteButton:hover {
-    background-color: #d32f2f;
-}
-
-
-@media (max-width: 480px) {
-    .userTable th{
-        padding: 8px 10px;
-        text-align: left;
-        font-size: 0.8rem;
-        white-space: nowrap;
-    }
-    .userTable td {
-        padding: 8px 10px;
-        text-align: left;
-        font-size: 0.7rem;
-        color: #343a40;
-        white-space: nowrap;
-    }
-
+.btn {
+    margin: 5px;
 }

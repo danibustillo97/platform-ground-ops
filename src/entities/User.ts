@@ -15,6 +15,7 @@ export interface UserCreate {
 }
 
 export interface User{
+  updatedAt: string;
   id: number;
   name: string;
   email: string;
