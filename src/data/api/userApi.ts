@@ -1,27 +1,24 @@
 // Obtener todos los usuarios
 const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
 export const getUsers = async () => {
-    try {
-        const response = await fetch(`${apiUrl}/api/users`, {
-            method: "GET",
-            headers: {
-                "Content-Type": "application/json",
-
-            },
-        });
-
-        if (!response.ok) {
-            throw new Error("Error al obtener los usuarios");
-        }
-
-        const res = await response.json();
-        console.log(res);
-        return res;
-
-    } catch (error) {
-        console.error("Error fetching users:", error);
-        throw error;
+    const response = await fetch(`${apiUrl}/api/users`, {
+        method: "GET",
+        headers: {
+            "ngrok-skip-browser-warning": "true",
+            "Content-Type": "application/json",
+        },
+    });
+    
+    if (!response.ok) {
+        const errorText = await response.text(); // Obtener el texto de error
+        console.error("Error fetching users:", errorText); // Mostrar error en consola
+        throw new Error("Error al obtener los usuarios");
     }
+    
+    const res = await response.json();
+    console.log(res); // Ver la respuesta
+    return res;
+
 };
 
 // Crear un nuevo usuario

@@ -24,7 +24,7 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
     handleSubmit,
   } = useModalBaggageController(details, onSave);
 
-  // Verificar si el modal debe estar abierto
+
   if (!isOpen) return null;
 
   return (
@@ -38,10 +38,10 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
           <p>
             <strong>Teléfono:</strong>
             <input
-              type="tel" // Cambiado a 'tel' para un mejor manejo de números de teléfono
+              type="tel" 
               value={phone}
               onChange={handlePhoneChange}
-              required // Asegura que el campo no esté vacío
+              required 
               className={styles.input} // Aplicar clase de módulo
             />
           </p>

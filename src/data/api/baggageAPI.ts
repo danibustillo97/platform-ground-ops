@@ -68,6 +68,7 @@ export const getBaggageCasesApi = async (token: string) => {
         );
         if (response.ok) {
             const data = await response.json();
+            
             return data;
         } else {
             console.error("Error fetching data:", response.statusText);
@@ -102,6 +103,31 @@ export const putBaggageCasesAPI = async (id_passenger: any, baggageCases: any, t
         }
     } catch (error) {
         console.error("Error en la solicitud PUT:", error);
+        throw error;
+    }
+};
+
+
+export const deleteBaggageCasesAPI = async (ids: string[], token: string) => {
+    try {
+        const response = await fetch(
+            `${apiURL}/api/baggage-case/`, // Asegúrate de que esta URL sea correcta
+            {
+                method: "DELETE",
+                headers: {
+                    "ngrok-skip-browser-warning": "true",
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${token}`, // Asegúrate de incluir el token si es necesario
+                },
+                body: JSON.stringify(ids), // Envío de la lista de IDs directamente
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(`Error deleting baggage cases, status: ${response.status}`);
+        }
+    } catch (error) {
+        console.error("Error deleting baggage cases", error);
         throw error;
     }
 };

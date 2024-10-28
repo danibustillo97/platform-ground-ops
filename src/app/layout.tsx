@@ -4,6 +4,10 @@ import { usePathname, useRouter } from "next/navigation";
 import { useEffect } from "react";
 import Navbar from "../components/nav/Navbar";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'primereact/resources/themes/saga-blue/theme.css'; // Cambia "saga-blue" por el tema que prefieras
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+
 import './globals.css';
 
 function RedirectHandler() {

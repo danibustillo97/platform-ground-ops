@@ -1,6 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
 import { getSession } from "next-auth/react";
-import { getBaggageCasesApi, putBaggageCasesAPI } from "@/data/api/baggageAPI"; 
+import {
+    getBaggageCasesApi,
+    putBaggageCasesAPI,
+    deleteBaggageCasesAPI,
+   
+} from "@/data/api/baggageAPI";
 import { BaggageCase } from "@/domain/types/BaggageCase";
 
 export const useBaggageCasesController = () => {
@@ -25,21 +30,60 @@ export const useBaggageCasesController = () => {
     }, []);
 
     const filteredData = useMemo(() => {
+        console.log("Starting filter process...");
+        console.log(baggageCases);
+    
         const start = startDate || "1900-01-01";
-        const end = endDate || new Date().toISOString().split('T')[0];
-        return baggageCases
-            .filter((row) => {
-                const matchesSearchTerm =
-                    searchTerm === "" ||
-                    row.pnr?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    row.passenger_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    row.status?.toLowerCase().includes(searchTerm.toLowerCase());
-                const matchesStatusFilter = statusFilter === "" || row.status?.toLowerCase().includes(statusFilter.toLowerCase());
-                const matchesDateRange =
-                    new Date(row.date_create) >= new Date(start) && new Date(row.date_create) <= new Date(end);
-                return matchesSearchTerm && matchesStatusFilter && matchesDateRange;
-            });
+        const end = endDate || new Date().toISOString().split('T')[0]; 
+    
+        return baggageCases.filter((row) => {
+            const rowDate = row.date_create ? new Date(row.date_create).toISOString().split('T')[0] : null;
+    
+            const matchesSearchTerm = !searchTerm || 
+                (row.pnr && row.pnr.toLowerCase().includes(searchTerm.toLowerCase())) || 
+                (row.passenger_name && row.passenger_name.toLowerCase().includes(searchTerm.toLowerCase())) || 
+                (row.status && row.status.toLowerCase().includes(searchTerm.toLowerCase())) || 
+                (row.baggage_code && row.baggage_code.toLowerCase().includes(searchTerm.toLowerCase())); 
+    
+            const matchesStatusFilter = !statusFilter || (row.status && row.status.toLowerCase().includes(statusFilter.toLowerCase()));
+    
+            const matchesDateRange = !rowDate || (rowDate >= start && rowDate <= end);
+    
+            // Cambiamos la lógica para que cualquier registro se incluya, incluso si algunos valores son null
+            return matchesSearchTerm || matchesStatusFilter || matchesDateRange;
+        });
     }, [searchTerm, statusFilter, startDate, endDate, baggageCases]);
+    
+    
+    
+    
+    
+
+    const updatedSavedBaggageCase = async (updatedCase: BaggageCase) => {
+        const session = await getSession();
+        const token = session?.user.access_token as string;
+        console.log("Datos enviados a la API:", updatedCase);
+        await putBaggageCasesAPI(updatedCase.id, updatedCase, token);
+
+        setBaggageCases((prevState) =>
+            prevState.map((caseItem) =>
+                caseItem.id === updatedCase.id ? { ...caseItem, ...updatedCase } : caseItem
+            )
+        );
+        handleCloseModal();
+    };
+    
+
+    const handleDeleteSelected = async (selectedCases: BaggageCase[]) => {
+        const ids = selectedCases.map((c) => c.id);
+        const session = await getSession();
+        const token = session?.user.access_token as string;
+
+        await deleteBaggageCasesAPI(ids, token);
+        setBaggageCases((prevState) =>
+            prevState.filter((caseItem) => !ids.includes(caseItem.id))
+        );
+    };
 
     const handleOpenModal = (details: BaggageCase) => {
         setSelectedBaggageDetails(details);
@@ -50,28 +94,6 @@ export const useBaggageCasesController = () => {
         setIsModalOpen(false);
         setSelectedBaggageDetails(null);
     };
-
-    const updatedSavedBaggageCase = async (updatedCase: BaggageCase) => {
-        const session = await getSession(); // Obtener el token de la sesión
-        const token = session?.user.access_token as string; // Asegúrate de que el token esté disponible
-
-        await putBaggageCasesAPI(updatedCase.id, updatedCase, token); // Llamar con los tres argumentos
-
-        setBaggageCases((prevState) =>
-            prevState.map((caseItem) =>
-                caseItem.id === updatedCase.id ? updatedCase : caseItem
-            )
-        );
-        handleCloseModal();
-    };
-
-    // const handleDeleteSelected = async (selectedCases: BaggageCase[]) => {
-    //     const ids = selectedCases.map((c) => c.id);
-    //     await deleteBaggageCasesAPI(ids);
-    //     setBaggageCases((prevState) =>
-    //         prevState.filter((caseItem) => !ids.includes(caseItem.id))
-    //     );
-    // };
 
     return {
         searchTerm,
@@ -89,6 +111,6 @@ export const useBaggageCasesController = () => {
         handleOpenModal,
         handleCloseModal,
         updatedSavedBaggageCase,
-        // handleDeleteSelected,
+        handleDeleteSelected,
     };
 };

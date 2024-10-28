@@ -1,11 +1,4 @@
-/* ESTILOS DE LOS ICONOS */
-.iconLogout{
-  padding: 2px;
-  color: #007bff;
-  font-size: 1.5rem;
-}
-/* ESTILOS DE LOS ICONOS */
-
+/* Estilos generales */
 .header {
   background-color: #f8f9fa; 
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -14,12 +7,17 @@
 .navbar {
   padding: 10px 20px;
 }
+.mx-auto {
+  margin-right: auto !important;
+  margin-left: auto !important;
+}
 
 .navbar-brand {
-  font-size: 1.5rem;
+  font-size: 1.5rem; /* Mantén el tamaño en pantallas grandes */
   color: #343a40; 
 }
 
+/* Estilos de los enlaces de navegación */
 .navLink {
   display: flex;
   justify-content: space-between;
@@ -31,30 +29,72 @@
 
 .navLink.active {
   color: #510c76c6 !important; 
-
 }
-
 
 .navLink:hover {
   color: #510c76c6 !important;
-
 }
 
+/* Estilos para móviles */
+@media (max-width: 768px) {
+  .mx-auto {
+    margin-right: auto !important;
+    margin-left: auto !important;
+    margin-top: 10px !important;
+}
+  .navbar {
+    padding: 10px; /* Reducir el espaciado */
+  }
+
+  .navLink {
+    padding: 10px !important; /* Menor padding en móviles */
+    font-size: 0.9rem; /* Tamaño de fuente más pequeño */
+    margin: 5px 0; 
+
+  }
+
+  .navbar-brand {
+    font-size: 1rem; /* Mantén el tamaño en pantallas grandes */
+  
+  }
+
+  .avatar {
+    width: 30px; /* Tamaño de avatar más pequeño */
+    height: 30px;
+    margin-right: 10px; 
+  }
+
+  .notification-badge {
+    width: 0.6rem; /* Hacer la insignia más pequeña */
+    height: 0.6rem; 
+  }
+}
+
+/* Estilos de los iconos */
+.iconLogout {
+  padding: 2px;
+  color: #007bff;
+  font-size: 1.5rem;
+}
+
+/* Estilos del menú desplegable */
 .dropdown-menu {
-  border-radius: 0.5rem; 
+  background-color: #fff; /* Fondo blanco para el menú */
+  border-radius: 0.5rem; /* Bordes redondeados */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para el menú */
 }
 
-.notification-badge {
-  position: absolute;
-  top: 0;
-  right: 0;
-  transform: translate(50%, -50%);
+.nav-link {
+  padding: 1rem 1.5rem; /* Espaciado para los enlaces */
 }
 
+.nav-item:hover .nav-link {
+  background-color: #f0f0f0; /* Fondo gris claro al pasar el ratón */
+}
+
+/* Avatar */
 .avatar {
-  width: 30px;  
-  height: 30px; 
-  border-radius: 50%;
-  object-fit: cover; 
+  width: 40px; /* Ancho de la imagen del avatar */
+  height: 40px; /* Alto de la imagen del avatar */
+  border-radius: 50%; /* Hacer que el avatar sea circular */
 }
-

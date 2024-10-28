@@ -8,9 +8,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
-
 // ICONOS
-import { FaHome, FaUserCog } from 'react-icons/fa';
+import { FaHome, FaUserCog } from "react-icons/fa";
 import { CiLogout } from "react-icons/ci";
 import { LuBaggageClaim } from "react-icons/lu";
 import { MdOutlineFlight } from "react-icons/md";
@@ -18,6 +17,7 @@ import { MdOutlineFlight } from "react-icons/md";
 const Navbar: React.FC = () => {
   const { data: session } = useSession();
   const [showDropdown, setShowDropdown] = useState(false);
+  const [navbarOpen, setNavbarOpen] = useState(false);
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -26,19 +26,13 @@ const Navbar: React.FC = () => {
   };
 
   const toggleDropdown = () => setShowDropdown((prev) => !prev);
-  const handleMouseEnter = () => setShowDropdown(true);
-  const handleMouseLeave = () => setShowDropdown(false);
+  const toggleNavbar = () => setNavbarOpen(!navbarOpen);
 
-  // Obtener la ruta actual
   const currentPath = usePathname();
-
 
   return (
     <header className="header">
       <nav className="navbar navbar-expand-lg px-4 py-2 bg-light shadow">
-        <a className="sidebar-toggler text-gray-500 me-4" href="#">
-          <i className="fas fa-align-left"></i>
-        </a>
         <Link href="/" className="navbar-brand">
           <Image
             className={styles.logo}
@@ -49,57 +43,9 @@ const Navbar: React.FC = () => {
             priority
           />
         </Link>
-        <ul className="navbar-nav mx-auto">
-          <li className="nav-item">
-            <Link 
-              href="/dashboard" 
-              className={`nav-link ${styles.navLink} ${currentPath === "/dashboard" ? styles.active : ""}`}
-            >
-              <FaHome /> Dashboard
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link 
-              href="/users" 
-              className={`nav-link ${styles.navLink} ${currentPath === "/users" ? styles.active : ""}`}
-            >
-              <span><FaUserCog /></span> Usuarios 
-            </Link>
-          </li>
-          <li className="nav-item"> 
-            <Link 
-              href="/baggage_gestion" 
-              className={`nav-link ${styles.navLink} ${currentPath === "/baggage_gestion" ? styles.active : ""}`}
-            >
-              <LuBaggageClaim /> Gestión de Equipajes
-            </Link>
-          </li>
-          <li className="nav-item">
-            <Link 
-              href="/flights" 
-              className={`nav-link ${styles.navLink} ${currentPath === "/flights" ? styles.active : ""}`}
-            >
-              <MdOutlineFlight /> Vuelos
-            </Link>
-          </li>
-        </ul>
+        
+        {/* User Info (Avatar) moved before the toggle button */}
         <ul className="ms-auto d-flex align-items-center list-unstyled mb-0">
-          <li className="nav-item dropdown me-2">
-            <a className="nav-link nav-link-icon text-gray-400" id="notifications" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i className="icon-notifications"></i>
-              <span className="notification-badge bg-green"></span>
-            </a>
-            <div className="dropdown-menu dropdown-menu-end text-sm" aria-labelledby="notifications">
-              <ul className="navbar-nav mx-auto">
-                <li className="nav-item">
-                  <Link href="/flights" className={`nav-link ${styles.navLink}`}>
-                    Vuelos
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </li>
-          {/* User Info */}
           {session && session.user ? (
             <li className="nav-item dropdown ms-auto">
               <a className="nav-link" id="userInfo" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -123,6 +69,56 @@ const Navbar: React.FC = () => {
             </li>
           )}
         </ul>
+
+        {/* Toggle button for mobile view */}
+        <button 
+          className="navbar-toggler" 
+          type="button" 
+          onClick={toggleNavbar} 
+          aria-controls="navbarContent"
+          aria-expanded={navbarOpen ? "true" : "false"} 
+          aria-label="Toggle navigation"
+        >
+          <span className="navbar-toggler-icon"></span>
+        </button>
+
+        {/* Collapsible menu */}
+        <div className={`collapse navbar-collapse ${navbarOpen ? "show" : ""}`} id="navbarContent">
+          <ul className="navbar-nav mx-auto">
+            <li className="nav-item">
+              <Link 
+                href="/dashboard" 
+                className={`nav-link ${styles.navLink} ${currentPath === "/dashboard" ? styles.active : ""}`}
+              >
+                <FaHome /> Dashboard
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link 
+                href="/users" 
+                className={`nav-link ${styles.navLink} ${currentPath === "/users" ? styles.active : ""}`}
+              >
+                <span><FaUserCog /></span> Usuarios 
+              </Link>
+            </li>
+            <li className="nav-item"> 
+              <Link 
+                href="/baggage_gestion" 
+                className={`nav-link ${styles.navLink} ${currentPath === "/baggage_gestion" ? styles.active : ""}`}
+              >
+                <LuBaggageClaim /> Gestión de Equipajes
+              </Link>
+            </li>
+            <li className="nav-item">
+              <Link 
+                href="/flights" 
+                className={`nav-link ${styles.navLink} ${currentPath === "/flights" ? styles.active : ""}`}
+              >
+                <MdOutlineFlight /> Vuelos
+              </Link>
+            </li>
+          </ul>
+        </div>
       </nav>
     </header>
   );

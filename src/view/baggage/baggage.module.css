@@ -1,133 +1,133 @@
 .container {
-    background-color: #f8f9fa; /* Fondo suave */
-    border-radius: 8px; /* Bordes suaves */
-    padding: 30px; /* Espaciado interior */
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* Sombra más pronunciada */
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .header {
-    margin-bottom: 20px; /* Margen inferior */
+    margin-bottom: 20px;
 }
 
 .title {
-    font-size: 1rem; /* Tamaño de fuente más grande */
-    font-weight: bold; /* Negrita para el título */
-    color: #343a40; /* Color oscuro */
+    font-size: 1rem;
+    font-weight: bold;
+    color: #343a40;
 }
 
 .addButton {
-    transition: background-color 0.3s, transform 0.3s; /* Transiciones suaves */
-    font-size: 0.8rem; /* Aumentar el tamaño del botón */
-    padding: 2px 15px;
+    transition: background-color 0.3s, transform 0.3s;
+    font-size: 12;
+    padding: 10px;
     background: #510c76;
     color: white;
+    border: none;
 }
 
 .addButton:hover {
-    background-color: #510c76b9; /* Color al pasar el mouse */
-    transform: scale(1.05); /* Aumento al pasar el mouse */
+    background-color: #510c76b9;
+    transform: scale(1.05);
     color: white;
 }
 
 .filters {
-    background-color: #ffffff; /* Fondo blanco para filtros */
-    border-radius: 8px; /* Bordes suaves */
-    padding: 20px; /* Espaciado interior */
+    background-color: #ffffff;
+    border-radius: 8px;
+    padding: 20px;
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
     justify-content: space-around;
-    align-items: flex-end; /* Sombra suave */
+    align-items: flex-end;
 }
 
 .tableContainer {
-    background-color: #ffffff; /* Fondo blanco para tabla */
-    border-radius: 8px; /* Bordes suaves */
-    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1); /* Sombra suave */
-    overflow-x: auto; /* Permitir desplazamiento horizontal */
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
 }
 
 .tableHeader {
-    background-color: #007bff; /* Color de fondo de la tabla */
+    background-color: #007bff;
 }
 
 .table-striped tbody tr:nth-of-type(odd) {
-    background-color: #f2f2f2; /* Fondo alternado para filas */
+    background-color: #f2f2f2;
 }
 
-.baggage_table td{
+.baggage_table td {
     vertical-align: middle;
-    font-size: 0.7rem; /* Alineación vertical media */
+    font-size: 0.7rem;
 }
 
 .baggage_table th {
-    font-size: 0.8rem  !important; /* Alineación vertical media */
+    font-size: 0.8rem !important;
 }
 
 .badge {
-    font-size: 0.9em; /* Tamaño de fuente para badge */
+    font-size: 0.9em;
 }
 
 .table td {
-    padding: 15px; /* Espaciado interior de las celdas */
+    padding: 15px;
 }
 
 .btn-outline-primary {
-    color: #007bff; /* Color del texto del botón */
-    border-color: #007bff; /* Color del borde del botón */
+    color: #007bff;
+    border-color: #007bff;
 }
 
 .btn-outline-primary:hover {
-    background-color: #007bff; /* Fondo azul al pasar el mouse */
-    color: white; /* Texto blanco al pasar el mouse */
+    background-color: #007bff;
+    color: white;
 }
 
 .baggage_table {
     white-space: nowrap;
 }
 
-/* Media Queries para Responsividad */
 @media (max-width: 1200px) {
     .container {
-        padding: 20px; /* Menos espaciado en pantallas más pequeñas */
+        padding: 20px;
     }
 
     .header {
-        margin-bottom: 15px; /* Menos margen en pantallas más pequeñas */
+        margin-bottom: 15px;
     }
 
     .addButton {
-        font-size: 0.75rem; /* Tamaño más pequeño en pantallas más pequeñas */
+        font-size: 0.75rem;
     }
 
     .title {
-        font-size: 0.9rem; /* Tamaño de fuente más pequeño */
+        font-size: 0.9rem;
     }
 }
 
 @media (max-width: 768px) {
     .container {
-        padding: 15px; /* Menos espaciado en pantallas más pequeñas */
+        padding: 15px;
     }
 
     .filters {
-        padding: 15px; /* Menos espaciado en filtros */
+        padding: 15px;
     }
 
     .table td,
     .table th {
-        padding: 10px; /* Menos espaciado en las celdas */
+        padding: 10px;
     }
 
     .addButton {
-        width: 100%; /* Botón ocupa el ancho completo */
+        width: 100%;
     }
 }
 
 @media (max-width: 576px) {
     .title {
-        font-size: 1rem; /* Ajustar el tamaño del título en móviles */
+        font-size: 1rem;
     }
 
     .table {
-        font-size: 0.8rem; /* Tamaño de fuente más pequeño para la tabla */
+        font-size: 0.8rem;
     }
 }

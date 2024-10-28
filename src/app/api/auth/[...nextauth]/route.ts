@@ -2,15 +2,22 @@ import NextAuth, { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 
 interface AuthUser {
-    id: string;
     access_token: string;
-    error?: string;
-    name: string;
+    token_type: string;
+    user: {
+        name: string;
+        email: string;
+    };
 }
 
 interface ExtendedNextAuthUser extends NextAuthUser {
     access_token: string; 
     name: string;
+}
+
+interface ExtendedJWT {
+    access_token?: string; 
+    name?: string;
 }
 
 const authOptions: NextAuthOptions = {
@@ -32,30 +39,36 @@ const authOptions: NextAuthOptions = {
                                 grant_type: 'password',
                                 username: credentials?.email || '',
                                 password: credentials?.password || '',
+                                // Añadir otros parámetros requeridos si son necesarios
+                                // client_id: 'your_client_id',
+                                // client_secret: 'your_client_secret',
                             }),
                             headers: {
                                 "Content-Type": "application/x-www-form-urlencoded",
-                                "ngrok-skip-browser-warning": "true",
                             },
                         }
                     );
 
                     if (!res.ok) {
+                        const errorData = await res.json();
+                        console.error('Error en la autenticación:', errorData);
                         throw new Error('Error en la autenticación');
                     }
 
                     const data: AuthUser = await res.json();
+                    
                     if (!data.access_token) {
-                        throw new Error('Access token no recibido');
+                        throw new Error('Access token no recibido o es inválido');
                     }
 
                     return {
-                        id: data.id, 
+                        id: data.user.email, // O usa otro identificador si es necesario
                         access_token: data.access_token,
-                        email: credentials?.email,
-                        name: data.name 
-                    } as ExtendedNextAuthUser; 
+                        email: data.user.email,
+                        name: data.user.name,
+                    } as ExtendedNextAuthUser;
                 } catch (error) {
+                    console.error(error);
                     throw new Error('Authorization failed');
                 }
             }
@@ -73,8 +86,8 @@ const authOptions: NextAuthOptions = {
             return token;
         },
         async session({ session, token }) {
-            session.user.access_token = token.access_token as string; 
-            session.user.name = token.name as string;
+            session.user.access_token = (token as ExtendedJWT).access_token || ""; 
+            session.user.name = (token as ExtendedJWT).name || "";
             return session;
         },
     },
