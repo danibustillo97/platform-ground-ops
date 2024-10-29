@@ -1,13 +1,11 @@
+// RootLayout.tsx
 "use client"; 
 import { SessionProvider, useSession } from "next-auth/react";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
-import Navbar from "../components/nav/Navbar";
+import { useEffect, useState } from "react"; 
+import Navbar from "@/components/nav/Navbar";
+import Sidebar from "@/components/sidebars/Sidebar"; 
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'primereact/resources/themes/saga-blue/theme.css'; // Cambia "saga-blue" por el tema que prefieras
-import 'primereact/resources/primereact.min.css';
-import 'primeicons/primeicons.css';
-
 import './globals.css';
 
 function RedirectHandler() {
@@ -37,6 +35,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   const pathname = usePathname(); 
   const isLoginPage = pathname === "/login";
 
+  const [sidebarOpen, setSidebarOpen] = useState(true); // Cambiado a true
+  const toggleSidebar = () => setSidebarOpen(prev => !prev);
+
   useEffect(() => {
     if (typeof window !== "undefined") {
       require('bootstrap/dist/js/bootstrap.bundle.min.js');
@@ -46,10 +47,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <SessionProvider>
       <RedirectHandler />
-      <html lang="es">
-        <body>
-          {!isLoginPage && <Navbar />}
-          <main>{children}</main>
+      <html lang="es">  {/* Etiqueta html añadida aquí */}
+        <body>         {/* Etiqueta body añadida aquí */}
+          {!isLoginPage && <Navbar toggleSidebar={toggleSidebar} />}
+          <div className="page-holder">
+            <Sidebar isOpen={sidebarOpen} toggleSidebar={toggleSidebar} />
+            <main className={`content ${sidebarOpen ? "shifted" : ""}`}>
+              {children}
+            </main>
+          </div>
         </body>
       </html>
     </SessionProvider>

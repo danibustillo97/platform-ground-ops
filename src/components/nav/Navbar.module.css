@@ -1,100 +1,65 @@
-/* Estilos generales */
 .header {
-  background-color: #f8f9fa; 
+  background-color: #f8f9fa;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  z-index: 2000 !important; /* Asegúrate de que el navbar tenga un z-index alto */
+  position: relative; /* Necesario para que z-index funcione */
 }
 
-.navbar {
-  padding: 10px 20px;
-}
-.mx-auto {
-  margin-right: auto !important;
-  margin-left: auto !important;
+
+
+.navbar{
+  flex-wrap: nowrap !important;
+  padding: 10px 20px; 
 }
 
 .navbar-brand {
-  font-size: 1.5rem; /* Mantén el tamaño en pantallas grandes */
-  color: #343a40; 
+  font-size: 1.5rem;
+  color: #343a40;
 }
 
-/* Estilos de los enlaces de navegación */
-.navLink {
-  display: flex;
-  justify-content: space-between;
-  border-radius: 10px;
-  padding: 15px;
-  background-color: #510c760c !important;
-  margin: 0px 5px;
+.navbar-nav {
+  flex-grow: 1; /* Permite que los enlaces crezcan */
 }
 
-.navLink.active {
-  color: #510c76c6 !important; 
+.avatar {
+  width: 30px; /* Tamaño del avatar */
+  height: 30px;
+  border-radius: 50%; /* Hace el avatar redondo */
+  margin-right: 10px; /* Espacio entre el avatar y el texto */
 }
 
-.navLink:hover {
-  color: #510c76c6 !important;
-}
 
-/* Estilos para móviles */
+
+/* Estilos para pantallas pequeñas */
 @media (max-width: 768px) {
-  .mx-auto {
-    margin-right: auto !important;
-    margin-left: auto !important;
-    margin-top: 10px !important;
-}
   .navbar {
-    padding: 10px; /* Reducir el espaciado */
-  }
-
-  .navLink {
-    padding: 10px !important; /* Menor padding en móviles */
-    font-size: 0.9rem; /* Tamaño de fuente más pequeño */
-    margin: 5px 0; 
-
+    flex-direction: column; /* Cambia a columna en pantallas pequeñas */
+    align-items: flex-start; /* Alinea a la izquierda */
   }
 
   .navbar-brand {
-    font-size: 1rem; /* Mantén el tamaño en pantallas grandes */
-  
+    margin-bottom: 10px; /* Espacio entre el logo y los botones */
   }
 
-  .avatar {
-    width: 30px; /* Tamaño de avatar más pequeño */
-    height: 30px;
-    margin-right: 10px; 
+  .nav-link {
+    padding: 0.5rem 1rem; /* Ajusta el padding para mejor ajuste en móviles */
+    font-size: 0.9rem; /* Cambia el tamaño de la fuente */
   }
 
-  .notification-badge {
-    width: 0.6rem; /* Hacer la insignia más pequeña */
-    height: 0.6rem; 
+  .btn-outline-primary {
+    margin-top: 5px; /* Espacio entre los botones en móviles */
   }
 }
 
-/* Estilos de los iconos */
 .iconLogout {
   padding: 2px;
   color: #007bff;
   font-size: 1.5rem;
 }
 
-/* Estilos del menú desplegable */
 .dropdown-menu {
-  background-color: #fff; /* Fondo blanco para el menú */
-  border-radius: 0.5rem; /* Bordes redondeados */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Sombra para el menú */
+  background-color: #fff;
+  border-radius: 0.5rem;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
-.nav-link {
-  padding: 1rem 1.5rem; /* Espaciado para los enlaces */
-}
-
-.nav-item:hover .nav-link {
-  background-color: #f0f0f0; /* Fondo gris claro al pasar el ratón */
-}
-
-/* Avatar */
-.avatar {
-  width: 40px; /* Ancho de la imagen del avatar */
-  height: 40px; /* Alto de la imagen del avatar */
-  border-radius: 50%; /* Hacer que el avatar sea circular */
-}

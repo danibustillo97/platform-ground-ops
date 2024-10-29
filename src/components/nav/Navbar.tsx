@@ -1,23 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import styles from "@/components/nav/Navbar.module.css";
 import Image from "next/image";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-
-// ICONOS
-import { FaHome, FaUserCog } from "react-icons/fa";
 import { CiLogout } from "react-icons/ci";
-import { LuBaggageClaim } from "react-icons/lu";
-import { MdOutlineFlight } from "react-icons/md";
+import { RxHamburgerMenu } from "react-icons/rx";
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  toggleSidebar: () => void; // Propiedad para alternar el sidebar
+}
+
+const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
   const { data: session } = useSession();
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [navbarOpen, setNavbarOpen] = useState(false);
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -25,14 +22,9 @@ const Navbar: React.FC = () => {
     router.push("/login");
   };
 
-  const toggleDropdown = () => setShowDropdown((prev) => !prev);
-  const toggleNavbar = () => setNavbarOpen(!navbarOpen);
-
-  const currentPath = usePathname();
-
   return (
-    <header className="header">
-      <nav className="navbar navbar-expand-lg px-4 py-2 bg-light shadow">
+    <header className={`${styles.header}`}>
+      <nav className="navbar navbar-expand-lg px-3 py-2 bg-light shadow flex-nowrap">
         <Link href="/" className="navbar-brand">
           <Image
             className={styles.logo}
@@ -43,79 +35,38 @@ const Navbar: React.FC = () => {
             priority
           />
         </Link>
-        
-        {/* User Info (Avatar) moved before the toggle button */}
-        <ul className="ms-auto d-flex align-items-center list-unstyled mb-0">
-          {session && session.user ? (
-            <li className="nav-item dropdown ms-auto">
-              <a className="nav-link" id="userInfo" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <img className={`bg-primary text-white ${styles.avatar}`} src="https://img.freepik.com/premium-vector/avatar-icon0002_750950-43.jpg?semt=ais_hybrid" alt="User Avatar" />
-              </a>
-              <div className="dropdown-menu dropdown-menu-end" aria-labelledby="userInfo">
-                <div className="dropdown-header">
-                  <h6 className="text-uppercase">{session.user.name}</h6>
-                  <small>{session.user.email}</small>
-                </div>
-                <div className="dropdown-divider"></div>
-                <a className="dropdown-item" href="#">Activity Logs</a>
-                <a className="dropdown-item d-flex justify-content-between" href="#" onClick={handleLogout}>
-                  Logout <span><CiLogout className={`${styles.iconLogout}`} /></span>
+
+        <div className="d-flex justify-content-between align-items-center w-100">
+          <div className="navbar-nav mx-auto">
+            {/* Aquí se pueden agregar enlaces si lo deseas */}
+          </div>
+          <ul className="d-flex align-items-center list-unstyled mb-0">
+            {session && session.user ? (
+              <li className="nav-item dropdown">
+                <a className="nav-link" id="userInfo" href="#" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <img className={`bg-primary text-white ${styles.avatar}`} src="https://img.freepik.com/premium-vector/avatar-icon0002_750950-43.jpg?semt=ais_hybrid" alt="User Avatar" />
                 </a>
-              </div>
-            </li>
-          ) : (
+                <div className="dropdown-menu dropdown-menu-end" aria-labelledby="userInfo">
+                  <div className="dropdown-header">
+                    <h6 className="text-uppercase">{session.user.name}</h6>
+                    <small>{session.user.email}</small>
+                  </div>
+                  <div className="dropdown-divider"></div>
+                  <a className="dropdown-item" href="#">Activity Logs</a>
+                  <a className="dropdown-item d-flex justify-content-between" href="#" onClick={handleLogout}>
+                    Logout <span><CiLogout className={`${styles.iconLogout}`} /></span>
+                  </a>
+                </div>
+              </li>
+            ) : (
+              <li className="nav-item">
+                <Link href="/login" className="nav-link">Login</Link>
+              </li>
+            )}
             <li className="nav-item">
-              <Link href="/login" className="nav-link">Login</Link>
-            </li>
-          )}
-        </ul>
-
-        {/* Toggle button for mobile view */}
-        <button 
-          className="navbar-toggler" 
-          type="button" 
-          onClick={toggleNavbar} 
-          aria-controls="navbarContent"
-          aria-expanded={navbarOpen ? "true" : "false"} 
-          aria-label="Toggle navigation"
-        >
-          <span className="navbar-toggler-icon"></span>
-        </button>
-
-        {/* Collapsible menu */}
-        <div className={`collapse navbar-collapse ${navbarOpen ? "show" : ""}`} id="navbarContent">
-          <ul className="navbar-nav mx-auto">
-            <li className="nav-item">
-              <Link 
-                href="/dashboard" 
-                className={`nav-link ${styles.navLink} ${currentPath === "/dashboard" ? styles.active : ""}`}
-              >
-                <FaHome /> Dashboard
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link 
-                href="/users" 
-                className={`nav-link ${styles.navLink} ${currentPath === "/users" ? styles.active : ""}`}
-              >
-                <span><FaUserCog /></span> Usuarios 
-              </Link>
-            </li>
-            <li className="nav-item"> 
-              <Link 
-                href="/baggage_gestion" 
-                className={`nav-link ${styles.navLink} ${currentPath === "/baggage_gestion" ? styles.active : ""}`}
-              >
-                <LuBaggageClaim /> Gestión de Equipajes
-              </Link>
-            </li>
-            <li className="nav-item">
-              <Link 
-                href="/flights" 
-                className={`nav-link ${styles.navLink} ${currentPath === "/flights" ? styles.active : ""}`}
-              >
-                <MdOutlineFlight /> Vuelos
-              </Link>
+              <button onClick={toggleSidebar} className="btn btn-outline-primary">
+                <RxHamburgerMenu />
+              </button>
             </li>
           </ul>
         </div>

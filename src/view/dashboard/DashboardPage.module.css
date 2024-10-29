@@ -1,4 +1,9 @@
 
+.dashboardContent {
+  
+  min-height: 100vh;
+}
+
 .innerContainer {
     padding: 20px;
   }
@@ -64,5 +69,12 @@
       flex: 1 1 100%; /* Ocupa el 100% del ancho en móviles */
       margin: 10px 0; /* Espacio vertical en móviles */
     }
+
+    .dashboardContent {
+  
+      min-height: 100vh;
+    }
   }
+  
+
   

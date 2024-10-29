@@ -7,37 +7,44 @@
   --foreground: #171717;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* globals.css */
 
-html,
-body {
-  max-width: 100vw;
+.page-holder {
+  display: flex;
   overflow-x: hidden;
+  width: 100%;
+  min-height: calc(100vh - 72px); 
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.content {
+  flex-grow: 1; /* Permite que el contenido ocupe el espacio restante */
+  padding: 1rem; 
+  transition: margin-left 0.3s ease; 
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+/* Ajusta el margen para el sidebar de 100px */
+.shifted {
+  margin-left: 80px; /* Cambia esto según el ancho de tu sidebar */
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+/* Sidebar Styles (Sidebar.module.css) */
+.sidebar {
+  position: fixed;
+  top: 72px; /* Cambia esto a la altura de tu navbar */
+  left: -200px; /* Inicialmente oculto */
+  width: 200px; /* Ajusta el ancho */
+  height: calc(100vh - 72px); /* Ocupa desde el final del navbar hasta el fondo */
+  background-color: #f8f9fa;
+  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+  transition: left 0.3s ease; /* Animación suave */
+  z-index: 1000; /* Asegura que esté por encima */
 }
+
+.open {
+  left: 0; /* Muestra el sidebar */
+}
+
+
 
 .btn-outline-primary {
   --bs-btn-color: #510c76 !important;
