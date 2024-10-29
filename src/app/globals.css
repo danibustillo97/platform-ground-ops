@@ -1,7 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
 
-
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -44,8 +43,7 @@
   left: 0; /* Muestra el sidebar */
 }
 
-
-
+/* Estilos de botones */
 .btn-outline-primary {
   --bs-btn-color: #510c76 !important;
   --bs-btn-border-color: #510c76 !important;
@@ -60,10 +58,41 @@
   --bs-btn-disabled-color: #510c76 !important;
   --bs-btn-disabled-bg: transparent !important;
   --bs-btn-disabled-border-color: #510c76 !important;
-  --bs-gradient: none!important; }
+  --bs-gradient: none!important;
+}
 
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;
   }
 }
+
+/* Estilos responsivos para mejorar la experiencia en móviles */
+@media (max-width: 768px) {
+  .page-holder {
+    flex-direction: column; /* Cambia a columna en pantallas pequeñas */
+  }
+
+  .sidebar {
+    width: 100%; /* Ancho completo para el sidebar en móviles */
+    height: auto; /* Permite que la altura se ajuste automáticamente */
+  }
+
+  .content {
+    padding: 0.5rem; /* Reduce el padding en contenido para móviles */
+    transition: none; /* Desactiva la transición en móviles para evitar saltos */
+  }
+
+  .shifted {
+    margin-left: 0; /* Restablece el margen para móviles */
+  }
+}
+
+/* Asegura que los botones se vean bien en pantallas pequeñas */
+@media (max-width: 576px) {
+  .btn-outline-primary {
+    width: 100%; /* Botones ocupan todo el ancho en móviles */
+    margin-bottom: 10px; /* Espaciado entre botones */
+  }
+}
+ 

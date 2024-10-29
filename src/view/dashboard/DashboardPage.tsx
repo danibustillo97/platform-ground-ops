@@ -128,7 +128,6 @@ const DashboardPage = () => {
     }
   }, [baggageData, labels, statusData]);
 
-  // Inicialización del gráfico de barras
   useEffect(() => {
     if (barChartRef.current) {
       if (barChartInstance.current) {
@@ -143,7 +142,7 @@ const DashboardPage = () => {
             {
               label: "Equipajes por Estado",
               data: statusData,
-              backgroundColor: ["#510C76", "#5B8D80", "#FFA500"], // Colores diferentes para cada barra
+              backgroundColor: ["#510C76", "#5B8D80", "#FFA500"], 
             },
           ],
         },

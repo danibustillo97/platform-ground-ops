@@ -93,7 +93,6 @@ const BaggageView: React.FC = () => {
         },
         { name: "Fecha de Creación", selector: (row: any) => new Date(row.date_create).toLocaleDateString(), sortable: true },
         { name: "Última Actualización", selector: (row: any) => new Date(row.last_updated).toLocaleString(), sortable: true },
-
     ];
 
     const handleDelete = async () => {
@@ -119,8 +118,8 @@ const BaggageView: React.FC = () => {
                     </h1>
                 </header>
 
-                <div className={`row mb-4 ${styles.filters}`}>
-                    <div className="col-md-3 mb-3">
+                <div className={`d-flex flex-wrap ${styles.filters}`}>
+                    <div className={styles.filterItem}>
                         <input
                             type="text"
                             placeholder="Buscar por PNR, pasajero o estado"
@@ -129,7 +128,7 @@ const BaggageView: React.FC = () => {
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
                     </div>
-                    <div className="col-md-3 mb-3">
+                    <div className={styles.filterItem}>
                         <select
                             className="form-select"
                             value={statusFilter}
@@ -142,63 +141,27 @@ const BaggageView: React.FC = () => {
                             <option value="Cerrado">Cerrado</option>
                         </select>
                     </div>
-                    <div className="col-md-3 mb-3">
-                        <label className="form-label">Desde:</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                        />
-                    </div>
-                    <div className="col-md-3 mb-3">
-                        <label className="form-label">Hasta:</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
-                        />
+                    <div className={styles.filterItem}>
+                        <button className={`${styles.btnCustom} btn`} onClick={handleExportToExcel}>
+                            <PiMicrosoftExcelLogo className="me-2" />
+                            Exportar a Excel
+                        </button>
                     </div>
                 </div>
 
-                <div className={`d-flex justify-content-between align-items-center mb-3 ${styles.buttonContainer}`}>
-                    <Link href="/baggage_gestion/baggage_form_reclamo" className={`btn btn-primary ${styles.addButton}`}>
-                        <LuPlusCircle className="me-2" /> Agregar Reclamo
-                    </Link>
-                    <button className={`btn btn-success ${styles.exportButton}`} onClick={handleExportToExcel}>
-                        <PiMicrosoftExcelLogo className="me-2" /> Exportar a Excel
-                    </button>
-                </div>
-
-                <div className={`table-responsive ${styles.tableContainer}`}>
+                <div className={`${styles.tableContainer}`}>
                     <DataTable
                         columns={columns}
                         data={filteredData}
-                        selectableRows
-                        onSelectedRowsChange={handleRowSelected}
                         pagination
                         expandableRows
-                        expandableRowsComponent={({ data }) => <ExpandedRow data={data} />}
+                        expandableRowsComponent={ExpandedRow}
+                        onSelectedRowsChange={handleRowSelected} // Cambiado a onSelectedRowsChange
+                        selectableRows
+                        selectableRowsHighlight
+                        highlightOnHover
                     />
-                    {selectedRows.length > 0 && (
-                        <div className="text-end mt-3">
-                            <button className="btn btn-danger" onClick={handleDelete}>
-                                <LuTrash2 className="me-2" />
-                                Eliminar Seleccionados
-                            </button>
-                        </div>
-                    )}
                 </div>
-
-                {isModalOpen && (
-                    <ModalBaggage
-                        isOpen={isModalOpen}
-                        onClose={handleCloseModal}
-                        details={selectedBaggageDetails}
-                        onSave={updatedSavedBaggageCase}
-                    />
-                )}
             </div>
         )
     );
