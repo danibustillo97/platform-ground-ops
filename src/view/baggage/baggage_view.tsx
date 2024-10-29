@@ -2,17 +2,16 @@
 
 import React, { useState } from "react";
 import { useBaggageCasesController } from "./useBaggageCasesController";
-import { LuEye, LuPlusCircle, LuTrash2 } from "react-icons/lu";
+import { LuTrash2 } from "react-icons/lu";
 import Link from "next/link";
 import ModalBaggage from "../../components/Modals/ModalBaggage";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import styles from "./baggage.module.css";
-import { signOut, useSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import DataTable from 'react-data-table-component';
 import OverlayComponent from "@/components/Overlay/Overlay";
 import * as XLSX from "xlsx";
 import { PiMicrosoftExcelLogo } from "react-icons/pi";
-import { RiEdit2Fill } from "react-icons/ri";
 
 const BaggageView: React.FC = () => {
     const session = useSession();
@@ -63,16 +62,6 @@ const BaggageView: React.FC = () => {
                     <p className="mb-0" style={{ fontSize: '0.9rem', color: '#4a4a4a' }}>
                         <strong>Descripción:</strong> {data.description || 'No disponible'}
                     </p>
-                </div>
-                <div className="col-md-4 text-md-end text-start mt-3 mt-md-0">
-                    <button
-                        className="btn btn-outline-primary btn-sm d-flex align-items-center px-3 py-1"
-                        style={{ borderRadius: '20px' }}
-                        onClick={() => handleOpenModal(data)}
-                    >
-                        <RiEdit2Fill className="me-1" />
-                        Editar
-                    </button>
                 </div>
             </div>
         </div>
@@ -142,6 +131,24 @@ const BaggageView: React.FC = () => {
                         </select>
                     </div>
                     <div className={styles.filterItem}>
+                        <label>Desde:</label>
+                        <input
+                            type="date"
+                            className="form-control"
+                            value={startDate}
+                            onChange={(e) => setStartDate(e.target.value)}
+                        />
+                    </div>
+                    <div className={styles.filterItem}>
+                        <label>Hasta:</label>
+                        <input
+                            type="date"
+                            className="form-control"
+                            value={endDate}
+                            onChange={(e) => setEndDate(e.target.value)}
+                        />
+                    </div>
+                    <div className={styles.filterItem}>
                         <button className={`${styles.btnCustom} btn`} onClick={handleExportToExcel}>
                             <PiMicrosoftExcelLogo className="me-2" />
                             Exportar a Excel
@@ -156,12 +163,19 @@ const BaggageView: React.FC = () => {
                         pagination
                         expandableRows
                         expandableRowsComponent={ExpandedRow}
-                        onSelectedRowsChange={handleRowSelected} // Cambiado a onSelectedRowsChange
+                        onSelectedRowsChange={handleRowSelected}
                         selectableRows
                         selectableRowsHighlight
                         highlightOnHover
                     />
                 </div>
+
+                <Link href="/baggage_gestion/baggage_form_reclamo">
+                    <button className={`${styles.addButton} btn btn-primary`}>
+                        +
+                    </button>
+                </Link>
+
             </div>
         )
     );

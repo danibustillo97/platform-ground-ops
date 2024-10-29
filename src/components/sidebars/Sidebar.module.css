@@ -1,6 +1,6 @@
 .sidebar {
-    background-color: rgba(var(--bs-light-rgb),var(--bs-bg-opacity))!important;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    background-color: #f8f9fa!important;
+
     color: white;
     width: 80px;
     height: 100vh;
@@ -12,7 +12,7 @@
     display: flex;
     flex-direction: column;
     padding: 1rem;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.5);
+    box-shadow: 2px 0 5px rgba(226, 226, 226, 0.226);
     z-index: 100; 
 }
 
@@ -58,6 +58,17 @@
     font-size: 0.6rem;
 }
 
+.sidebarLinkSubMenu{
+    font-size: 12px;
+    background-color: rgb(253, 253, 253);
+    align-items: center;
+    padding: 5px;
+    margin: auto -10px;
+    text-decoration: none;
+    box-shadow: inset;
+    color: #6c757d;
+}
+
 .sidebarLink:hover {
     color: white;
 }
@@ -82,6 +93,9 @@
 }
 
 .sidebarLink.active {
-    color: white;
-    background-color: rgba(15, 3, 255, 0.1);
+    color: rgb(255, 255, 255) !important;
+    background-color: #510c76;
+    padding: 10px;
+    border-radius: 5px;
+    width: 100%;
 }

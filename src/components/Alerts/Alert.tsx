@@ -10,8 +10,15 @@ interface AlertProps {
 }
 
 const Alert: React.FC<AlertProps> = ({ type, message, onClose }) => {
+  const iconMap = {
+    success: '✅',
+    warning: '⚠️',
+    error: '❌',
+  };
+
   return (
     <div className={`${styles.alert} ${styles[type]}`}>
+      <span className={styles.icon}>{iconMap[type]}</span>
       <span>{message}</span>
       {onClose && (
         <button className={styles.closeButton} onClick={onClose}>

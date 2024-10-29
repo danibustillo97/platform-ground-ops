@@ -39,19 +39,28 @@ export const createBaggageCasesAPI = async (baggageCases: any[], token: string) 
                 },
                 body: JSON.stringify(baggageCases),
             }
-            
         );
+
         if (!response.ok) {
-            throw new Error(`Error creating baggage cases, status: ${response.status}`);
+            if (response.status === 400) {
+                const errorData = await response.json();
+                console.error("Error 400: El caso ya existe.", errorData.detail);
+                throw new Error(`Error 400: ${errorData.detail}`);
+            } else {
+                throw new Error(`Error creating baggage cases, status: ${response.status}`);
+            }
         }
+
         const data = await response.json();
-        console.log("caso creado:", response );
+        console.log("Caso creado:", data);
         return data;
+
     } catch (error) {
         console.error("Error creating baggage cases", error);
         throw error;
     }
 };
+
 
 export const getBaggageCasesApi = async (token: string) => {
     try {

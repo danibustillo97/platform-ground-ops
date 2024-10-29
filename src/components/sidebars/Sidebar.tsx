@@ -31,8 +31,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       label: "Equipaje",
       icon: <LuBaggageClaim className={styles.icon} />,
       submenu: [
-        { href: "/baggage_gestion", label: "Gestionar" },
-        { href: "/baggage_gestion/baggage_form_reclamo", label: "Añadir Caso" },
+        // { href: "/baggage_gestion", label: "Gestionar" },
+        // { href: "/baggage_gestion/baggage_form_reclamo", label: "Añadir Caso" },
       ],
     },
     {
@@ -40,8 +40,8 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
       label: "Vuelos",
       icon: <MdOutlineFlight className={styles.icon} />,
       submenu: [
-        { href: "/flights", label: "Gestionar vuelos" },
-        { href: "#", label: "Registros" },
+        // { href: "/flights", label: "Gestionar vuelos" },
+        // { href: "#", label: "Registros" },
       ],
     },
   ];
@@ -63,7 +63,7 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
               <ul className={styles.sidebarMenu}>
                 {link.submenu.map((subLink, subIndex) => (
                   <li key={subIndex} className={styles.sidebarListItem}>
-                    <Link href={subLink.href} className={styles.sidebarLink}>
+                    <Link href={subLink.href} className={styles.sidebarLinkSubMenu}>
                       {subLink.label}
                     </Link>
                   </li>

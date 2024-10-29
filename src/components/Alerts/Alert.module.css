@@ -6,24 +6,35 @@
     align-items: center;
     padding: 15px 20px;
     border-radius: 5px;
-    margin: 10px 0;
+    margin: 10px auto; /* Centrado automático */
     font-family: 'Roboto', sans-serif;
     font-size: 16px;
     color: #fff;
-    position: relative;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: fixed; /* Cambiado a fixed */
+    top: 20px; /* Espacio desde la parte superior */
+    left: 50%; /* Centrado horizontal */
+    transform: translateX(-50%); /* Centrado horizontal */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    max-width: 90%; /* Limitar el ancho máximo para móviles */
+    width: 400px; /* Ancho fijo para pantallas grandes */
+    animation: bounceIn 0.5s ease forwards; /* Animación de entrada */
+    z-index: 1000; /* Asegúrate de que sea un valor alto */
 }
 
 .success {
     background-color: #4caf50; /* Verde */
+    border-left: 5px solid #3e8e41; /* Borde verde más oscuro */
 }
 
 .warning {
     background-color: #ff9800; /* Amarillo */
+    border-left: 5px solid #e68a00; /* Borde amarillo más oscuro */
 }
 
 .error {
     background-color: #f44336; /* Rojo */
+    border-left: 5px solid #d32f2f; /* Borde rojo más oscuro */
 }
 
 .closeButton {
@@ -37,4 +48,35 @@
 
 .closeButton:hover {
     opacity: 0.7;
+}
+
+/* Animación de entrada tipo "bounce" */
+@keyframes bounceIn {
+    0% {
+        transform: translate(-50%, -30%); /* Empieza un poco más arriba */
+        opacity: 0;
+    }
+    60% {
+        transform: translate(-50%, 10%); /* Se desplaza un poco hacia abajo */
+    }
+    80% {
+        transform: translate(-50%, -5%); /* Rebota hacia arriba */
+    }
+    100% {
+        transform: translate(-50%, 0); /* Posición final */
+        opacity: 1;
+    }
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 480px) {
+    .alert {
+        font-size: 14px; /* Tamaño de fuente más pequeño */
+        padding: 10px 15px; /* Menos padding */
+        max-width: 90%; /* Ajuste el ancho a un 90% de la pantalla */
+        width: 100%; /* Permite que la alerta se ajuste */
+    }
+    .closeButton {
+        font-size: 18px; /* Tamaño de fuente más pequeño para el botón de cierre */
+    }
 }

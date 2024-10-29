@@ -1,8 +1,11 @@
+"use client"
+
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { getSession } from "next-auth/react";
 import { getPassengerData, createBaggageCases } from "../../../data/repositories/baggageRepository";
 import { PassengerData } from "../../../domain/types/PassengerData";
+import Alert from "@/components/Alerts/Alert"; 
 
 export const useFormBaggageController = () => {
     const [loading, setLoading] = useState(true);
@@ -25,6 +28,9 @@ export const useFormBaggageController = () => {
         issue: string;
     }[]>([]);
     const [formData, setFormData] = useState({ phone: "", email: "", address: "" });
+    
+    // Estado para el manejo de alertas
+    const [alert, setAlert] = useState<{ type: 'success' | 'warning' | 'error'; message: string } | null>(null);
 
     useEffect(() => {
         if (pnrAdded) {
@@ -47,9 +53,9 @@ export const useFormBaggageController = () => {
                 const data = await getPassengerData(pnr, token);
                 setPassengerData(data);
             }
-
         } catch (error) {
             console.error("Error fetching passenger data from repository", error);
+            setAlert({ type: 'error', message: 'Error al obtener los datos del pasajero.' });
         }
     };
 
@@ -78,8 +84,8 @@ export const useFormBaggageController = () => {
         const luggage = e.target.value;
         const passengerInfo = passengerData.find((p) => p.Pax_Name === selectedPassenger);
         if (luggage && !selectedLuggage.some((item) => item.luggage === luggage) && passengerInfo) {
-            setSelectedLuggage([
-                ...selectedLuggage,
+            setSelectedLuggage((prevLuggage) => [
+                ...prevLuggage,
                 {
                     id: uuidv4(),
                     luggage,
@@ -102,16 +108,16 @@ export const useFormBaggageController = () => {
     };
 
     const handleDescriptionChange = (id: string, value: string) => {
-        setSelectedLuggage(
-            selectedLuggage.map((item) =>
+        setSelectedLuggage((prevLuggage) =>
+            prevLuggage.map((item) =>
                 item.id === id ? { ...item, description: value } : item
             )
         );
     };
 
     const handleIssueChange = (id: string, value: string) => {
-        setSelectedLuggage(
-            selectedLuggage.map((item) =>
+        setSelectedLuggage((prevLuggage) =>
+            prevLuggage.map((item) =>
                 item.id === id ? { ...item, issue: value } : item
             )
         );
@@ -144,25 +150,35 @@ export const useFormBaggageController = () => {
                 direccion_envio: direccionEnvio || "Null",
                 pruebas_url: pruebasUrl || "Null",
                 created_agente_name: session?.user.name || "",
+                date_create: new Date().toISOString(),
+                last_updated: new Date().toISOString(),
+                number_ticket_zendesk: "12345",
             };
         });
-
-        console.log("Datos preparados para enviar:", formattedData);
 
         if (token) {
             try {
                 const response = await createBaggageCases(formattedData, token);
-                console.log('Success:', response);
-                console.log("Datos enviados:", formattedData);
-            } catch (error) {   
-                console.error('Error al crear casos de equipaje:', error);
+                console.log("Respuesta del servidor:", response);
+                setAlert({ type: 'success', message: 'Los casos de equipaje se han creado exitosamente.' });
+            } catch (error) {
+                if (error instanceof Error) {
+                    if (error.message.includes("400")) {
+                        setAlert({ type: 'warning', message: "El caso ya existe en los registros." });
+                    } else {
+                        console.error("Error al crear los casos de equipaje:", error.message);
+                        setAlert({ type: 'error', message: "Ocurrió un error al intentar crear los casos de equipaje." });
+                    }
+                } else {
+                    console.error("Error desconocido:", error);
+                    setAlert({ type: 'error', message: "Ocurrió un error desconocido." });
+                }
             }
         } else {
             console.error('Token no disponible. No se puede realizar la operación.');
+            setAlert({ type: 'error', message: 'Token no disponible. No se puede realizar la operación.' });
         }
     };
-
-
 
     return {
         loading,
@@ -183,5 +199,7 @@ export const useFormBaggageController = () => {
         handleDescriptionChange,
         handleIssueChange,
         handleCreateCases,
+        alert, // Retorna el estado de alertas
+        setAlert, // Para poder actualizar el estado de alertas desde el componente padre
     };
 };

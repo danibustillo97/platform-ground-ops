@@ -1,35 +1,28 @@
-/* Contenedor principal */
 .container {
     padding: 20px;
     max-width: 800px;
-    margin: 0 auto;
-    background-color: #f8f9fa;
+    margin: 30px auto;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    border: 1px solid #ddd;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
 }
 
-/* Título */
 .title {
-    font-size: 24px;
+    font-size: 26px;
     font-weight: bold;
     color: #510C76;
     margin-bottom: 20px;
     text-align: center;
 }
 
-/* Estilo del formulario */
 .form {
     display: flex;
     flex-direction: column;
 }
 
-/* Agrupación de formulario */
 .formGroup {
     margin-bottom: 20px;
 }
 
-/* Etiquetas de campos */
 .label {
     display: block;
     font-size: 14px;
@@ -38,13 +31,6 @@
     color: #333;
 }
 
-/* Contenedor del input y botón */
-.inputContainer {
-    display: flex;
-    align-items: center;
-}
-
-/* Estilo de inputs y selects */
 .input,
 .textarea,
 .select {
@@ -54,28 +40,44 @@
     border: 1px solid #ddd;
     font-size: 14px;
     color: #333;
+    transition: border-color 0.3s ease;
 }
 
-.textarea {
-    resize: vertical;
+.input:focus,
+.textarea:focus,
+.select:focus {
+    border-color: #510C76;
 }
 
-/* Estilo del botón PNR */
+.input.error,
+.textarea.error,
+.select.error {
+    border-color: #f44336;
+}
+
+.input.success,
+.textarea.success,
+.select.success {
+    border-color: #4CAF50;
+}
+
 .pnrButton {
     background: #510C76;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 12px 20px;
     cursor: pointer;
     display: flex;
     align-items: center;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
 .pnrButton:hover {
     background: #3f0b5e;
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
 .pnrButton.success {
@@ -86,36 +88,31 @@
     background: #45a049;
 }
 
-/* Campos en línea */
 .inlineFields {
     display: flex;
     gap: 20px;
     flex-wrap: wrap;
 }
 
-/* Campos en línea individuales */
 .inlineField {
     flex: 1;
     min-width: 200px;
 }
 
-/* Estilo de contenedor de maletas seleccionadas */
 .selectedLuggageContainer {
     margin-top: 20px;
 }
 
-/* Estilo de las tarjetas de maleta */
 .luggageItem {
     background: white;
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
     margin-bottom: 20px;
     border: 1px solid #ddd;
     position: relative;
 }
 
-/* Encabezado de la tarjeta de maleta */
 .luggageHeader {
     display: flex;
     justify-content: space-between;
@@ -123,14 +120,6 @@
     margin-bottom: 15px;
 }
 
-/* Código de la maleta */
-.luggageCode {
-    font-size: 18px;
-    font-weight: bold;
-    color: #333;
-}
-
-/* Botón de eliminar maleta */
 .removeButton {
     background: #f44336;
     color: white;
@@ -138,15 +127,15 @@
     border-radius: 6px;
     padding: 8px 12px;
     cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
 }
 
 .removeButton:hover {
     background: #d32f2f;
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
-/* Detalles de la maleta */
 .luggageDetails {
     margin-top: 10px;
 }
@@ -157,58 +146,36 @@
     color: #555;
 }
 
-/* Contenedor de los botones */
 .buttonContainer {
     display: flex;
     justify-content: space-between;
-    /* Alinea los botones a los lados opuestos */
     align-items: center;
-    /* Alinea verticalmente los botones */
     margin-top: 20px;
-    /* Añadido espacio superior para separación */
 }
 
-/* Botón de Crear Casos */
-.createButton {
-    background: #510C76;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    padding: 12px 20px;
-    cursor: pointer;
-    transition: background-color 0.3s ease, transform 0.2s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 16px;
-}
-
-.createButton:hover {
-    background: #3f0b5e;
-    transform: scale(1.05);
-}
-
-/* Botón de volver */
+.createButton,
 .backButton {
     background: #510C76;
     color: white;
     border: none;
-    border-radius: 6px;
+    border-radius: 8px;
     padding: 12px 20px;
     cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 16px;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
 }
 
+.createButton:hover,
 .backButton:hover {
     background: #3f0b5e;
-    transform: scale(1.05);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
 }
 
-/* Estilos responsivos */
 @media (max-width: 768px) {
     .inlineFields {
         flex-direction: column;
@@ -235,7 +202,7 @@
 
 @media (max-width: 480px) {
     .title {
-        font-size: 20px;
+        font-size: 16px;
     }
 
     .input,
