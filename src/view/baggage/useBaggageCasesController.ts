@@ -49,8 +49,7 @@ export const useBaggageCasesController = () => {
     
             const matchesDateRange = !rowDate || (rowDate >= start && rowDate <= end);
     
-            // Cambiamos la lógica para que cualquier registro se incluya, incluso si algunos valores son null
-            return matchesSearchTerm || matchesStatusFilter || matchesDateRange;
+               return matchesSearchTerm || matchesStatusFilter || matchesDateRange;
         });
     }, [searchTerm, statusFilter, startDate, endDate, baggageCases]);
     

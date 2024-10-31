@@ -12,6 +12,11 @@ import DataTable from 'react-data-table-component';
 import OverlayComponent from "@/components/Overlay/Overlay";
 import * as XLSX from "xlsx";
 import { PiMicrosoftExcelLogo } from "react-icons/pi";
+import { Calendar } from 'primereact/calendar';
+import 'primereact/resources/themes/saga-blue/theme.css';
+import 'primereact/resources/primereact.min.css';
+import 'primeicons/primeicons.css';
+import { IoIosAddCircle } from "react-icons/io";
 
 const BaggageView: React.FC = () => {
     const session = useSession();
@@ -36,9 +41,18 @@ const BaggageView: React.FC = () => {
 
     const [selectedRows, setSelectedRows] = useState<any[]>([]);
 
+    const [dateRange, setDateRange] = useState<[Date | null, Date | null] | null>(null);
+
+    const handleDateChange = (e: any) => {
+        setDateRange(e.value);
+    };
+
     const handleRowSelected = (state: { selectedRows: any[] }) => {
         setSelectedRows(state.selectedRows);
     };
+
+
+
 
     const getStatusBadge = (status: string) => {
         switch (status) {
@@ -55,16 +69,50 @@ const BaggageView: React.FC = () => {
         }
     };
 
+    // const ExpandedRow = ({ data }: { data: any }) => (
+    //     <div className="container-fluid py-3 px-4 bg-white border rounded shadow-sm my-2">
+    //         <div className="row align-items-center">
+    //             <div className="col-md-8">
+    //                 <p className="mb-0" style={{ fontSize: '0.9rem', color: '#4a4a4a' }}>
+    //                     <strong>Descripción:</strong> {data.description || 'No disponible'}
+    //                 </p>
+    //             </div>
+    //         </div>
+    //     </div>
+    // );
+
+
     const ExpandedRow = ({ data }: { data: any }) => (
-        <div className="container-fluid py-3 px-4 bg-white border rounded shadow-sm my-2">
-            <div className="row align-items-center">
-                <div className="col-md-8">
-                    <p className="mb-0" style={{ fontSize: '0.9rem', color: '#4a4a4a' }}>
-                        <strong>Descripción:</strong> {data.description || 'No disponible'}
-                    </p>
-                </div>
-            </div>
+        <div
+        style={{
+            padding: '20px',
+            backgroundColor: '#ffffff',
+            borderRadius: '8px',
+            boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+            color: '#333',
+            maxWidth: '400px',
+            fontFamily: 'Arial, sans-serif'
+        }}
+    >
+        <h3 style={{ margin: '0 0 10px 0', color: '#4a90e2' }}>Detalles del Registro</h3>
+        <div style={{ borderTop: '1px solid #eee', paddingTop: '10px' }}>
+            <p style={{ margin: '0', fontSize: '14px', color: '#666' }}>
+                <strong>Descripción:</strong>
+                <span style={{ display: 'block', color: '#333', marginTop: '4px' }}>
+                    {data.description || 'No disponible'}
+                </span>
+            </p>
         </div>
+        <div style={{ borderTop: '1px solid #eee', paddingTop: '10px', marginTop: '10px' }}>
+            <p style={{ margin: '0', fontSize: '14px', color: '#666' }}>
+                <strong>Última Actualización:</strong>
+                <span style={{ display: 'block', color: '#333', marginTop: '4px' }}>
+                    {new Date(data.last_updated).toLocaleString()}
+                </span>
+            </p>
+        </div>
+    </div>
+    
     );
 
     const columns = [
@@ -131,21 +179,14 @@ const BaggageView: React.FC = () => {
                         </select>
                     </div>
                     <div className={styles.filterItem}>
-                        <label>Desde:</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            value={startDate}
-                            onChange={(e) => setStartDate(e.target.value)}
-                        />
-                    </div>
-                    <div className={styles.filterItem}>
-                        <label>Hasta:</label>
-                        <input
-                            type="date"
-                            className="form-control"
-                            value={endDate}
-                            onChange={(e) => setEndDate(e.target.value)}
+                        <label>Seleccione rango de fechas:</label>
+                        <Calendar
+                            value={dateRange}
+                            onChange={handleDateChange}
+                            selectionMode="range"
+                            placeholder="Seleccione rango"
+                            dateFormat="dd/mm/yy"
+                            showIcon
                         />
                     </div>
                     <div className={styles.filterItem}>
@@ -154,9 +195,8 @@ const BaggageView: React.FC = () => {
                             Exportar a Excel
                         </button>
                     </div>
-                </div>
 
-                <div className={`${styles.tableContainer}`}>
+                    <div className={`${styles.tableContainer}`}>
                     <DataTable
                         columns={columns}
                         data={filteredData}
@@ -169,10 +209,13 @@ const BaggageView: React.FC = () => {
                         highlightOnHover
                     />
                 </div>
+                </div>
+
+             
 
                 <Link href="/baggage_gestion/baggage_form_reclamo">
                     <button className={`${styles.addButton} btn btn-primary`}>
-                        +
+                    <IoIosAddCircle />
                     </button>
                 </Link>
 

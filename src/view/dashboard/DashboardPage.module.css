@@ -1,80 +1,63 @@
+.chartContainer {
+  border-radius: 15px; 
+  border: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden; 
+  margin: 10px;
+  padding: 20px;
+  max-height: 700px;
+}
+.chartWrapper {
+  width: 100%;
+  height: 150px; /* Ajusta la altura según tus necesidades */
+}
+.cardBody {
+  padding: 1rem; 
 
-.dashboardContent {
-  
-  min-height: 100vh;
 }
 
-.innerContainer {
-    padding: 20px;
-  }
-  
-  .cardContainer {
-    display: flex;
-    flex-wrap: wrap; 
-    justify-content: space-between; 
-  }
-
-  .card {
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    padding: 16px;
-    flex-grow: 1;
-    flex-shrink: 1;
-    flex-basis: calc(33% - 20px);
-    margin: 10px;
-    text-align: center;
-    transition: transform 0.2s;
-    display: flex; /* Habilita flexbox */
-    flex-direction: row; /* Alinea en fila */
-    align-items: center; /* Centra verticalmente */
-    overflow: hidden; /* Evita el desbordamiento */
+.cardTitle {
+  font-size: 1.2rem;
+  margin-bottom: 0.5rem; 
 }
 
-/* Icono y texto ocupan espacio de forma dinámica */
 
-.cardIcon{
-    flex: 1; /* Permite que el icono se ajuste */
-    font-size: 50px; 
-    color: #510c76b9;/* Ajusta el tamaño del ícono si es necesario */
-} 
-.cardText{
-    flex: 1; /* Permite que el icono se ajuste */
-    font-size: 60px; /* Ajusta el tamaño del ícono si es necesario */
+.bandejaEntrada {
+  margin-top: 20px;
 }
 
-/* Textos ocupan el espacio restante */
-
-.cardSubtext {
-    flex: 2; /* Permite que los textos se ajusten */
-    text-align: left; /* Alinea el texto a la izquierda */
-    overflow: hidden; /* Evita el desbordamiento */
-    white-space: nowrap; /* Evita que el texto se divida en múltiples líneas */
-    text-overflow: ellipsis; /* Muestra puntos suspensivos si hay desbordamiento */
+.bandejaEntrada .card {
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
-  
-  .chartBoxContainer{
-    display: flex;
-  }
-  .chartContainer {
- 
-    margin-top: 20px; 
-    width: 100%; 
-  }
-  
-  /* Responsividad para móviles */
-  @media (max-width: 768px) {
-    .card {
-      flex: 1 1 100%; /* Ocupa el 100% del ancho en móviles */
-      margin: 10px 0; /* Espacio vertical en móviles */
-    }
+.bandejaEntrada .list-group-item {
+  border: none;
+  padding: 15px;
+  transition: background-color 0.2s ease;
+}
 
-    .dashboardContent {
-  
-      min-height: 100vh;
-    }
-  }
-  
+.bandejaEntrada .list-group-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
 
-  
+.bandejaEntrada .list-group-item .btn {
+  border-radius: 20px;
+  font-size: 0.9rem;
+}
+
+.bandejaEntrada .list-group-item strong {
+  color: #333;
+}
+
+.bandejaEntrada .list-group-item small {
+  color: #888;
+}
+
+.bandejaEntrada .list-group-item p {
+  margin-top: 5px;
+  color: #555;
+}
+
+
+

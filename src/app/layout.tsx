@@ -8,6 +8,7 @@ import Sidebar from "@/components/sidebars/Sidebar";
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './globals.css';
 
+
 function RedirectHandler() {
   const { data: session, status } = useSession();
   const pathname = usePathname();
