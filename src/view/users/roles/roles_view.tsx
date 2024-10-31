@@ -3,6 +3,7 @@ import React, { useState, useEffect } from "react";
 import Styles from "@/view/users/roles/rolesView.module.css";
 import { Role } from "@/entities/Role";
 import { RoleRepositoryImpl } from "@/data/repositories/RoleRepositoryImpl";
+import DataTable, { TableColumn } from "react-data-table-component";
 
 const roleRepository = new RoleRepositoryImpl();
 
@@ -51,7 +52,7 @@ const RolesView: React.FC = () => {
     const openEditModal = (role: Role) => {
         setCurrentRole(role);
         setRoleName(role.rol);
-        setRoleDescription(currentRole?.description || "");
+        setRoleDescription(role.description || "");
         setShowEditModal(true);
     };
 
@@ -98,6 +99,43 @@ const RolesView: React.FC = () => {
         }
     };
 
+    const columns: TableColumn<Role>[] = [
+        {
+            name: "Rol",
+            selector: (row) => row.rol || "", // Asegúrate de que siempre devuelva un string
+            sortable: true,
+        },
+        {
+            name: "Descripción",
+            selector: (row) => row.description || "", // Asegúrate de que siempre devuelva un string
+            sortable: true,
+        },
+        {
+            name: "Cant Asig",
+            selector: (row) => row.cant_user_asigned ?? 0, // Asegúrate de que siempre devuelva un número
+            sortable: true,
+        },
+        {
+            name: "Acciones",
+            cell: (row) => (
+                <div>
+                    <button
+                        className={`${Styles.button} ${Styles.editButton}`}
+                        onClick={() => openEditModal(row)}
+                    >
+                        Editar
+                    </button>
+                    <button
+                        className={`${Styles.button} ${Styles.deleteButton}`}
+                        onClick={() => openDeleteModal(row.id)}
+                    >
+                        Eliminar
+                    </button>
+                </div>
+            ),
+        },
+    ];
+
     return (
         <div className={Styles.ro_container_body}>
             <div className={Styles.container_header}>
@@ -111,47 +149,13 @@ const RolesView: React.FC = () => {
             </div>
 
             <div className={Styles.tableContainer}>
-                <table className={` ${Styles.table} table table-striped table-bordered`}>
-                    <thead className={Styles.tableHeader}>
-                        <tr>
-                            <th className={Styles.tableHeaderCell}>Rol</th>
-                            <th className={Styles.tableHeaderCell}>
-                                Descripción
-                            </th>
-                            <th className={Styles.tableHeaderCell}>
-                                Cant Asig
-                            </th>
-                            <th className={Styles.tableHeaderCell}>Acciones</th>
-                        </tr>
-                    </thead>
-                    <tbody className={Styles.tableBody}>
-                        {roles.map((role) => (
-                            <tr key={role.id}>
-                                <td className={Styles.tableCell}>{role.rol}</td>
-                                <td className={Styles.tableCell}>
-                                    {role.description}
-                                </td>
-                                <td className={Styles.tableCell}>
-                                    {role.cant_user_asigned}
-                                </td>
-                                <td className={Styles.tableCell}>
-                                    <button
-                                        className={`${Styles.button} ${Styles.editButton}`}
-                                        onClick={() => openEditModal(role)}
-                                    >
-                                        Editar
-                                    </button>
-                                    <button
-                                        className={`${Styles.button} ${Styles.deleteButton}`}
-                                        onClick={() => openDeleteModal(role.id)}
-                                    >
-                                        Eliminar
-                                    </button>
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                <DataTable
+                    columns={columns}
+                    data={roles}
+                    pagination
+                    striped
+                    highlightOnHover
+                />
             </div>
 
             {showAddModal && (
