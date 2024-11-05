@@ -13,13 +13,10 @@ export const fetchAllUsers = async (): Promise<User[]> => {
 };
 
 export const createNewUser = async (user: User): Promise<User> => {
-    try {
+   
         const newUser = await createUser(user);
         return newUser;
-    } catch (error) {
-        console.error("Error al crear usuario:", error);
-        throw error;
-    }
+  
 };
 
 export const updateExistingUser = async (id: number, user: Partial<User>): Promise<User> => {
