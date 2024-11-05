@@ -45,7 +45,7 @@ export const createUser = async (user: { name: string; email: string }) => {
 // Editar un usuario
 export const updateUser = async (id: number, updatedData: { name?: string; email?: string }) => {
     try {
-        const response = await fetch(`http://127.0.0.1:8000/api/users/${id}`, {
+        const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/users/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
