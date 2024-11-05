@@ -20,7 +20,7 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, userForm, onSave
     useEffect(() => {
         setFormState({
             ...userForm,
-            password: editingUser ? "" : userForm.password // Resetea la contraseña al abrir el modal
+            password: "" // Siempre resetea la contraseña a vacía al abrir el modal
         });
     }, [userForm, editingUser]);
 
@@ -34,11 +34,11 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, userForm, onSave
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-
-        // Aquí aseguramos que siempre se incluya el campo password
+        
+        // Asegúrate de que la contraseña esté presente como string vacío si no hay valor
         const userToSave = {
             ...formState,
-            password: formState.password || "", // Asegúrate de que la contraseña esté presente como string vacío si no hay valor
+            password: formState.password || "", 
         };
 
         await onSave(userToSave); // Envía el objeto
@@ -56,6 +56,12 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, userForm, onSave
                         <input className={styles.input} type="text" name="phone" value={formState.phone} onChange={handleChange} placeholder="Teléfono" required />
                         <input className={styles.input} type="text" name="rol" value={formState.rol} onChange={handleChange} placeholder="Rol" required />
                         <input className={styles.input} type="text" name="estacion" value={formState.estacion} onChange={handleChange} placeholder="Estación" required />
+                        {/* Mostrar el campo de contraseña si no se está editando un usuario */}
+                        {!editingUser && (
+                            <div>
+                                <input className={styles.input} type="password" name="password" value={formState.password} onChange={handleChange} placeholder="Contraseña (obligatoria)" required />
+                            </div>
+                        )}
                         {editingUser && (
                             <div>
                                 <input className={styles.input} type="password" name="password" value={formState.password} onChange={handleChange} placeholder="Nueva Contraseña (opcional)" />
