@@ -1,7 +1,7 @@
 // Obtener todos los usuarios
 const apiUrl = "https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net"
 export const getUsers = async () => {
-    const response = await fetch(`${apiUrl}/api/users`, {
+    const response = await fetch("https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/users/", {
         method: "GET",
         headers: {
             "ngrok-skip-browser-warning": "true",
