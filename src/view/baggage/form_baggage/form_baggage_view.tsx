@@ -7,8 +7,8 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import Alert from "@/components/Alerts/Alert";
-import { confirmPopup, ConfirmPopup } from 'primereact/confirmpopup';
-import { Toast } from 'primereact/toast';
+import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
+import { Toast } from "primereact/toast";
 
 const FormReclamoView: React.FC = () => {
     const {
@@ -36,36 +36,38 @@ const FormReclamoView: React.FC = () => {
     const toast = useRef<Toast>(null);
 
     const accept = () => {
-        toast.current!.show({ severity: 'info', summary: 'Confirmed', detail: 'You have accepted', life: 3000 });
+        toast.current?.show({ severity: "info", summary: "Confirmado", detail: "Acción confirmada", life: 3000 });
+        handleCreateCases();
     };
 
     const reject = () => {
-        toast.current!.show({ severity: 'warn', summary: 'Rejected', detail: 'You have rejected', life: 3000 });
+        toast.current?.show({ severity: "warn", summary: "Rechazado", detail: "Acción cancelada", life: 3000 });
     };
 
-    const confirm1 = (event: { currentTarget: any; }) => {
+
+    const consolePrueba = () => console.log("click")
+
+    const popUpCreateCase = (event: { currentTarget: any; }) => {
         confirmPopup({
             target: event.currentTarget,
             message: 'Are you sure you want to proceed?',
             icon: 'pi pi-exclamation-triangle',
             defaultFocus: 'accept',
-            accept,
+            accept: () => handleCreateCases,
             reject
         });
     };
 
-    const popUpBack = (event: { currentTarget: any; }) => {
+    const popUpBack = (event: { currentTarget: any }) => {
         confirmPopup({
             target: event.currentTarget,
-            message: '¿Estás seguro de que deseas volver?',
-            icon: 'pi pi-exclamation-triangle',
-            defaultFocus: 'accept',
+            message: "¿Estás seguro de que deseas volver?",
+            icon: "pi pi-exclamation-triangle",
             accept: () => window.history.back(),
             reject,
-            className: 'custom-confirm-popup'
+            className: "custom-confirm-popup"
         });
     };
-
     return (
 
 
@@ -180,7 +182,7 @@ const FormReclamoView: React.FC = () => {
                             {selectedLuggage.map(({ id, luggage, phone, email, flightNum, departureDate, fromAirport, toAirport, passengerName, description, issue }) => (
                                 <div key={id} className={styles.luggageItem}>
                                     <div className={styles.luggageHeader}>
-                                        <span>{passengerName} - {luggage}</span>
+                                        <span className={styles.passengerName}>{passengerName} - Tag: <span className={styles.tagName}>{luggage}</span></span>
                                         <button
                                             type="button"
                                             className={styles.removeButton}
@@ -243,7 +245,7 @@ const FormReclamoView: React.FC = () => {
                             <button
                                 type="button"
                                 className={styles.createButton}
-                                onClick={handleCreateCases}
+                                onClick={popUpCreateCase}
                                 disabled={loading || selectedLuggage.length === 0}
                             >
                                 Crear Casos
