@@ -1,28 +1,28 @@
-.modalOverlay {
+.modal {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.6);
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   z-index: 1000;
 }
 
 .modalContent {
-  background-color: #fff;
-  border-radius: 10px;
-  width: 100%;
-  max-width: 500px;
-  padding: 30px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
   position: relative;
-  animation: slideDown 0.3s ease;
+  background-color: #ffffff;
+  border-radius: 12px;
+  padding: 40px 30px;
+  width: 450px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+  animation: slideIn 0.3s;
+  transition: transform 0.3s ease, opacity 0.3s ease;
 }
 
-@keyframes slideDown {
+@keyframes slideIn {
   from {
     opacity: 0;
     transform: translateY(-20px);
@@ -33,88 +33,85 @@
   }
 }
 
-/* h2 {
-  font-size: 1.8rem;
-  color: #333;
-  text-align: center;
+.close {
+  cursor: pointer;
+  position: absolute;
+  top: -18px;
+  right: 0px;
+  color: #f44336;
+  padding: 10px;
+  border: none;
+  border-radius: 50%;
+  font-size: 2rem;
+  transition: background-color 0.3s;
+}
+
+.close:hover {
+  color: #ff6b6b;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.input {
   margin-bottom: 20px;
-} */
-
-.userFormGroup {
-  margin-bottom: 20px;
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  transition: border 0.3s, box-shadow 0.3s;
 }
 
-.userFormGroup label {
-  display: block;
-  font-weight: 600;
-  margin-bottom: 8px;
-  color: #444;
-}
-
-.userFormInput {
-  width: 100%;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 1rem;
-  transition: border-color 0.3s ease;
-}
-
-.userFormInput:focus {
-  border-color: #007bff;
+.input:focus {
+  border-color: #510c76;
+  box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
   outline: none;
 }
 
-.userFormInput.error {
-  border-color: #ff4d4d;
-}
-
-.errorMessage {
-  color: #ff4d4d;
-  font-size: 0.9rem;
-  margin-top: 5px;
-}
-
-.selectedRole {
-  margin-bottom: 20px;
-}
-
-.modalActions {
-  display: flex;
-  justify-content: space-between;
-  margin-top: 20px;
-}
-
-.submitButton,
-.cancelButton {
-  padding: 12px 20px;
+.button {
+  background-color: #510c76;
+  color: #ffffff;
+  padding: 15px; /* Aumentar el padding para mayor comodidad */
   border: none;
-  border-radius: 6px;
-  font-size: 1rem;
+  border-radius: 8px; /* Bordes más redondeados */
   cursor: pointer;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s, transform 0.2s;
+  width: 100%; /* Botón ocupa el 100% del ancho */
+  display: flex;
+  align-items: center;
+  justify-content: center; /* Alinear contenido del botón */
 }
 
-.submitButton {
-  background-color: #3a0e56;
-  color: white;
+.button:hover {
+  background-color: #510c76;
+  transform: translateY(-2px);
 }
 
-.submitButton:hover {
-  background-color: #3a0e56;
+.buttonGroup {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.button .icon {
+  margin-right: 8px; /* Espacio entre el icono y el texto */
+  font-size: 1.2rem; /* Tamaño del icono */
 }
 
 .cancelButton {
-  background-color: #ce0000;
-  color: white;
+  position: absolute;
+  top: 15px;
+  right: 20px;
+  background-color: transparent;
+  color: #f44336;
+  padding: 10px;
+  border: none;
+  border-radius: 50%;
+  font-size: 2rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
 }
 
 .cancelButton:hover {
-  background-color: #ce0000;
-}
-
-@media (max-width: 600px) {
-  .modalContent {
-    width: 95%;
-  }
+  background-color: rgba(244, 67, 54, 0.1);
 }

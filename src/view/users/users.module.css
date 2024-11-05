@@ -5,7 +5,7 @@
 .userManagementHeader {
     text-align: center;
     margin-bottom: 20px;
-    font-size: 2rem;
+    font-size: 1.8rem;
     color: #333;
 }
 
@@ -24,31 +24,117 @@
 }
 
 .cardProfile {
+    background-color: white;
     border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    margin: 10px;
+    width: calc(25% - 20px); /* 4 cards in large screens */
     overflow: hidden;
+    transition: transform 0.2s;
+    position: relative;
+}
+
+.cardProfile:hover {
+    transform: scale(1.02);
 }
 
 .cardHeader {
     height: 150px;
+    background-image: url('https://elnacional.com.do/wp-content/uploads/2023/05/arajet.jpg');
     background-size: cover;
-    background-position: bottom;
-    background-attachment: unset;
+    background-position: center;
 }
 
 .cardProfileImg {
     width: 80px;
     height: 80px;
     border-radius: 50%;
-    margin-top: -40px;
     border: 3px solid white;
+    position: absolute;
+    top: 100px; /* Positioning below the header */
+    left: 50%;
+    transform: translateX(-50%);
 }
 
-.card-body {
+.cardBody {
     text-align: center;
+    padding: 15px;
+    margin-top: 20px ;
 }
 
-.btn {
-    margin: 5px;
+.cardBody h3{
+    text-align: center;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+}
+
+.cardBodyDataPerson{
+    display: flex;
+    flex-direction: column;
+    padding:10px;
+  
+}
+
+.cardBodyDataPerson p{
+    font-size: 0.8rem;
+    text-align: start;
+    color: #4e4e4e;
+  
+}
+
+.cardBodyDataPerson p small{
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #0d0d0d;
+    padding-left: 5px;
+
+  
+}
+
+
+
+.cardButtons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.editButton, .deleteButton {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.editButton {
+    background-color: #510c76;
+    color: white;
+}
+
+.deleteButton {
+    background-color: #dc3545;
+    color: white;
+}
+
+.editButton:hover {
+    background-color: #510c76;
+}
+
+.deleteButton:hover {
+    background-color: #c82333;
+}
+
+@media (max-width: 992px) {
+    .cardProfile {
+        width: calc(50% - 20px); 
+    }
+}
+
+@media (max-width: 576px) {
+    .cardProfile {
+        width: 100%; 
+    }
 }
 
 .floatingAddButton {
