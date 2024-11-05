@@ -1,5 +1,5 @@
 // Obtener todos los usuarios
-const apiUrl = process.env.NEXT_PUBLIC_BACKEND_URL
+const apiUrl = "https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net"
 export const getUsers = async () => {
     const response = await fetch(`${apiUrl}/api/users`, {
         method: "GET",
@@ -28,7 +28,7 @@ export const createUser = async (user: { name: string; email: string }) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
+             
             },
             body: JSON.stringify(user),
         });
@@ -50,7 +50,7 @@ export const updateUser = async (id: number, updatedData: { name?: string; email
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
+              
             },
             body: JSON.stringify(updatedData),
         });
@@ -73,7 +73,7 @@ export const deleteUser = async (id: number) => {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
-                "ngrok-skip-browser-warning": "true",
+              
             },
         });
 
