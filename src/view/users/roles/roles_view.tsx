@@ -1,21 +1,26 @@
 "use client";
 import React, { useState, useEffect } from "react";
-import Styles from "@/view/users/roles/rolesView.module.css";
 import { Role } from "@/entities/Role";
 import { RoleRepositoryImpl } from "@/data/repositories/RoleRepositoryImpl";
-import DataTable, { TableColumn } from "react-data-table-component";
+import { Button } from "primereact/button";
+import { DataTable } from "primereact/datatable";
+import { Column } from "primereact/column";
+import { FaEdit } from "react-icons/fa";
+import { MdDeleteSweep } from "react-icons/md";
+import { IoIosAddCircleOutline } from "react-icons/io";
+import ModalForm from "@/components/FormsModals/ModalForm";
+import { Dialog } from "@mui/material";
 
 const roleRepository = new RoleRepositoryImpl();
 
 const RolesView: React.FC = () => {
     const [roles, setRoles] = useState<Role[]>([]);
-    const [showAddModal, setShowAddModal] = useState(false);
-    const [showEditModal, setShowEditModal] = useState(false);
-    const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [currentRole, setCurrentRole] = useState<Role | null>(null);
-    const [roleName, setRoleName] = useState("");
-    const [roleDescription, setRoleDescription] = useState("");
     const [roleToDelete, setRoleToDelete] = useState<number | null>(null);
+
+    const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
     useEffect(() => {
         fetchRoles();
@@ -30,7 +35,7 @@ const RolesView: React.FC = () => {
         }
     };
 
-    const handleAddRole = async () => {
+    const handleAddRole = async (roleName: string, roleDescription: string) => {
         if (roleName && roleDescription) {
             try {
                 const newRole = await roleRepository.addRole({
@@ -40,23 +45,14 @@ const RolesView: React.FC = () => {
                     cant_user_asigned: 0,
                 });
                 setRoles([...roles, newRole]);
-                setShowAddModal(false);
-                setRoleName("");
-                setRoleDescription("");
+                setIsAddModalOpen(false);
             } catch (error) {
                 console.error("Error adding role:", error);
             }
         }
     };
 
-    const openEditModal = (role: Role) => {
-        setCurrentRole(role);
-        setRoleName(role.rol);
-        setRoleDescription(role.description || "");
-        setShowEditModal(true);
-    };
-
-    const handleEditRole = async () => {
+    const handleEditRole = async (roleName: string, roleDescription: string) => {
         if (currentRole && roleName && roleDescription) {
             try {
                 const updatedRole = await roleRepository.editRole({
@@ -66,24 +62,25 @@ const RolesView: React.FC = () => {
                 });
                 setRoles(
                     roles.map((role) =>
-                        role.id === updatedRole.id ? updatedRole : role,
+                        role.id === updatedRole.id ? updatedRole : role
                     ),
                 );
-                setShowEditModal(false);
+                setIsEditModalOpen(false);
                 setCurrentRole(null);
-                setRoleName("");
-                setRoleDescription("");
             } catch (error) {
                 console.error("Error editing role:", error);
             }
-        } else {
-            console.error("currentRole is null");
         }
+    };
+
+    const openEditModal = (role: Role) => {
+        setCurrentRole(role);
+        setIsEditModalOpen(true);
     };
 
     const openDeleteModal = (roleId: number) => {
         setRoleToDelete(roleId);
-        setShowDeleteModal(true);
+        setIsDeleteModalOpen(true);
     };
 
     const handleDeleteRole = async () => {
@@ -91,7 +88,7 @@ const RolesView: React.FC = () => {
             try {
                 await roleRepository.deleteRole(roleToDelete);
                 setRoles(roles.filter((role) => role.id !== roleToDelete));
-                setShowDeleteModal(false);
+                setIsDeleteModalOpen(false);
                 setRoleToDelete(null);
             } catch (error) {
                 console.error("Error deleting role:", error);
@@ -99,148 +96,64 @@ const RolesView: React.FC = () => {
         }
     };
 
-    const columns: TableColumn<Role>[] = [
-        {
-            name: "Rol",
-            selector: (row) => row.rol || "", // Asegúrate de que siempre devuelva un string
-            sortable: true,
-        },
-        {
-            name: "Descripción",
-            selector: (row) => row.description || "", // Asegúrate de que siempre devuelva un string
-            sortable: true,
-        },
-        {
-            name: "Cant Asig",
-            selector: (row) => row.cant_user_asigned ?? 0, // Asegúrate de que siempre devuelva un número
-            sortable: true,
-        },
-        {
-            name: "Acciones",
-            cell: (row) => (
-                <div>
-                    <button
-                        className={`${Styles.button} ${Styles.editButton}`}
-                        onClick={() => openEditModal(row)}
-                    >
-                        Editar
-                    </button>
-                    <button
-                        className={`${Styles.button} ${Styles.deleteButton}`}
-                        onClick={() => openDeleteModal(row.id)}
-                    >
-                        Eliminar
-                    </button>
-                </div>
-            ),
-        },
-    ];
+    const actionsBodyTemplate = (rowData: Role) => (
+        <div>
+            <Button icon={<FaEdit />} onClick={() => openEditModal(rowData)} className="p-button-rounded p-button-info" />
+            <Button
+                icon={<MdDeleteSweep />}
+                onClick={() => openDeleteModal(rowData.id)}
+                className="p-button-rounded p-button-danger p-ml-2"
+            />
+        </div>
+    );
 
     return (
-        <div className={Styles.ro_container_body}>
-            <div className={Styles.container_header}>
-                <h1 className={Styles.ro_title}>Gestión de Roles</h1>
-                <button
-                    className={`${Styles.button} ${Styles.addRoleButton}`}
-                    onClick={() => setShowAddModal(true)}
-                >
-                    Añadir Rol
-                </button>
-            </div>
-
-            <div className={Styles.tableContainer}>
-                <DataTable
-                    columns={columns}
-                    data={roles}
-                    pagination
-                    striped
-                    highlightOnHover
+        <div className="roles-container">
+            <div className="header">
+                <h1>Gestión de Roles</h1>
+                <Button
+                    label="Añadir Rol"
+                    icon={<IoIosAddCircleOutline />}
+                    onClick={() => setIsAddModalOpen(true)}
+                    className="p-button-success"
                 />
             </div>
 
-            {showAddModal && (
-                <div className={Styles.modal}>
-                    <div className={Styles.modalContent}>
-                        <h2>Agregar Rol</h2>
-                        <label>
-                            Nombre del Rol:
-                            <input
-                                type="text"
-                                value={roleName}
-                                onChange={(e) => setRoleName(e.target.value)}
-                            />
-                        </label>
-                        <label>
-                            Descripción:
-                            <textarea
-                                value={roleDescription}
-                                onChange={(e) =>
-                                    setRoleDescription(e.target.value)
-                                }
-                            />
-                        </label>
-                        <button onClick={handleAddRole}>Guardar</button>
-                        <button
-                            className="cancel"
-                            onClick={() => setShowAddModal(false)}
-                        >
-                            Cancelar
-                        </button>
-                    </div>
-                </div>
+            <div className="table-container">
+                <DataTable value={roles} paginator rows={10} className="p-datatable-gridlines">
+                    <Column field="rol" header="Rol" />
+                    <Column field="description" header="Descripción" />
+                    <Column field="cant_user_asigned" header="Cant. Asig." />
+                    <Column body={actionsBodyTemplate} header="Acciones" />
+                </DataTable>
+            </div>
+
+            {/* Modal para agregar rol */}
+            <ModalForm isOpen={isAddModalOpen} onClose={() => setIsAddModalOpen(false)} onSave={handleAddRole} />
+
+            {/* Modal para editar rol */}
+            {currentRole && (
+                <ModalForm
+                    isOpen={isEditModalOpen}
+                    onClose={() => setIsEditModalOpen(false)}
+                    onSave={handleEditRole}
+                    roleName={currentRole.rol}
+                    roleDescription={currentRole.description || ""}
+                />
             )}
 
-            {showEditModal && currentRole && (
-                <div className={Styles.modal}>
-                    <div className={Styles.modalContent}>
-                        <h2>Editar Rol</h2>
-                        <label>
-                            Nombre del Rol:
-                            <input
-                                type="text"
-                                value={roleName}
-                                onChange={(e) => setRoleName(e.target.value)}
-                            />
-                        </label>
-                        <label>
-                            Descripción:
-                            <textarea
-                                value={roleDescription}
-                                onChange={(e) =>
-                                    setRoleDescription(e.target.value)
-                                }
-                            />
-                        </label>
-                        <button onClick={handleEditRole}>Guardar</button>
-                        <button
-                            className="cancel"
-                            onClick={() => setShowEditModal(false)}
-                        >
-                            Cancelar
-                        </button>
-                    </div>
-                </div>
-            )}
-
-            {showDeleteModal && (
-                <div className={Styles.modalDelete}>
-                    <div className={Styles.modalDeleteContent}>
-                        <h2>Confirmar Eliminación</h2>
-                        <p>
-                            ¿Estás seguro de que deseas eliminar este rol? Esta
-                            acción no se puede deshacer.
-                        </p>
-                        <button className="confirm" onClick={handleDeleteRole}>
-                            Eliminar
-                        </button>
-                        <button
-                            className="cancel"
-                            onClick={() => setShowDeleteModal(false)}
-                        >
-                            Cancelar
-                        </button>
-                    </div>
-                </div>
+            {/* Modal de confirmación de eliminación */}
+            {isDeleteModalOpen && (
+                <Dialog
+                    header="Confirmar Eliminación"
+                    visible={isDeleteModalOpen}
+                    style={{ width: "30vw" }}
+                    onHide={() => setIsDeleteModalOpen(false)}
+                >
+                    <p>¿Estás seguro de que deseas eliminar este rol?</p>
+                    <Button label="Eliminar" icon="pi pi-check" className="p-button-danger" onClick={handleDeleteRole} />
+                    <Button label="Cancelar" icon="pi pi-times" className="p-button-text" onClick={() => setIsDeleteModalOpen(false)} />
+                </Dialog>
             )}
         </div>
     );

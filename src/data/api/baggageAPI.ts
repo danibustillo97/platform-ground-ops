@@ -9,7 +9,6 @@ export const fetchPassengerDataAPI = async (pnr: string, token: string) => {
             {
                 method: "GET",
                 headers: {
-                    "ngrok-skip-browser-warning": "true",
                     "Content-Type": "application/json",
                     Authorization: `Bearer ${token}`,  
                 },
@@ -18,6 +17,7 @@ export const fetchPassengerDataAPI = async (pnr: string, token: string) => {
         if (!response.ok) {
             throw new Error(`Error fetching data, status: ${response.status}`);
         }
+        console.log(response)
         const data = await response.json();
         return data;
     } catch (error) {
@@ -77,7 +77,8 @@ export const getBaggageCasesApi = async (token: string) => {
         );
         if (response.ok) {
             const data = await response.json();
-            
+            console.log("Respuesta completa desde la API:", response);  // Imprimir la respuesta HTTP completa
+            console.log("Datos procesados desde la API:", JSON.stringify(data, null, 2));  // Datos procesados en formato legible
             return data;
         } else {
             console.error("Error fetching data:", response.statusText);

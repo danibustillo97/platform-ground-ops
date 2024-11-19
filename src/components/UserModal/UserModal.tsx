@@ -14,31 +14,41 @@ interface UserModalProps {
 const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, userForm, onSave, editingUser }) => {
     const [formState, setFormState] = useState<UserCreate>({
         ...userForm,
-        password: editingUser ? "" : userForm.password // Inicializa la contraseña como vacía si está editando
+        password: editingUser ? "" : userForm.password, // Inicializa la contraseña como vacía si está editando
     });
 
     useEffect(() => {
         setFormState({
             ...userForm,
-            password: "" // Siempre resetea la contraseña a vacía al abrir el modal
+            password: "", // Siempre resetea la contraseña a vacía al abrir el modal
         });
     }, [userForm, editingUser]);
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
-        setFormState(prevState => ({
-            ...prevState,
-            [name]: value,
-        }));
+
+        if (e.target instanceof HTMLSelectElement) {
+            // Verificamos si el evento proviene de un select múltiple (roles o estaciones)
+            const selectedValues = Array.from(e.target.selectedOptions).map(option => option.value);
+
+            setFormState(prevState => ({
+                ...prevState,
+                [name]: selectedValues,
+            }));
+        } else {
+            setFormState(prevState => ({
+                ...prevState,
+                [name]: value,
+            }));
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
-        // Asegúrate de que la contraseña esté presente como string vacío si no hay valor
+
         const userToSave = {
             ...formState,
-            password: formState.password || "", 
+            password: formState.password || "", // Asegura que la contraseña esté presente como string vacío si no hay valor
         };
 
         await onSave(userToSave); // Envía el objeto
@@ -54,9 +64,16 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, userForm, onSave
                         <input className={styles.input} type="text" name="name" value={formState.name} onChange={handleChange} placeholder="Nombre" required />
                         <input className={styles.input} type="email" name="email" value={formState.email} onChange={handleChange} placeholder="Email" required />
                         <input className={styles.input} type="text" name="phone" value={formState.phone} onChange={handleChange} placeholder="Teléfono" required />
-                        <input className={styles.input} type="text" name="rol" value={formState.rol} onChange={handleChange} placeholder="Rol" required />
-                        <input className={styles.input} type="text" name="estacion" value={formState.estacion} onChange={handleChange} placeholder="Estación" required />
-                        {/* Mostrar el campo de contraseña si no se está editando un usuario */}
+                        <select className={styles.input} name="rol" multiple value={formState.rol} onChange={handleChange} required>
+                            <option value="Admin">Admin</option>
+                            <option value="User">User</option>
+                            <option value="Guest">Guest</option>
+                        </select>
+                        <select className={styles.input} name="estacion" multiple value={formState.estacion} onChange={handleChange} required>
+                            <option value="Estacion1">Estación 1</option>
+                            <option value="Estacion2">Estación 2</option>
+                            <option value="Estacion3">Estación 3</option>
+                        </select>
                         {!editingUser && (
                             <div>
                                 <input className={styles.input} type="password" name="password" value={formState.password} onChange={handleChange} placeholder="Contraseña (obligatoria)" required />

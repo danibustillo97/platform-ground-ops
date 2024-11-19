@@ -21,7 +21,7 @@ const UsersView: React.FC = () => {
         name: "",
         email: "",
         phone: "",
-        rol: "",
+        rol: "",    
         estacion: "",
         password: "",
     });
