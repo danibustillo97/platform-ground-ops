@@ -1,12 +1,31 @@
-// Sidebar.tsx
 import React from "react";
-import { FaHome, FaUserCog } from "react-icons/fa";
-import { LuBaggageClaim } from "react-icons/lu";
-import { MdOutlineFlight } from "react-icons/md";
-import styles from "./Sidebar.module.css";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse,
+  IconButton,
+  Typography,
+  Box,
+} from "@mui/material";
+import {
+  FaHome,
+  FaUserCog,
+} from "react-icons/fa";
+import {
+  LuBaggageClaim,
+} from "react-icons/lu";
+import {
+  MdOutlineFlight,
+  MdExpandMore,
+  MdExpandLess,
+} from "react-icons/md";
 import { GrLinkTop } from "react-icons/gr";
-import { usePathname } from "next/navigation"; 
-import Link from "next/link"; // Importar Link
 
 interface SidebarProps {
   isOpen: boolean;
@@ -14,14 +33,22 @@ interface SidebarProps {
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
-  const pathname = usePathname(); 
+  const pathname = usePathname();
+  const [openSubmenus, setOpenSubmenus] = React.useState<{ [key: string]: boolean }>({});
+
+  const toggleSubmenu = (key: string) => {
+    setOpenSubmenus((prevState) => ({
+      ...prevState,
+      [key]: !prevState[key],
+    }));
+  };
 
   const links = [
-    { href: "/dashboard", label: "Dashboard", icon: <FaHome className={styles.icon} /> },
+    { href: "/dashboard", label: "Dashboard", icon: <FaHome /> },
     {
       href: "/users",
       label: "Usuarios",
-      icon: <FaUserCog className={styles.icon} />,
+      icon: <FaUserCog />,
       submenu: [
         { href: "/users/roles", label: "Roles" },
       ],
@@ -29,51 +56,92 @@ const Sidebar: React.FC<SidebarProps> = ({ isOpen, toggleSidebar }) => {
     {
       href: "/baggage_gestion",
       label: "Equipaje",
-      icon: <LuBaggageClaim className={styles.icon} />,
-      submenu: [
-        // { href: "/baggage_gestion", label: "Gestionar" },
-        // { href: "/baggage_gestion/baggage_form_reclamo", label: "Añadir Caso" },
-      ],
+      icon: <LuBaggageClaim />,
+      submenu: [],
     },
     {
       href: "/flights",
       label: "Vuelos",
-      icon: <MdOutlineFlight className={styles.icon} />,
-      submenu: [
-        // { href: "/flights", label: "Gestionar vuelos" },
-        // { href: "#", label: "Registros" },
-      ],
+      icon: <MdOutlineFlight />,
+      submenu: [],
     },
   ];
 
   return (
-    <div className={`${styles.sidebar} ${isOpen ? styles.open : ""}`}>
-      <button onClick={toggleSidebar} className={styles.closeButton}>
-        <GrLinkTop />
-      </button>
-
-      <ul className={`${styles.menu}`}>
+    <Drawer
+      anchor="left"
+      open={isOpen}
+      onClose={toggleSidebar}
+      sx={{
+        width: 250,
+        "& .MuiDrawer-paper": {
+          width: 250,
+          boxSizing: "border-box",
+        },
+      }}
+    >
+      <Box sx={{ display: "flex", alignItems: "center", padding: 2 }}>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          Menú
+        </Typography>
+        <IconButton onClick={toggleSidebar}>
+          <GrLinkTop />
+        </IconButton>
+      </Box>
+      <List>
         {links.map((link, index) => (
-          <li key={index} className={styles.sidebarListItem}>
-            <Link href={link.href} className={`${styles.sidebarLink} ${pathname === link.href ? styles.active : ''}`}>
-              {link.icon}
-              <span className={styles.menuText}>{link.label}</span>
-            </Link>
-            {link.submenu && (
-              <ul className={styles.sidebarMenu}>
-                {link.submenu.map((subLink, subIndex) => (
-                  <li key={subIndex} className={styles.sidebarListItem}>
-                    <Link href={subLink.href} className={styles.sidebarLinkSubMenu}>
-                      {subLink.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
+          <React.Fragment key={index}>
+            <ListItem disablePadding>
+              <ListItemButton
+                component={Link}
+                href={link.href}
+                selected={pathname === link.href}
+                sx={{
+                  "&.Mui-selected": { backgroundColor: "primary.main", color: "white" },
+                  "&.Mui-selected:hover": { backgroundColor: "primary.dark" },
+                }}
+              >
+                <ListItemIcon>{link.icon}</ListItemIcon>
+                <ListItemText primary={link.label} />
+                {link.submenu && link.submenu.length > 0 && (
+                  <IconButton
+                    onClick={(e) => {
+                      e.preventDefault();
+                      toggleSubmenu(link.href);
+                    }}
+                    size="small"
+                  >
+                    {openSubmenus[link.href] ? <MdExpandLess /> : <MdExpandMore />}
+                  </IconButton>
+                )}
+              </ListItemButton>
+            </ListItem>
+            {link.submenu && link.submenu.length > 0 && (
+              <Collapse in={openSubmenus[link.href]} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {link.submenu.map((subLink, subIndex) => (
+                    <ListItem key={subIndex} disablePadding>
+                      <ListItemButton
+                        component={Link}
+                        href={subLink.href}
+                        selected={pathname === subLink.href}
+                        sx={{
+                          pl: 4,
+                          "&.Mui-selected": { backgroundColor: "primary.light", color: "white" },
+                          "&.Mui-selected:hover": { backgroundColor: "primary.main" },
+                        }}
+                      >
+                        <ListItemText primary={subLink.label} />
+                      </ListItemButton>
+                    </ListItem>
+                  ))}
+                </List>
+              </Collapse>
             )}
-          </li>
+          </React.Fragment>
         ))}
-      </ul>
-    </div>
+      </List>
+    </Drawer>
   );
 };
 
