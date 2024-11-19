@@ -3,9 +3,24 @@
 import React, { useState, useEffect } from "react";
 import { fetchAllUsers, deleteUserById, createNewUser, updateExistingUser } from "@/view/users/userController";
 import { User, UserCreate } from "@/entities/User";
-import styles from "@/view/users/users.module.css";
-import UserModal from "@/components/UserModal/UserModal";
-import OverlayComponent from "@/components/Overlay/Overlay";
+import {
+    Box,
+    Typography,
+    TextField,
+    Button,
+    Card,
+    CardContent,
+    CardActions,
+    Avatar,
+    Grid,
+    IconButton,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogTitle,
+    CircularProgress,
+    Tooltip,
+} from "@mui/material";
 import { FaPlus } from "react-icons/fa";
 import { AiOutlineUserDelete } from "react-icons/ai";
 import { LiaUserEditSolid } from "react-icons/lia";
@@ -21,7 +36,7 @@ const UsersView: React.FC = () => {
         name: "",
         email: "",
         phone: "",
-        rol: "",    
+        rol: "",
         estacion: "",
         password: "",
     });
@@ -86,7 +101,7 @@ const UsersView: React.FC = () => {
             phone: user.phone,
             rol: user.rol,
             estacion: user.estacion,
-            password: '',
+            password: "",
         });
         setShowModal(true);
     };
@@ -109,66 +124,154 @@ const UsersView: React.FC = () => {
         setEditingUser(null);
     };
 
-    const filteredUsers = usersData.filter(user =>
+    const filteredUsers = usersData.filter((user) =>
         user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         user.email.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
     return (
-        loading ? <OverlayComponent /> : (
-            <div className={styles.userManagementContainer}>
-                <h1 className={styles.userManagementHeader}>Gestión de Usuarios</h1>
-                <input
-                    type="text"
-                    placeholder="Buscar usuarios..."
-                    className={styles.searchInput}
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <div className={styles.userCardsContainer}>
+        <Box sx={{ padding: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+                Gestión de Usuarios
+            </Typography>
+            <TextField
+                label="Buscar usuarios..."
+                variant="outlined"
+                fullWidth
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                sx={{ marginBottom: 3 }}
+            />
+            {loading ? (
+                <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: "50vh" }}>
+                    <CircularProgress />
+                </Box>
+            ) : (
+                <Grid container spacing={3}>
                     {filteredUsers.length > 0 ? (
                         filteredUsers.map((user) => (
-                            <div key={user.id} className={styles.cardProfile}>
-                                <div className={styles.cardHeader}>
-                                    <img className={styles.cardProfileImg} src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5KZ8Ilz6ha_pUItL6KtOFXB1TVC3vVYtCfA&s" alt={user.name} />
-                                </div>
-                                <div className={styles.cardBody}>
-                                    <h3>{user.name}</h3>
-                                    <div className={styles.cardBodyDataPerson}>
-                                        <p><small>EMAIL:</small> {user.email}</p>
-                                        <p><small>PHONE:</small> {user.phone}</p>
-                                        <p><small>ROL:</small> {user.rol}</p>
-                                        <p><small>ESTACION:</small> {user.estacion}</p>
-                                    </div>
-                                    <div className={styles.cardButtons}>
-                                        <button className={styles.editButton} onClick={() => handleEditUser(user)}>
-                                            <LiaUserEditSolid /> Editar
-                                        </button>
-                                        <button className={styles.deleteButton} onClick={() => handleDelete(user.id)}>
-                                        <MdOutlineDeleteSweep />
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
+                            <Grid item xs={12} sm={6} md={4} key={user.id}>
+                                <Card>
+                                    <CardContent>
+                                        <Box sx={{ display: "flex", alignItems: "center", marginBottom: 2 }}>
+                                            <Avatar
+                                                src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ5KZ8Ilz6ha_pUItL6KtOFXB1TVC3vVYtCfA&s"
+                                                alt={user.name}
+                                                sx={{ width: 56, height: 56, marginRight: 2 }}
+                                            />
+                                            <Typography variant="h6">{user.name}</Typography>
+                                        </Box>
+                                        <Typography variant="body2">
+                                            <strong>Email:</strong> {user.email}
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            <strong>Teléfono:</strong> {user.phone}
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            <strong>Rol:</strong> {user.rol}
+                                        </Typography>
+                                        <Typography variant="body2">
+                                            <strong>Estación:</strong> {user.estacion}
+                                        </Typography>
+                                    </CardContent>
+                                    <CardActions>
+                                        <Tooltip title="Editar">
+                                            <IconButton
+                                                color="primary"
+                                                onClick={() => handleEditUser(user)}
+                                            >
+                                                <LiaUserEditSolid />
+                                            </IconButton>
+                                        </Tooltip>
+                                        <Tooltip title="Eliminar">
+                                            <IconButton
+                                                color="error"
+                                                onClick={() => handleDelete(user.id)}
+                                            >
+                                                <MdOutlineDeleteSweep />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </CardActions>
+                                </Card>
+                            </Grid>
                         ))
                     ) : (
-                        <p>No se encontraron usuarios.</p>
+                        <Typography>No se encontraron usuarios.</Typography>
                     )}
-                </div>
-                {showModal && (
-                    <UserModal
-                        isOpen={showModal}
-                        onClose={handleCloseModal}
-                        userForm={userForm}
-                        onSave={handleSaveUser}
-                        editingUser={editingUser}
+                </Grid>
+            )}
+            <Button
+                variant="contained"
+                color="primary"
+                onClick={handleAddUser}
+                startIcon={<FaPlus />}
+                sx={{ position: "fixed", bottom: 16, right: 16 }}
+            >
+                Añadir Usuario
+            </Button>
+            <Dialog open={showModal} onClose={handleCloseModal} fullWidth>
+                <DialogTitle>{editingUser ? "Editar Usuario" : "Añadir Usuario"}</DialogTitle>
+                <DialogContent>
+                    <TextField
+                        label="Nombre"
+                        variant="outlined"
+                        fullWidth
+                        margin="dense"
+                        value={userForm.name}
+                        onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
                     />
-                )}
-                <button className={styles.floatingAddButton} onClick={handleAddUser}>
-                    <FaPlus />
-                </button>
-            </div>
-        )
+                    <TextField
+                        label="Email"
+                        variant="outlined"
+                        fullWidth
+                        margin="dense"
+                        value={userForm.email}
+                        onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                    />
+                    <TextField
+                        label="Teléfono"
+                        variant="outlined"
+                        fullWidth
+                        margin="dense"
+                        value={userForm.phone}
+                        onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })}
+                    />
+                    <TextField
+                        label="Rol"
+                        variant="outlined"
+                        fullWidth
+                        margin="dense"
+                        value={userForm.rol}
+                        onChange={(e) => setUserForm({ ...userForm, rol: e.target.value })}
+                    />
+                    <TextField
+                        label="Estación"
+                        variant="outlined"
+                        fullWidth
+                        margin="dense"
+                        value={userForm.estacion}
+                        onChange={(e) => setUserForm({ ...userForm, estacion: e.target.value })}
+                    />
+                    <TextField
+                        label="Contraseña"
+                        type="password"
+                        variant="outlined"
+                        fullWidth
+                        margin="dense"
+                        value={userForm.password}
+                        onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                    />
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCloseModal} color="secondary">
+                        Cancelar
+                    </Button>
+                    <Button onClick={() => handleSaveUser(userForm)} color="primary">
+                        Guardar
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </Box>
     );
 };
 

@@ -16,29 +16,28 @@ import {
   InputLabel,
   Grid,
   Box,
-  FilledTextFieldProps,
-  OutlinedTextFieldProps,
-  StandardTextFieldProps,
-  TextFieldVariants,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers"; 
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns"; 
+import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
+import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
 import styles from "@/view/baggage/baggage.module.css";
 
 const BaggageView: React.FC = () => {
   const {
     searchTerm,
     statusFilter,
+    startDate,
+    endDate,
     filteredData,
     loading,
     setSearchTerm,
     setStatusFilter,
+    setStartDate,
+    setEndDate,
   } = useBaggageCasesController();
 
-  const [selectedRows, setSelectedRows] = useState<any[]>([]); // Cambiado a GridRowId[]
+  const [selectedRows, setSelectedRows] = useState<any[]>([]);
   const [paginationModel, setPaginationModel] = useState({ pageSize: 10, page: 0 });
-  const [dateRange, setDateRange] = useState<[Date | null, Date | null]>([null, null]);
 
   const statusOptions = [
     { label: "Abierto", value: "Abierto" },
@@ -60,13 +59,12 @@ const BaggageView: React.FC = () => {
   ];
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}> 
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
       <div className={styles.baggageContainer}>
         <header className={styles.header}>
           <h1>Gestión de Equipaje</h1>
         </header>
 
-        {/* Barra de filtros */}
         <div className={styles.filtersContainer}>
           <Grid container spacing={2} alignItems="center">
             <Grid item xs={3}>
@@ -75,19 +73,17 @@ const BaggageView: React.FC = () => {
                 variant="outlined"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className={styles.searchInput}
                 fullWidth
               />
             </Grid>
 
             <Grid item xs={3}>
-              <FormControl fullWidth variant="outlined" className={styles.dropdown}>
+              <FormControl fullWidth variant="outlined">
                 <InputLabel>Filtrar por estado</InputLabel>
                 <Select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
                   label="Filtrar por estado"
-                  fullWidth
                 >
                   {statusOptions.map((option) => (
                     <MenuItem key={option.value} value={option.value}>
@@ -101,35 +97,23 @@ const BaggageView: React.FC = () => {
             <Grid item xs={3}>
               <DatePicker
                 label="Fecha de Creación (Inicio)"
-                value={dateRange[0]}
-                onChange={(newValue: Date | null) => setDateRange([newValue, dateRange[1]])}
-                renderInput={(params: React.JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<FilledTextFieldProps | OutlinedTextFieldProps | StandardTextFieldProps, "variant">) => <TextField {...params} fullWidth />}
+                value={startDate ? new Date(startDate) : null}
+                onChange={(newValue) => setStartDate(newValue ? newValue.toISOString().split("T")[0] : "")}
+                renderInput={(params) => <TextField {...params} fullWidth />}
               />
             </Grid>
 
             <Grid item xs={3}>
               <DatePicker
                 label="Fecha de Creación (Fin)"
-                value={dateRange[1]}
-                onChange={(newValue: Date | null) => setDateRange([dateRange[0], newValue])}
-                renderInput={(params: React.JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<FilledTextFieldProps | OutlinedTextFieldProps | StandardTextFieldProps, "variant">) => <TextField {...params} fullWidth />}
+                value={endDate ? new Date(endDate) : null}
+                onChange={(newValue) => setEndDate(newValue ? newValue.toISOString().split("T")[0] : "")}
+                renderInput={(params) => <TextField {...params} fullWidth />}
               />
             </Grid>
           </Grid>
-
-          <Box mt={2}>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => console.log("Exportar")}
-              startIcon={<i className="pi pi-file-excel"></i>}
-            >
-              Exportar a Excel
-            </Button>
-          </Box>
         </div>
 
-        {/* Tabla de Equipaje */}
         <div className={styles.dataTableContainer}>
           <DataGrid
             rows={filteredData}
@@ -137,27 +121,11 @@ const BaggageView: React.FC = () => {
             paginationModel={paginationModel}
             checkboxSelection
             disableRowSelectionOnClick
-            onRowSelectionModelChange={(newSelection) =>
-              setSelectedRows(newSelection as any[])
-            }
+            onRowSelectionModelChange={(newSelection) => setSelectedRows(newSelection as any[])}
             onPaginationModelChange={setPaginationModel}
-            getRowId={(row) => row.id}
-            className={styles.dataGrid}
+            autoHeight
           />
         </div>
-
-        {/* Cargando */}
-        <Dialog open={loading} fullWidth maxWidth="xs" onClose={() => {}} disableEscapeKeyDown>
-          <DialogTitle>Cargando...</DialogTitle>
-          <DialogContent>
-            <CircularProgress size={50} />
-          </DialogContent>
-          <DialogActions>
-            <Button color="primary" onClick={() => {}} disabled>
-              Esperando...
-            </Button>
-          </DialogActions>
-        </Dialog>
       </div>
     </LocalizationProvider>
   );
