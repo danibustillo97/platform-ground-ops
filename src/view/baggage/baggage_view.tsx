@@ -7,11 +7,6 @@ import {
   Select,
   MenuItem,
   Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
   FormControl,
   InputLabel,
   Grid,
@@ -21,9 +16,12 @@ import {
   StandardTextFieldProps,
   TextFieldVariants,
 } from "@mui/material";
-import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
-import { AdapterDateFns } from "@mui/x-date-pickers/AdapterDateFns";
+import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
+import { DatePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
+import dayjs, { Dayjs } from "dayjs";
+
 import styles from "@/view/baggage/baggage.module.css";
 
 const BaggageView: React.FC = () => {
@@ -41,6 +39,8 @@ const BaggageView: React.FC = () => {
   } = useBaggageCasesController();
 
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
+  const [selectedCase, setSelectedCase] = useState<any>(null);
+  const [description, setDescription] = useState<string>("");
   const [paginationModel, setPaginationModel] = useState({
     pageSize: 10,
     page: 0,
@@ -69,8 +69,25 @@ const BaggageView: React.FC = () => {
     { field: "date_create", headerName: "Fecha de Creación", width: 200 },
   ];
 
+  const handleRowClick = (params: GridRowParams) => {
+    setSelectedCase(params.row); // Establece el caso seleccionado
+    setDescription(params.row.description || ""); // Carga la descripción previa si existe
+  };
+
+  const handleSaveDescription = () => {
+    if (selectedCase) {
+      console.log(
+        `Descripción guardada para el caso ${selectedCase.PNR}:`,
+        description
+      );
+      // Aquí puedes implementar la lógica para guardar la descripción en el backend
+      setSelectedCase(null); // Limpia la selección al guardar
+      setDescription(""); // Limpia la descripción al guardar
+    }
+  };
+
   return (
-    <LocalizationProvider dateAdapter={AdapterDateFns}>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
       <div className={styles.baggageContainer}>
         <header className={styles.header}>
           <h1>Gestión de Equipaje</h1>
@@ -108,30 +125,20 @@ const BaggageView: React.FC = () => {
             <Grid item xs={3}>
               <DatePicker
                 label="Fecha de Creación (Inicio)"
-                value={startDate ? new Date(startDate) : null}
+                value={startDate ? dayjs(startDate) : null}
                 onChange={(newValue) =>
-                  setStartDate(
-                    newValue ? newValue.toISOString().split("T")[0] : ""
-                  )
+                  setStartDate(newValue?.toISOString() || "")
                 }
-                slotProps={{
-                  textField: { fullWidth: true },
-                }}
               />
             </Grid>
 
             <Grid item xs={3}>
               <DatePicker
-                label="Fecha de Creación (Fin)" 
-                value={endDate ? new Date(endDate) : null}
+                label="Fecha de Creación (Fin)"
+                value={endDate ? dayjs(endDate) : null}
                 onChange={(newValue) =>
-                  setEndDate(
-                    newValue ? newValue.toISOString().split("T")[0] : ""
-                  )
+                  setEndDate(newValue?.toISOString() || "")
                 }
-                slotProps={{
-                  textField: { fullWidth: true },
-                }}
               />
             </Grid>
           </Grid>
@@ -144,12 +151,34 @@ const BaggageView: React.FC = () => {
             paginationModel={paginationModel}
             checkboxSelection
             disableRowSelectionOnClick
-            onRowSelectionModelChange={(newSelection) =>
-              setSelectedRows(newSelection as any[])
-            }
+            onRowClick={handleRowClick}
             onPaginationModelChange={setPaginationModel}
           />
         </div>
+
+        {selectedCase && (
+          <Box mt={4}>
+            <h3>Agregar Descripción para el Caso: {selectedCase.PNR}</h3>
+            <TextField
+              label="Descripción"
+              value={description}
+              onChange={(e) => setDescription(e.target.value)}
+              fullWidth
+              multiline
+              rows={4}
+              variant="outlined"
+            />
+            <Box mt={2}>
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={handleSaveDescription}
+              >
+                Guardar Descripción
+              </Button>
+            </Box>
+          </Box>
+        )}
       </div>
     </LocalizationProvider>
   );
