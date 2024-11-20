@@ -10,17 +10,23 @@ import {
   FormControl,
   InputLabel,
   Grid,
+  IconButton,
   Box,
-  FilledTextFieldProps,
-  OutlinedTextFieldProps,
-  StandardTextFieldProps,
-  TextFieldVariants,
 } from "@mui/material";
-import { DataGrid, GridColDef, GridRowParams } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridActionsCellItem,
+  GridRowModesModel,
+  GridRowModes,
+} from "@mui/x-data-grid";
 import { DatePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
-import dayjs, { Dayjs } from "dayjs";
+import dayjs from "dayjs";
+import EditIcon from "@mui/icons-material/Edit";
+import SaveIcon from "@mui/icons-material/Save";
+import CancelIcon from "@mui/icons-material/Cancel";
 
 import styles from "@/view/baggage/baggage.module.css";
 
@@ -31,60 +37,107 @@ const BaggageView: React.FC = () => {
     startDate,
     endDate,
     filteredData,
-    loading,
     setSearchTerm,
     setStatusFilter,
     setStartDate,
     setEndDate,
   } = useBaggageCasesController();
 
-  const [selectedRows, setSelectedRows] = useState<any[]>([]);
-  const [selectedCase, setSelectedCase] = useState<any>(null);
-  const [description, setDescription] = useState<string>("");
-  const [paginationModel, setPaginationModel] = useState({
-    pageSize: 10,
-    page: 0,
-  });
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
-  const statusOptions = [
-    { label: "Abierto", value: "Abierto" },
-    { label: "En espera de pasajero", value: "En espera de pasajero" },
-    { label: "En espera de formulario", value: "En espera de formulario" },
-    { label: "Cerrado", value: "Cerrado" },
-  ];
+  const handleEditClick = (id: any) => {
+    setRowModesModel((prev) => ({
+      ...prev,
+      [id]: { mode: GridRowModes.Edit },
+    }));
+  };
+
+  const handleSaveClick = (id: any) => {
+    setRowModesModel((prev) => ({
+      ...prev,
+      [id]: { mode: GridRowModes.View },
+    }));
+    // Lógica para guardar los datos editados en el backend
+    console.log("Guardar cambios para el ID:", id);
+  };
+
+  const handleCancelClick = (id: any) => {
+    setRowModesModel((prev) => ({
+      ...prev,
+      [id]: { mode: GridRowModes.View, ignoreModifications: true },
+    }));
+  };
 
   const columns: GridColDef[] = [
-    { field: "PNR", headerName: "PNR", width: 180 },
-    { field: "baggage_code", headerName: "Código de Equipaje", width: 180 },
+    { field: "PNR", headerName: "PNR", width: 150, editable: true },
+    {
+      field: "baggage_code",
+      headerName: "Código de Equipaje",
+      width: 180,
+      editable: true,
+    },
     {
       field: "number_ticket_zendesk",
       headerName: "Ticket Zendesk",
       width: 180,
+      editable: true,
     },
-    { field: "contact.phone", headerName: "Teléfono", width: 180 },
-    { field: "contact.email", headerName: "Email", width: 250 },
-    { field: "passenger_name", headerName: "Nombre Pasajero", width: 180 },
-    { field: "issue_type", headerName: "Tipo de Problema", width: 200 },
-    { field: "status", headerName: "Estado", width: 180 },
-    { field: "date_create", headerName: "Fecha de Creación", width: 200 },
+    {
+      field: "contact.phone",
+      headerName: "Teléfono",
+      width: 180,
+      editable: true,
+    },
+    { field: "contact.email", headerName: "Email", width: 250, editable: true },
+    {
+      field: "passenger_name",
+      headerName: "Nombre Pasajero",
+      width: 200,
+      editable: true,
+    },
+    {
+      field: "issue_type",
+      headerName: "Tipo de Problema",
+      width: 200,
+      editable: true,
+    },
+    { field: "status", headerName: "Estado", width: 150, editable: true },
+    {
+      field: "date_create",
+      headerName: "Fecha de Creación",
+      width: 200,
+      editable: true,
+    },
+    {
+      field: "description",
+      headerName: "Descripción",
+      width: 250,
+      editable: true,
+    },
+    {
+      field: "actions",
+      type: "actions",
+      headerName: "Acciones",
+      width: 100,
+      getActions: ({ id }) => [
+        <GridActionsCellItem
+          icon={<EditIcon />}
+          label="Editar"
+          onClick={() => handleEditClick(id)}
+        />,
+        <GridActionsCellItem
+          icon={<SaveIcon />}
+          label="Guardar"
+          onClick={() => handleSaveClick(id)}
+        />,
+        <GridActionsCellItem
+          icon={<CancelIcon />}
+          label="Cancelar"
+          onClick={() => handleCancelClick(id)}
+        />,
+      ],
+    },
   ];
-
-  const handleRowClick = (params: GridRowParams) => {
-    setSelectedCase(params.row); // Establece el caso seleccionado
-    setDescription(params.row.description || ""); // Carga la descripción previa si existe
-  };
-
-  const handleSaveDescription = () => {
-    if (selectedCase) {
-      console.log(
-        `Descripción guardada para el caso ${selectedCase.PNR}:`,
-        description
-      );
-      // Aquí puedes implementar la lógica para guardar la descripción en el backend
-      setSelectedCase(null); // Limpia la selección al guardar
-      setDescription(""); // Limpia la descripción al guardar
-    }
-  };
 
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -113,9 +166,14 @@ const BaggageView: React.FC = () => {
                   onChange={(e) => setStatusFilter(e.target.value)}
                   label="Filtrar por estado"
                 >
-                  {statusOptions.map((option) => (
-                    <MenuItem key={option.value} value={option.value}>
-                      {option.label}
+                  {[
+                    "Abierto",
+                    "Cerrado",
+                    "En espera de pasajero",
+                    "En espera de formulario",
+                  ].map((status) => (
+                    <MenuItem key={status} value={status}>
+                      {status}
                     </MenuItem>
                   ))}
                 </Select>
@@ -148,37 +206,16 @@ const BaggageView: React.FC = () => {
           <DataGrid
             rows={filteredData}
             columns={columns}
-            paginationModel={paginationModel}
+            rowModesModel={rowModesModel}
+            processRowUpdate={(row) => {
+              console.log("Datos actualizados:", row);
+              return row; // Aquí puedes enviar los datos al backend
+            }}
+            editMode="row" // Habilita el modo de edición por filas
             checkboxSelection
             disableRowSelectionOnClick
-            onRowClick={handleRowClick}
-            onPaginationModelChange={setPaginationModel}
           />
         </div>
-
-        {selectedCase && (
-          <Box mt={4}>
-            <h3>Agregar Descripción para el Caso: {selectedCase.PNR}</h3>
-            <TextField
-              label="Descripción"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              fullWidth
-              multiline
-              rows={4}
-              variant="outlined"
-            />
-            <Box mt={2}>
-              <Button
-                variant="contained"
-                color="primary"
-                onClick={handleSaveDescription}
-              >
-                Guardar Descripción
-              </Button>
-            </Box>
-          </Box>
-        )}
       </div>
     </LocalizationProvider>
   );
