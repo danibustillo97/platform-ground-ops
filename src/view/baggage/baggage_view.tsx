@@ -41,7 +41,10 @@ const BaggageView: React.FC = () => {
   } = useBaggageCasesController();
 
   const [selectedRows, setSelectedRows] = useState<any[]>([]);
-  const [paginationModel, setPaginationModel] = useState({ pageSize: 10, page: 0 });
+  const [paginationModel, setPaginationModel] = useState({
+    pageSize: 10,
+    page: 0,
+  });
 
   const statusOptions = [
     { label: "Abierto", value: "Abierto" },
@@ -53,7 +56,11 @@ const BaggageView: React.FC = () => {
   const columns: GridColDef[] = [
     { field: "PNR", headerName: "PNR", width: 180 },
     { field: "baggage_code", headerName: "Código de Equipaje", width: 180 },
-    { field: "number_ticket_zendesk", headerName: "Ticket Zendesk", width: 180 },
+    {
+      field: "number_ticket_zendesk",
+      headerName: "Ticket Zendesk",
+      width: 180,
+    },
     { field: "contact.phone", headerName: "Teléfono", width: 180 },
     { field: "contact.email", headerName: "Email", width: 250 },
     { field: "passenger_name", headerName: "Nombre Pasajero", width: 180 },
@@ -102,17 +109,29 @@ const BaggageView: React.FC = () => {
               <DatePicker
                 label="Fecha de Creación (Inicio)"
                 value={startDate ? new Date(startDate) : null}
-                onChange={(newValue) => setStartDate(newValue ? newValue.toISOString().split("T")[0] : "")}
-                renderInput={(params: React.JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<FilledTextFieldProps | OutlinedTextFieldProps | StandardTextFieldProps, "variant">) => <TextField {...params} fullWidth />}
+                onChange={(newValue) =>
+                  setStartDate(
+                    newValue ? newValue.toISOString().split("T")[0] : ""
+                  )
+                }
+                slotProps={{
+                  textField: { fullWidth: true },
+                }}
               />
             </Grid>
 
             <Grid item xs={3}>
               <DatePicker
-                label="Fecha de Creación (Fin)"
+                label="Fecha de Creación (Fin)" 
                 value={endDate ? new Date(endDate) : null}
-                onChange={(newValue) => setEndDate(newValue ? newValue.toISOString().split("T")[0] : "")}
-                renderInput={(params: React.JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<FilledTextFieldProps | OutlinedTextFieldProps | StandardTextFieldProps, "variant">) => <TextField {...params} fullWidth />}
+                onChange={(newValue) =>
+                  setEndDate(
+                    newValue ? newValue.toISOString().split("T")[0] : ""
+                  )
+                }
+                slotProps={{
+                  textField: { fullWidth: true },
+                }}
               />
             </Grid>
           </Grid>
@@ -125,9 +144,10 @@ const BaggageView: React.FC = () => {
             paginationModel={paginationModel}
             checkboxSelection
             disableRowSelectionOnClick
-            onRowSelectionModelChange={(newSelection) => setSelectedRows(newSelection as any[])}
+            onRowSelectionModelChange={(newSelection) =>
+              setSelectedRows(newSelection as any[])
+            }
             onPaginationModelChange={setPaginationModel}
-      
           />
         </div>
       </div>
