@@ -1,6 +1,6 @@
 import RolesView from "../../../view/users/roles/roles_view";
 
-const Roles:  React.FC = () => {
+const Roles = () => {
     return <RolesView />;
   };
   

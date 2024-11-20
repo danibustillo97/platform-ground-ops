@@ -1,9 +1,10 @@
-import React from "react";
+
 import LoginPage from "../../view/login/LoginPage";
 
 
 
-const Login: React.FC = () => {
+
+const Login = () => {
   return <LoginPage />;
 };
 

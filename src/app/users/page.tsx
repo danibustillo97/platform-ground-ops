@@ -1,9 +1,9 @@
 import UsersView from "../../view/users/UsersView"; 
 
 
-const Users: React.FC = () => {
+
+  const Users = () => {
     return <UsersView />;
   };
-  
 
 export default Users;
