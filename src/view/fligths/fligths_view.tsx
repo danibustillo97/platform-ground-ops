@@ -144,7 +144,7 @@ const FlightsPage = () => {
         selectedFlight !== null &&
         row.flight_number === selectedFlight?.flight_number,
       style: {
-        backgroundColor: "#510c76b9",
+        backgroundColor: "#723A90",
         color: "white",
         "&:hover": {
           cursor: "pointer",
