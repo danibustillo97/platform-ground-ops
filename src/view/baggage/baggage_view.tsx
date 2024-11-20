@@ -16,6 +16,10 @@ import {
   InputLabel,
   Grid,
   Box,
+  FilledTextFieldProps,
+  OutlinedTextFieldProps,
+  StandardTextFieldProps,
+  TextFieldVariants,
 } from "@mui/material";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { LocalizationProvider, DatePicker } from "@mui/x-date-pickers";
@@ -99,7 +103,7 @@ const BaggageView: React.FC = () => {
                 label="Fecha de Creación (Inicio)"
                 value={startDate ? new Date(startDate) : null}
                 onChange={(newValue) => setStartDate(newValue ? newValue.toISOString().split("T")[0] : "")}
-                renderInput={(params) => <TextField {...params} fullWidth />}
+                renderInput={(params: React.JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<FilledTextFieldProps | OutlinedTextFieldProps | StandardTextFieldProps, "variant">) => <TextField {...params} fullWidth />}
               />
             </Grid>
 
@@ -108,7 +112,7 @@ const BaggageView: React.FC = () => {
                 label="Fecha de Creación (Fin)"
                 value={endDate ? new Date(endDate) : null}
                 onChange={(newValue) => setEndDate(newValue ? newValue.toISOString().split("T")[0] : "")}
-                renderInput={(params) => <TextField {...params} fullWidth />}
+                renderInput={(params: React.JSX.IntrinsicAttributes & { variant?: TextFieldVariants | undefined; } & Omit<FilledTextFieldProps | OutlinedTextFieldProps | StandardTextFieldProps, "variant">) => <TextField {...params} fullWidth />}
               />
             </Grid>
           </Grid>
@@ -123,7 +127,7 @@ const BaggageView: React.FC = () => {
             disableRowSelectionOnClick
             onRowSelectionModelChange={(newSelection) => setSelectedRows(newSelection as any[])}
             onPaginationModelChange={setPaginationModel}
-            autoHeight
+      
           />
         </div>
       </div>
