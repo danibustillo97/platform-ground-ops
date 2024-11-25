@@ -10,7 +10,7 @@
     email: string;
     phone: string;
     rol: string;
-    estacion: string;
+    estacion: string[];
     password?: string;
 
   }
@@ -20,7 +20,7 @@
     email: string;
     phone: string;
     rol: string;
-    estacion: string;
+    estacion: string[];
     password?: string;
   }
 
@@ -31,5 +31,5 @@
     email: string;
     phone: string;
     rol: string;
-    estacion: string;
+    estacion: string[];
   }

@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import React, { useState, useEffect } from "react";
 import { Role } from "@/entities/Role";
 import { RoleRepositoryImpl } from "@/data/repositories/RoleRepositoryImpl";
@@ -8,11 +8,11 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
-  TextField,
   Grid,
   Paper,
   Typography,
   IconButton,
+  Box,
 } from "@mui/material";
 import { FaEdit } from "react-icons/fa";
 import { MdDeleteSweep } from "react-icons/md";
@@ -52,7 +52,7 @@ const RolesView: React.FC = () => {
           description: roleDescription,
           cant_user_asigned: 0,
         });
-        setRoles([...roles, newRole]);
+        setRoles((prevRoles) => [...prevRoles, newRole]);
         setIsAddModalOpen(false);
       } catch (error) {
         console.error("Error adding role:", error);
@@ -68,8 +68,8 @@ const RolesView: React.FC = () => {
           rol: roleName,
           description: roleDescription,
         });
-        setRoles(
-          roles.map((role) => (role.id === updatedRole.id ? updatedRole : role))
+        setRoles((prevRoles) =>
+          prevRoles.map((role) => (role.id === updatedRole.id ? updatedRole : role))
         );
         setIsEditModalOpen(false);
         setCurrentRole(null);
@@ -93,7 +93,7 @@ const RolesView: React.FC = () => {
     if (roleToDelete !== null) {
       try {
         await roleRepository.deleteRole(roleToDelete);
-        setRoles(roles.filter((role) => role.id !== roleToDelete));
+        setRoles((prevRoles) => prevRoles.filter((role) => role.id !== roleToDelete));
         setIsDeleteModalOpen(false);
         setRoleToDelete(null);
       } catch (error) {
@@ -127,59 +127,67 @@ const RolesView: React.FC = () => {
 
   return (
     <div style={{ padding: "20px" }}>
-      <Typography variant="h4" gutterBottom align="center">
+      <Typography variant="h4" gutterBottom align="center" color="primary">
         Gestión de Roles
       </Typography>
-      <Paper elevation={4} style={{ padding: "20px", marginBottom: "20px" }}>
-        <Grid container spacing={2} justifyContent="flex-end">
-          <Grid item>
-            <Button
-              variant="contained"
-              color="primary"
-              startIcon={<IoIosAddCircleOutline />}
-              onClick={() => setIsAddModalOpen(true)}
-            >
-              Añadir Rol
-            </Button>
-          </Grid>
-        </Grid>
-      </Paper>
-
-      <Paper
-        elevation={3}
-        style={{
-          padding: "20px",
-          boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
-        }}
+      <Box
+        display="flex"
+        justifyContent="flex-end"
+        marginBottom={2}
+        sx={{ padding: "20px 0" }}
       >
-        <Grid container spacing={2}>
-          {roles.length > 0 ? (
-            roles.map((role) => (
-              <Grid item xs={12} md={6} key={role.id}>
-                <Paper
-                  elevation={2}
-                  style={{ padding: "15px", backgroundColor: "#f9f9f9" }}
-                >
-                  <Typography variant="h6">{role.rol}</Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    {role.description}
-                  </Typography>
-                  <Typography variant="body2" color="textSecondary">
-                    Usuarios Asignados: {role.cant_user_asigned}
-                  </Typography>
-                  <div style={{ marginTop: "10px" }}>
-                    {actionsBodyTemplate(role)}
-                  </div>
-                </Paper>
-              </Grid>
-            ))
-          ) : (
-            <Typography variant="body1" color="textSecondary" align="center">
-              No hay roles disponibles.
-            </Typography>
-          )}
-        </Grid>
-      </Paper>
+        <Button
+          variant="contained"
+          color="primary"
+          startIcon={<IoIosAddCircleOutline />}
+          onClick={() => setIsAddModalOpen(true)}
+          sx={{
+            boxShadow: "0 4px 10px rgba(0,0,0,0.1)",
+            transition: "all 0.3s ease-in-out",
+            "&:hover": { boxShadow: "0 6px 15px rgba(0,0,0,0.2)" },
+          }}
+        >
+          Añadir Rol
+        </Button>
+      </Box>
+
+      {/* Modificar el Grid para que se alineen bien */}
+      <Grid container spacing={2} justifyContent="flex-start" alignItems="flex-start">
+        {roles.length > 0 ? (
+          roles.map((role) => (
+            <Grid item xs={12} sm={6} md={4} key={role.id}>
+              <Paper
+                elevation={3} // Sombra más marcada para mejor visibilidad
+                sx={{
+                  padding: "20px",
+                  backgroundColor: "#f9f9f9",
+                  borderRadius: "8px", // Bordes redondeados
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  transition: "all 0.3s ease-in-out",
+                  "&:hover": { boxShadow: "0 8px 20px rgba(0,0,0,0.2)" },
+                }}
+              >
+                <Typography variant="h6" color="primary" fontWeight="bold">
+                  {role.rol}
+                </Typography>
+                <Typography variant="body2" color="textSecondary" paragraph>
+                  {role.description}
+                </Typography>
+                <Typography variant="body2" color="textSecondary" paragraph>
+                  Usuarios Asignados: {role.cant_user_asigned}
+                </Typography>
+                <Box sx={{ marginTop: "10px", textAlign: "center" }}>
+                  {actionsBodyTemplate(role)}
+                </Box>
+              </Paper>
+            </Grid>
+          ))
+        ) : (
+          <Typography variant="body1" color="textSecondary" align="center" sx={{ width: "100%" }}>
+            No hay roles disponibles.
+          </Typography>
+        )}
+      </Grid>
 
       {/* Modal para agregar rol */}
       <ModalForm
@@ -209,7 +217,7 @@ const RolesView: React.FC = () => {
         <DialogTitle>Confirmar Eliminación</DialogTitle>
         <DialogContent>
           <Typography>
-            ¿Estás seguro de que deseas eliminar este rol?
+            ¿Estás seguro de que deseas eliminar este rol? Esta acción no se puede deshacer.
           </Typography>
         </DialogContent>
         <DialogActions>
