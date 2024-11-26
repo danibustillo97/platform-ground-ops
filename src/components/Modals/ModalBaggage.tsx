@@ -1,6 +1,6 @@
 import React from "react";
 import styles from "./Modal.module.css";
-import { BaggageCase, Status } from "@/types/BaggageCase";
+import { BaggageCase, Status } from "@/domain/types/BaggageCase"; // Importa la definición correcta
 import useModalBaggageController from "./useModalBaggageController";
 
 interface ModalBaggageProps {
@@ -10,7 +10,12 @@ interface ModalBaggageProps {
   onSave: (updatedDetails: BaggageCase) => void;
 }
 
-const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, onSave }) => {
+const ModalBaggage: React.FC<ModalBaggageProps> = ({
+  isOpen,
+  onClose,
+  details,
+  onSave,
+}) => {
   // Si details es null, no se puede utilizar
   if (!details) return null;
 
@@ -22,8 +27,7 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
     handleEmailChange,
     handleStatusChange,
     handleSubmit,
-  } = useModalBaggageController(details, onSave);
-
+  } = useModalBaggageController(details, onSave); // No es necesario hacer un cast si las interfaces coinciden
 
   if (!isOpen) return null;
 
@@ -38,10 +42,10 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
           <p>
             <strong>Teléfono:</strong>
             <input
-              type="tel" 
+              type="tel"
               value={phone}
               onChange={handlePhoneChange}
-              required 
+              required
               className={styles.input} // Aplicar clase de módulo
             />
           </p>
@@ -76,13 +80,21 @@ const ModalBaggage: React.FC<ModalBaggageProps> = ({ isOpen, onClose, details, o
             </select>
           </p>
           <p>
-            <strong>Fecha de Creación:</strong> {new Date(details.date_create.split("T")[0]).toLocaleDateString()}
+            <strong>Fecha de Creación:</strong>{" "}
+            {new Date(details.date_create.split("T")[0]).toLocaleDateString()}
           </p>
           <div className={styles.buttonGroup}>
-            <button type="submit" className={`${styles.button} ${styles.saveButton}`}>
+            <button
+              type="submit"
+              className={`${styles.button} ${styles.saveButton}`}
+            >
               Actualizar
             </button>
-            <button type="button" onClick={onClose} className={`${styles.button} ${styles.closeButton}`}>
+            <button
+              type="button"
+              onClick={onClose}
+              className={`${styles.button} ${styles.closeButton}`}
+            >
               Cerrar
             </button>
           </div>

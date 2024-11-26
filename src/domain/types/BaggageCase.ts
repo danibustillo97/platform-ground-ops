@@ -8,7 +8,7 @@ export enum Status{
 export interface BaggageCase {
     id: string;
     baggage_code: string;
-    PNR: string;
+    PNR?: string; 
     contact: {
       phone: string;
       email: string;
