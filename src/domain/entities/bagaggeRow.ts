@@ -1,11 +1,4 @@
-export enum Status{
-    closed = "Cerrado",
-    open = "Abierto",
-    standby_form = "En espera de formulario",
-    standby_pax = "En espera de pasajero"
-}
-
-export interface BaggageCase {
+export interface BaggageRow {
     id: string;
     baggage_code: string;
     PNR: string;
@@ -25,4 +18,4 @@ export interface BaggageCase {
     status: string;
     date_create: string;
     number_ticket_zendesk: string;
-}
+  }

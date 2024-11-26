@@ -7,6 +7,7 @@ import {
 } from "@/data/api/baggageAPI";
 import { BaggageCase } from "@/domain/types/BaggageCase";
 
+
 export const useBaggageCasesController = () => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [statusFilter, setStatusFilter] = useState<string>("");
@@ -39,7 +40,7 @@ export const useBaggageCasesController = () => {
 
       const matchesSearchTerm =
         !searchTerm ||
-        (row.pnr && row.pnr.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (row.PNR && row.PNR.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (row.passenger_name && row.passenger_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (row.status && row.status.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (row.baggage_code && row.baggage_code.toLowerCase().includes(searchTerm.toLowerCase()));

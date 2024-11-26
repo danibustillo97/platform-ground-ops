@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useBaggageCasesController } from "./useBaggageCasesController";
+import { BaggageCase } from "@/domain/types/BaggageCase";
 import {
   TextField,
   Select,
@@ -28,6 +29,7 @@ import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { createTheme, ThemeProvider, styled } from "@mui/material/styles";
+import { auto } from "@popperjs/core";
 
 const theme = createTheme({
   palette: {
@@ -112,48 +114,80 @@ const BaggageView: React.FC = () => {
     }));
   };
 
+  const cleanedData = filteredData.map((row) => ({
+    ...row,
+    contact: row.contact || { email: "", phone: "" },
+    contact_phone: row.contact?.phone || "",
+    contact_email: row.contact?.email || "",
+  }));
+
   const columns: GridColDef[] = [
-    { field: "PNR", headerName: "PNR", width: 150, editable: true },
+    {
+      field: "PNR",
+      headerName: "PNR",
+      width: 150,
+      editable: true,
+      minWidth: 100,
+    },
     {
       field: "baggage_code",
       headerName: "Código de Equipaje",
-      width: 180,
+      flex: 1, // Ajuste dinámico
+      minWidth: 180, // Añadir un mínimo para evitar que sea demasiado estrecho
       editable: true,
     },
     {
       field: "number_ticket_zendesk",
       headerName: "Ticket Zendesk",
       width: 180,
+      minWidth: 150, // Para evitar que sea muy pequeño
     },
     {
-      field: "contact.phone",
+      field: "contact_phone",
       headerName: "Teléfono",
-      width: 180,
+      flex: 1, // Ajuste dinámico
+      minWidth: 180, // Añadir un mínimo para evitar que se corte
       editable: true,
     },
-    { field: "contact.email", headerName: "Email", width: 250, editable: true },
+    {
+      field: "contact_email",
+      headerName: "Email",
+      flex: 2, // Más espacio para el email
+      minWidth: 250, // Añadir un mínimo para evitar que se corte
+      editable: true,
+    },
     {
       field: "passenger_name",
       headerName: "Nombre Pasajero",
-      width: 200,
+      flex: 1, // Ajuste dinámico
+      minWidth: 200, // Para evitar que se corte
       editable: true,
     },
     {
       field: "issue_type",
       headerName: "Tipo de Problema",
       width: 200,
+      minWidth: 180, // Para que no se corte
     },
-    { field: "status", headerName: "Estado", width: 150, editable: true },
+    {
+      field: "status",
+      headerName: "Estado",
+      width: 150,
+      editable: true,
+      minWidth: 120,
+    },
     {
       field: "date_create",
       headerName: "Fecha de Creación",
       width: 200,
+      minWidth: 150, // Evita que sea muy pequeño
     },
     {
       field: "description",
       headerName: "Descripción",
       width: 250,
       editable: true,
+      minWidth: 180, // Evita que se corte
     },
     {
       field: "actions",
@@ -256,26 +290,27 @@ const BaggageView: React.FC = () => {
               borderRadius: 2,
               boxShadow: 2,
               scrollBehavior: "smooth",
+              overflowX: auto,
+              msOverflowY: auto,
             }}
           >
             <DataGrid
-              rows={filteredData}
+              rows={cleanedData}
               columns={columns}
               rowModesModel={rowModesModel}
-              processRowUpdate={(row) => {
-                console.log("Datos actualizados:", row);
-                return row;
-              }}
+              autoHeight
               editMode="row"
               checkboxSelection
               disableRowSelectionOnClick
               sx={{
-                ".MuiDataGrid-columnHeaders": {
+                width: "100%",
+                overflowX: scroll,
+                ".MuiDataGrid-columnHeader": {
                   backgroundColor: "#510C76",
-                  color: "#20201E ",
+                  color: "#ffffff",
                 },
                 ".MuiDataGrid-cell": {
-                  fontSize: "0.9rem",
+                  fontSize: 12,
                 },
               }}
             />
