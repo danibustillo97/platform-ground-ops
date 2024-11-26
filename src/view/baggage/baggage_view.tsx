@@ -304,7 +304,7 @@ const BaggageView: React.FC = () => {
               disableRowSelectionOnClick
               sx={{
                 width: "100%",
-                overflowX: scroll,
+                overflowX: auto,
                 ".MuiDataGrid-columnHeader": {
                   backgroundColor: "#510C76",
                   color: "#ffffff",
