@@ -6,12 +6,12 @@ import {
   TextField,
   Select,
   MenuItem,
-  Button,
   FormControl,
   InputLabel,
   Grid,
-  IconButton,
   Box,
+  Typography,
+  Paper,
 } from "@mui/material";
 import {
   DataGrid,
@@ -27,8 +27,53 @@ import dayjs from "dayjs";
 import EditIcon from "@mui/icons-material/Edit";
 import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
+import { createTheme, ThemeProvider, styled } from "@mui/material/styles";
 
-import styles from "@/view/baggage/baggage.module.css";
+const theme = createTheme({
+  palette: {
+    primary: {
+      main: "#510C76",
+    },
+    secondary: {
+      main: "#ffffff",
+    },
+    background: {
+      default: "#f4f4f9",
+    },
+  },
+  typography: {
+    fontFamily: "Roboto, Arial, sans-serif",
+    h1: {
+      fontSize: "2rem",
+      fontWeight: 700,
+    },
+    body1: {
+      fontSize: "1rem",
+    },
+  },
+});
+
+const Container = styled(Box)(({ theme }) => ({
+  backgroundColor: theme.palette.background.default,
+  padding: theme.spacing(4),
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[4],
+  [theme.breakpoints.down("sm")]: {
+    padding: theme.spacing(2),
+  },
+}));
+
+const FilterPaper = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(2),
+  borderRadius: theme.shape.borderRadius,
+  boxShadow: theme.shadows[3],
+  backgroundColor: theme.palette.background.default,
+  marginBottom: theme.spacing(3),
+  [theme.breakpoints.down("sm")]: {
+    boxShadow: theme.shadows[1],
+    padding: theme.spacing(1.5),
+  },
+}));
 
 const BaggageView: React.FC = () => {
   const {
@@ -57,7 +102,6 @@ const BaggageView: React.FC = () => {
       ...prev,
       [id]: { mode: GridRowModes.View },
     }));
-    // Lógica para guardar los datos editados en el backend
     console.log("Guardar cambios para el ID:", id);
   };
 
@@ -80,7 +124,6 @@ const BaggageView: React.FC = () => {
       field: "number_ticket_zendesk",
       headerName: "Ticket Zendesk",
       width: 180,
-      editable: true,
     },
     {
       field: "contact.phone",
@@ -99,14 +142,12 @@ const BaggageView: React.FC = () => {
       field: "issue_type",
       headerName: "Tipo de Problema",
       width: 200,
-      editable: true,
     },
     { field: "status", headerName: "Estado", width: 150, editable: true },
     {
       field: "date_create",
       headerName: "Fecha de Creación",
       width: 200,
-      editable: true,
     },
     {
       field: "description",
@@ -121,17 +162,17 @@ const BaggageView: React.FC = () => {
       width: 100,
       getActions: ({ id }) => [
         <GridActionsCellItem
-          icon={<EditIcon />}
+          icon={<EditIcon color="primary" />}
           label="Editar"
           onClick={() => handleEditClick(id)}
         />,
         <GridActionsCellItem
-          icon={<SaveIcon />}
+          icon={<SaveIcon color="primary" />}
           label="Guardar"
           onClick={() => handleSaveClick(id)}
         />,
         <GridActionsCellItem
-          icon={<CancelIcon />}
+          icon={<CancelIcon color="error" />}
           label="Cancelar"
           onClick={() => handleCancelClick(id)}
         />,
@@ -140,84 +181,108 @@ const BaggageView: React.FC = () => {
   ];
 
   return (
-    <LocalizationProvider dateAdapter={AdapterDayjs}>
-      <div className={styles.baggageContainer}>
-        <header className={styles.header}>
-          <h1>Gestión de Equipaje</h1>
-        </header>
+    <ThemeProvider theme={theme}>
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <Container>
+          <Typography variant="h1" color="primary" align="center" gutterBottom>
+            Gestión de Equipaje
+          </Typography>
 
-        <div className={styles.filtersContainer}>
-          <Grid container spacing={2} alignItems="center">
-            <Grid item xs={3}>
-              <TextField
-                label="Buscar por PNR, pasajero o estado"
-                variant="outlined"
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                fullWidth
-              />
+          {/* Filtros */}
+          <FilterPaper>
+            <Grid container spacing={3}>
+              <Grid item xs={12} sm={6} md={3}>
+                <TextField
+                  label="Buscar por PNR, pasajero o estado"
+                  variant="outlined"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  fullWidth
+                  size="small"
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <FormControl fullWidth size="small">
+                  <InputLabel>Filtrar por estado</InputLabel>
+                  <Select
+                    value={statusFilter}
+                    onChange={(e) => setStatusFilter(e.target.value)}
+                    label="Filtrar por estado"
+                  >
+                    {[
+                      "Abierto",
+                      "Cerrado",
+                      "En espera de pasajero",
+                      "En espera de formulario",
+                    ].map((status) => (
+                      <MenuItem key={status} value={status}>
+                        {status}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <DatePicker
+                  label="Fecha Inicio"
+                  value={startDate ? dayjs(startDate) : null}
+                  onChange={(newValue) =>
+                    setStartDate(newValue?.toISOString() || "")
+                  }
+                  slotProps={{ textField: { size: "small", fullWidth: true } }}
+                />
+              </Grid>
+
+              <Grid item xs={12} sm={6} md={3}>
+                <DatePicker
+                  label="Fecha Fin"
+                  value={endDate ? dayjs(endDate) : null}
+                  onChange={(newValue) =>
+                    setEndDate(newValue?.toISOString() || "")
+                  }
+                  slotProps={{ textField: { size: "small", fullWidth: true } }}
+                />
+              </Grid>
             </Grid>
+          </FilterPaper>
 
-            <Grid item xs={3}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Filtrar por estado</InputLabel>
-                <Select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  label="Filtrar por estado"
-                >
-                  {[
-                    "Abierto",
-                    "Cerrado",
-                    "En espera de pasajero",
-                    "En espera de formulario",
-                  ].map((status) => (
-                    <MenuItem key={status} value={status}>
-                      {status}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Grid>
-
-            <Grid item xs={3}>
-              <DatePicker
-                label="Fecha de Creación (Inicio)"
-                value={startDate ? dayjs(startDate) : null}
-                onChange={(newValue) =>
-                  setStartDate(newValue?.toISOString() || "")
-                }
-              />
-            </Grid>
-
-            <Grid item xs={3}>
-              <DatePicker
-                label="Fecha de Creación (Fin)"
-                value={endDate ? dayjs(endDate) : null}
-                onChange={(newValue) =>
-                  setEndDate(newValue?.toISOString() || "")
-                }
-              />
-            </Grid>
-          </Grid>
-        </div>
-
-        <div className={styles.dataTableContainer}>
-          <DataGrid
-            rows={filteredData}
-            columns={columns}
-            rowModesModel={rowModesModel}
-            processRowUpdate={(row) => {
-              console.log("Datos actualizados:", row);
-              return row; // Aquí puedes enviar los datos al backend
+          {/* Tabla */}
+          <Box
+            sx={{
+              height: "70vh",
+              bgcolor: "white",
+              borderRadius: 2,
+              boxShadow: 2,
+              scrollBehavior: "smooth",
             }}
-            editMode="row" // Habilita el modo de edición por filas
-            checkboxSelection
-            disableRowSelectionOnClick
-          />
-        </div>
-      </div>
-    </LocalizationProvider>
+          >
+            <DataGrid
+              rows={filteredData}
+              columns={columns}
+              rowModesModel={rowModesModel}
+              processRowUpdate={(row) => {
+                console.log("Datos actualizados:", row);
+                return row;
+              }}
+              editMode="row"
+              checkboxSelection
+              disableRowSelectionOnClick
+              sx={{
+                ".MuiDataGrid-columnHeaders": {
+                  backgroundColor: "#510C76",
+                  color: "#20201E ",
+                },
+                ".MuiDataGrid-cell": {
+                  fontSize: "0.9rem",
+                },
+              }}
+            />
+          </Box>
+        </Container>
+      </LocalizationProvider>
+    </ThemeProvider>
   );
 };
 
