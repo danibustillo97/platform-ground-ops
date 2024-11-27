@@ -1,8 +1,7 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useBaggageCasesController } from "./useBaggageCasesController";
-import { BaggageCase } from "@/domain/types/BaggageCase";
 import {
   TextField,
   Select,
@@ -13,6 +12,12 @@ import {
   Box,
   Typography,
   Paper,
+  IconButton,
+  AppBar,
+  CssBaseline,
+  Toolbar,
+  Menu,
+  Button,
 } from "@mui/material";
 import {
   DataGrid,
@@ -30,6 +35,12 @@ import SaveIcon from "@mui/icons-material/Save";
 import CancelIcon from "@mui/icons-material/Cancel";
 import { createTheme, ThemeProvider, styled } from "@mui/material/styles";
 import { auto } from "@popperjs/core";
+import MenuIcon from "@mui/icons-material/Menu";
+import clsx from "clsx";
+import LuggageIcon from "@mui/icons-material/Luggage";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import DownloadIcon from "@mui/icons-material/Download"; // Ícono para "Exportar Excel"
+import AddCircleIcon from "@mui/icons-material/AddCircle";
 
 const theme = createTheme({
   palette: {
@@ -40,7 +51,7 @@ const theme = createTheme({
       main: "#ffffff",
     },
     background: {
-      default: "#f4f4f9",
+      default: "#f5f6fa",
     },
   },
   typography: {
@@ -50,7 +61,7 @@ const theme = createTheme({
       fontWeight: 700,
     },
     body1: {
-      fontSize: "1rem",
+      fontSize: "0.9rem",
     },
   },
 });
@@ -59,7 +70,7 @@ const Container = styled(Box)(({ theme }) => ({
   backgroundColor: theme.palette.background.default,
   padding: theme.spacing(4),
   borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[4],
+  boxShadow: "0px 4px 12px rgba(0, 0, 0, 0.1)",
   [theme.breakpoints.down("sm")]: {
     padding: theme.spacing(2),
   },
@@ -68,11 +79,9 @@ const Container = styled(Box)(({ theme }) => ({
 const FilterPaper = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(2),
   borderRadius: theme.shape.borderRadius,
-  boxShadow: theme.shadows[3],
-  backgroundColor: theme.palette.background.default,
+  boxShadow: "0px 2px 8px rgba(0, 0, 0, 0.1)",
   marginBottom: theme.spacing(3),
   [theme.breakpoints.down("sm")]: {
-    boxShadow: theme.shadows[1],
     padding: theme.spacing(1.5),
   },
 }));
@@ -91,6 +100,8 @@ const BaggageView: React.FC = () => {
   } = useBaggageCasesController();
 
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const open = Boolean(anchorEl);
 
   const handleEditClick = (id: any) => {
     setRowModesModel((prev) => ({
@@ -114,6 +125,14 @@ const BaggageView: React.FC = () => {
     }));
   };
 
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
   const cleanedData = filteredData.map((row) => ({
     ...row,
     contact: row.contact || { email: "", phone: "" },
@@ -122,78 +141,45 @@ const BaggageView: React.FC = () => {
   }));
 
   const columns: GridColDef[] = [
-    {
-      field: "PNR",
-      headerName: "PNR",
-      width: 150,
-      editable: true,
-      minWidth: 100,
-    },
+    { field: "PNR", headerName: "PNR", width: 100, editable: true },
     {
       field: "baggage_code",
       headerName: "Código de Equipaje",
-      flex: 1, // Ajuste dinámico
-      minWidth: 180, // Añadir un mínimo para evitar que sea demasiado estrecho
+      width: 100,
       editable: true,
     },
     {
       field: "number_ticket_zendesk",
       headerName: "Ticket Zendesk",
-      width: 180,
-      minWidth: 150, // Para evitar que sea muy pequeño
+      width: 100,
     },
     {
       field: "contact_phone",
       headerName: "Teléfono",
-      flex: 1, // Ajuste dinámico
-      minWidth: 180, // Añadir un mínimo para evitar que se corte
+      width: 100,
       editable: true,
     },
-    {
-      field: "contact_email",
-      headerName: "Email",
-      flex: 2, // Más espacio para el email
-      minWidth: 250, // Añadir un mínimo para evitar que se corte
-      editable: true,
-    },
+    { field: "contact_email", headerName: "Email", width: 200, editable: true },
     {
       field: "passenger_name",
       headerName: "Nombre Pasajero",
-      flex: 1, // Ajuste dinámico
-      minWidth: 200, // Para evitar que se corte
+      width: 200,
       editable: true,
     },
-    {
-      field: "issue_type",
-      headerName: "Tipo de Problema",
-      width: 200,
-      minWidth: 180, // Para que no se corte
-    },
-    {
-      field: "status",
-      headerName: "Estado",
-      width: 150,
-      editable: true,
-      minWidth: 120,
-    },
-    {
-      field: "date_create",
-      headerName: "Fecha de Creación",
-      width: 200,
-      minWidth: 150, // Evita que sea muy pequeño
-    },
+    { field: "issue_type", headerName: "Tipo de Problema", width: 120 },
+    { field: "status", headerName: "Estado", width: 100, editable: true },
+    { field: "date_create", headerName: "Fecha de Creación", width: 200 },
     {
       field: "description",
       headerName: "Descripción",
-      width: 250,
+      width: 300,
       editable: true,
-      minWidth: 180, // Evita que se corte
     },
     {
       field: "actions",
       type: "actions",
       headerName: "Acciones",
-      width: 100,
+      width: 200,
       getActions: ({ id }) => [
         <GridActionsCellItem
           icon={<EditIcon color="primary" />}
@@ -217,32 +203,109 @@ const BaggageView: React.FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <Container>
-          <Typography variant="h1" color="primary" align="center" gutterBottom>
-            Gestión de Equipaje
-          </Typography>
+        <CssBaseline />
+        <AppBar
+          position="static"
+          sx={{ mb: 3, backgroundColor: "#510C76", height: "56px" }}
+        >
+          <Toolbar sx={{ padding: "0 16px" }}>
+            <Typography
+              variant="h6"
+              noWrap
+              sx={{ flexGrow: 1, fontSize: "1rem" }}
+            >
+              Gestión de Equipaje
+            </Typography>
 
-          {/* Filtros */}
-          <FilterPaper>
-            <Grid container spacing={3}>
+            {/* Botón de Exportar Excel */}
+            <Button
+              color="inherit"
+              sx={{
+                mr: 2,
+                fontSize: "0.875rem", // Fuente más pequeña
+                borderRadius: "10px", // Bordes más suaves (menos redondeados)
+                padding: "6px 12px", // Más compacto
+              }}
+              onClick={() => console.log("Exportar Excel")}
+              startIcon={<DownloadIcon />} // Ícono de exportar
+            >
+              Exportar Excel
+            </Button>
+
+            {/* Botón de Añadir Nuevo Caso */}
+            <Button
+              color="inherit"
+              sx={{
+                mr: 2,
+                fontSize: "0.875rem", // Fuente más pequeña
+                borderRadius: "10px", // Bordes más suaves (menos redondeados)
+                padding: "6px 12px", // Más compacto
+              }}
+              onClick={() => console.log("Añadir Nuevo Caso")}
+              startIcon={<AddCircleIcon />} // Ícono de añadir
+            >
+              Añadir Nuevo Caso
+            </Button>
+
+            {/* Agente Asignado - Menú */}
+            <Button
+              color="inherit"
+              sx={{
+                mr: 2,
+                fontSize: "0.875rem", // Fuente más pequeña
+                borderRadius: "10px", // Bordes más suaves (menos redondeados)
+                padding: "6px 12px", // Más compacto
+              }}
+              onClick={handleMenuClick}
+              endIcon={<MoreVertIcon />}
+            >
+              Agente Asignado
+            </Button>
+            <Menu
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleCloseMenu}
+              MenuListProps={{
+                "aria-labelledby": "basic-button",
+              }}
+            >
+              <MenuItem onClick={handleCloseMenu}>Agente 1</MenuItem>
+              <MenuItem onClick={handleCloseMenu}>Agente 2</MenuItem>
+              <MenuItem onClick={handleCloseMenu}>Agente 3</MenuItem>
+            </Menu>
+          </Toolbar>
+        </AppBar>
+        <Box sx={{ width: "100%", height: "100vh", overflow: "auto" }}>
+          <Paper
+            elevation={3}
+            sx={{
+              p: 3,
+              mb: 3,
+              borderRadius: 2,
+              boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+            }}
+          >
+            <Typography variant="h6" gutterBottom sx={{ mb: 2 }}>
+              Filtros de Búsqueda
+            </Typography>
+            <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={3}>
                 <TextField
-                  label="Buscar por PNR, pasajero o estado"
-                  variant="outlined"
+                  label="Buscar"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  variant="outlined"
                   fullWidth
                   size="small"
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={3}>
                 <FormControl fullWidth size="small">
-                  <InputLabel>Filtrar por estado</InputLabel>
+                  <InputLabel>Estado</InputLabel>
                   <Select
                     value={statusFilter}
                     onChange={(e) => setStatusFilter(e.target.value)}
-                    label="Filtrar por estado"
+                    label="Estado"
                   >
                     {[
                       "Abierto",
@@ -257,7 +320,6 @@ const BaggageView: React.FC = () => {
                   </Select>
                 </FormControl>
               </Grid>
-
               <Grid item xs={12} sm={6} md={3}>
                 <DatePicker
                   label="Fecha Inicio"
@@ -268,7 +330,6 @@ const BaggageView: React.FC = () => {
                   slotProps={{ textField: { size: "small", fullWidth: true } }}
                 />
               </Grid>
-
               <Grid item xs={12} sm={6} md={3}>
                 <DatePicker
                   label="Fecha Fin"
@@ -280,42 +341,20 @@ const BaggageView: React.FC = () => {
                 />
               </Grid>
             </Grid>
-          </FilterPaper>
+          </Paper>
 
-          {/* Tabla */}
-          <Box
-            sx={{
-              height: "70vh",
-              bgcolor: "white",
-              borderRadius: 2,
-              boxShadow: 2,
-              scrollBehavior: "smooth",
-              overflowX: auto,
-              msOverflowY: auto,
-            }}
-          >
+          <Container>
             <DataGrid
               rows={cleanedData}
               columns={columns}
-              rowModesModel={rowModesModel}
-              autoHeight
-              editMode="row"
               checkboxSelection
-              disableRowSelectionOnClick
-              sx={{
-                width: "100%",
-                overflowX: auto,
-                ".MuiDataGrid-columnHeader": {
-                  backgroundColor: "#510C76",
-                  color: "#ffffff",
-                },
-                ".MuiDataGrid-cell": {
-                  fontSize: 12,
-                },
-              }}
+              rowModesModel={rowModesModel}
+              onRowModesModelChange={setRowModesModel}
+              getRowId={(row) => row.PNR}
+              sx={{ height: "calc(100vh - 260px)", width: "100%" }}
             />
-          </Box>
-        </Container>
+          </Container>
+        </Box>
       </LocalizationProvider>
     </ThemeProvider>
   );

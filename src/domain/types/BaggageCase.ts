@@ -26,3 +26,9 @@ export interface BaggageCase {
     date_create: string;
     number_ticket_zendesk: string;
 }
+
+
+export interface ChartData {
+  name: string;
+  value: number;
+}
