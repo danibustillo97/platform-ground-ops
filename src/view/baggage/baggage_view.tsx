@@ -206,7 +206,12 @@ const BaggageView: React.FC = () => {
         <CssBaseline />
         <AppBar
           position="static"
-          sx={{ mb: 3, backgroundColor: "#510C76", height: "56px" }}
+          sx={{
+            mb: 3,
+            backgroundColor: "#510C76",
+            height: "56px",
+            borderRadius: "16px",
+          }}
         >
           <Toolbar sx={{ padding: "0 16px" }}>
             <Typography
@@ -223,7 +228,7 @@ const BaggageView: React.FC = () => {
               sx={{
                 mr: 2,
                 fontSize: "0.875rem", // Fuente más pequeña
-                borderRadius: "10px", // Bordes más suaves (menos redondeados)
+                borderRadius: "20px", // Bordes más redondeados y suavizados
                 padding: "6px 12px", // Más compacto
               }}
               onClick={() => console.log("Exportar Excel")}
@@ -238,7 +243,7 @@ const BaggageView: React.FC = () => {
               sx={{
                 mr: 2,
                 fontSize: "0.875rem", // Fuente más pequeña
-                borderRadius: "10px", // Bordes más suaves (menos redondeados)
+                borderRadius: "20px", // Bordes más redondeados y suavizados
                 padding: "6px 12px", // Más compacto
               }}
               onClick={() => console.log("Añadir Nuevo Caso")}
@@ -253,7 +258,7 @@ const BaggageView: React.FC = () => {
               sx={{
                 mr: 2,
                 fontSize: "0.875rem", // Fuente más pequeña
-                borderRadius: "10px", // Bordes más suaves (menos redondeados)
+                borderRadius: "20px", // Bordes más redondeados y suavizados
                 padding: "6px 12px", // Más compacto
               }}
               onClick={handleMenuClick}
@@ -351,7 +356,15 @@ const BaggageView: React.FC = () => {
               rowModesModel={rowModesModel}
               onRowModesModelChange={setRowModesModel}
               getRowId={(row) => row.PNR}
-              sx={{ height: "calc(100vh - 260px)", width: "100%" }}
+              sx={{
+                height: "calc(100vh - 260px)",
+                width: "100%",
+                "& .MuiDataGrid-columnHeaders": {
+                  backgroundColor: "#510C76 ",
+                  color: "#510C76 ",
+                  fontWeight: "bold",
+                },
+              }}
             />
           </Container>
         </Box>
