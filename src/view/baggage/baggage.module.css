@@ -1,0 +1,13 @@
+.statusAbierto {
+    background-color: red;
+    color: white;
+  }
+  .statusCerrado {
+    background-color: #9BBE68;
+    color: white;
+  }
+  .statusEnEspera {
+    background-color: #FFC400;
+    color: #20201E;
+  }
+  

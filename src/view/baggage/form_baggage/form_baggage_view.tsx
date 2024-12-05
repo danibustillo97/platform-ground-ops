@@ -47,16 +47,19 @@ const FormReclamoView: React.FC = () => {
 
     const consolePrueba = () => console.log("click")
 
-    const popUpCreateCase = (event: { currentTarget: any; }) => {
-        confirmPopup({
-            target: event.currentTarget,
-            message: 'Are you sure you want to proceed?',
-            icon: 'pi pi-exclamation-triangle',
-            defaultFocus: 'accept',
-            accept: () => handleCreateCases,
-            reject
-        });
-    };
+        const popUpCreateCase = (event: { currentTarget: any; }) => {
+            confirmPopup({
+                target: event.currentTarget,
+                message: 'Are you sure you want to proceed?',
+                icon: 'pi pi-exclamation-triangle',
+                defaultFocus: 'accept',
+                acceptClassName: `${styles.customButton}`,
+                rejectClassName: `${styles.customButton} ${styles.customRejectButton}`,
+                className: `${styles.customPopup}`,
+                accept: () => handleCreateCases,
+                reject
+            });
+        };
 
     const popUpBack = (event: { currentTarget: any }) => {
         confirmPopup({

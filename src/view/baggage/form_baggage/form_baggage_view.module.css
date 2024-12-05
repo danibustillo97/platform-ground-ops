@@ -342,3 +342,66 @@
         left: 20px;     
     }
 }
+
+
+/* baggage.module.css */
+
+.customPopup {
+    background-color: #ffffff;
+    border: 2px solid #510C76;
+    border-radius: 10px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    font-family: Roboto, Arial, sans-serif;
+    color: #333;
+    max-width: 400px;
+  }
+  
+  .customPopup .customHeader {
+    font-size: 1.2rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #510C76;
+  }
+  
+  .customPopup .customIcon {
+    font-size: 2rem;
+    color: #510C76;
+    margin-right: 10px;
+  }
+  
+  .customPopup .customMessage {
+    font-size: 1rem;
+    margin: 10px 0;
+    line-height: 1.5;
+  }
+  
+  .customPopup .customButtons {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+  }
+  
+  .customPopup .customButton {
+    background-color: #510C76;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    padding: 8px 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  
+  .customPopup .customButton:hover {
+    background-color: #6f228d;
+  }
+  
+  .customPopup .customRejectButton {
+    background-color: #ccc;
+    color: #333;
+  }
+  
+  .customPopup .customRejectButton:hover {
+    background-color: #999;
+  }
+  

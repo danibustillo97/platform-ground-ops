@@ -23,3 +23,8 @@ export interface BaggageCase {
     last_updated: string; 
     number_ticket_zendesk:string
 }
+
+
+export interface UpdateBaggageCase{
+    
+}
