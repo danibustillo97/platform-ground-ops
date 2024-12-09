@@ -1,13 +1,149 @@
-.statusAbierto {
-    background-color: red;
-    color: white;
+/* Estilos generales para el contenedor de la página */
+.pageContainer {
+  width: 100%;
+  overflow-x: auto;
+  /* Scroll horizontal para toda la pantalla */
+  padding: 10px;
+  background-color: #f9f9f9;
+  /* Fondo claro */
+}
+
+/* Contenedor de la tabla */
+.tableContainer {
+  max-width: 100%;
+  overflow-x: auto;
+  /* Scroll horizontal para la tabla */
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background-color: #fff;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+  margin: 20px 0;
+  padding: 15px;
+}
+
+/* Contenedor de los botones de acción */
+.actionButtons {
+  display: flex;
+  justify-content: center;
+  /* Centra los botones */
+  gap: 12px;
+  /* Espacio entre botones */
+  align-items: center;
+  /* Alineación vertical */
+}
+
+/* Estilo individual de los botones */
+.actionButton {
+  font-size: 1.2rem;
+  /* Tamaño de íconos mayor */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  /* Forma circular */
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Colores específicos para los botones */
+.actionButton.outline-primary {
+  color: #510c76;
+  background-color: #fff;
+  border: 1px solid #510c76;
+}
+
+.actionButton.outline-primary:hover {
+  background-color: #510c76;
+  color: #fff;
+}
+
+.actionButton.outline-success {
+  color: #28a745;
+  background-color: #fff;
+  border: 1px solid #28a745;
+}
+
+.actionButton.outline-success:hover {
+  background-color: #28a745;
+  color: #fff;
+}
+
+.actionButton.outline-danger {
+  color: #dc3545;
+  background-color: #fff;
+  border: 1px solid #dc3545;
+}
+
+.actionButton.outline-danger:hover {
+  background-color: #dc3545;
+  color: #fff;
+}
+
+/* Estilo para mensajes de "no data" */
+.noData {
+  color: #666;
+  text-align: center;
+  font-size: 1rem;
+  font-weight: bold;
+  padding: 20px;
+}
+
+/* Alineación de celdas y colores de la tabla */
+.dataTableHeader {
+  background-color: #510c76;
+  color: white;
+  font-size: 1.1rem;
+  text-align: center;
+  padding: 10px 0;
+}
+
+.dataTableCell {
+  text-align: center;
+  vertical-align: middle;
+  font-size: 0.9rem;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding: 8px;
+}
+
+.editableField {
+  border: 1px solid #ccc;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s ease-in-out;
+}
+
+.editableField:focus {
+  border-color: #510C76; /* Color profesional */
+  box-shadow: 0 0 5px rgba(81, 12, 118, 0.5);
+}
+
+.modalComment{
+  margin-top: 80px;
+}
+
+
+.CardHeader{
+  background-color: #510C76;
+  color: white;
+}
+
+/* Responsividad */
+@media (max-width: 768px) {
+  .actionButton {
+    font-size: 1rem;
+    width: 35px;
+    height: 35px;
   }
-  .statusCerrado {
-    background-color: #9BBE68;
-    color: white;
+
+  .tableContainer {
+    padding: 10px;
   }
-  .statusEnEspera {
-    background-color: #FFC400;
-    color: #20201E;
+
+  .dataTableCell {
+    font-size: 0.85rem;
+    padding: 5px;
   }
-  
+}
