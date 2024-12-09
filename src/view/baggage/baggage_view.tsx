@@ -1,11 +1,11 @@
 "use client"
 import React from "react";
-import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Card, Spinner, Button } from "react-bootstrap";
 import { useBaggageCasesController } from "@/view/baggage/useBaggageCasesController";
 import Filters from "@/view/baggage/components/Filters";
 import BaggageTable from "@/view/baggage/components/BaggageTable";
 import { BaggageCase } from "@/domain/types/BaggageCase";
-import styles from "@/view/baggage/baggage.module.css"
+import styles from "@/view/baggage/baggage.module.css";
 
 const BaggageView: React.FC = () => {
   const { loading, filters, filteredCases, setFilter, updateCase } =
@@ -21,6 +21,17 @@ const BaggageView: React.FC = () => {
 
   const handleCancel = (id: string) => {
     console.log("Cancel", id);
+  };
+
+  // Funciones de los botones
+  const handleExportExcel = () => {
+    console.log("Exporting to Excel...");
+    // Aquí agregarías la lógica para exportar los datos a un archivo Excel
+  };
+
+  const handleAddCase = () => {
+    console.log("Adding new baggage case...");
+    // Aquí agregarías la lógica para redirigir a la página o formulario para agregar un nuevo caso
   };
 
   if (loading) {
@@ -39,7 +50,27 @@ const BaggageView: React.FC = () => {
         <Col>
           <Card className="shadow-sm border-0">
             <Card.Header className={`${styles.CardHeader}`}>
-              <h5 className="mb-0">Filtros</h5>
+              <Row className="d-flex justify-content-between w-100">
+                <Col xs="auto">
+                  <h5 className="mb-0">Filtros</h5>
+                </Col>
+                <Col xs="auto" className="d-flex justify-content-end">
+                  <Button
+                    variant="primary"
+                    onClick={handleExportExcel}
+                    className={`${styles.ButtonExcel} me-2`}
+                  >
+                    Exportar Excel
+                  </Button>
+                  <Button
+                  
+                    onClick={handleAddCase}
+                    className={`${styles.ButtonAdd}`}
+                  >
+                    Agregar Caso
+                  </Button>
+                </Col>
+              </Row>
             </Card.Header>
             <Card.Body>
               <Filters
@@ -47,7 +78,7 @@ const BaggageView: React.FC = () => {
                 status={filters.status}
                 startDate={filters.startDate}
                 endDate={filters.endDate}
-                onChange={setFilter}// Pasamos la función correctamente tipada
+                onChange={setFilter} // Pasamos la función correctamente tipada
               />
             </Card.Body>
           </Card>
@@ -60,7 +91,16 @@ const BaggageView: React.FC = () => {
               <h5 className="mb-0">Gestión de Equipajes</h5>
             </Card.Header>
             <Card.Body>
-              <BaggageTable rows={filteredCases} onSaveChanges={handleSave} onEdit={handleEdit} onCancel={handleCancel} searchTerm={""} status={""} startDate={""} endDate={""} />
+              <BaggageTable
+                rows={filteredCases}
+                onSaveChanges={handleSave}
+                onEdit={handleEdit}
+                onCancel={handleCancel}
+                searchTerm={""}
+                status={""}
+                startDate={""}
+                endDate={""}
+              />
             </Card.Body>
           </Card>
         </Col>

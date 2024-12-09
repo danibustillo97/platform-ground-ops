@@ -130,6 +130,28 @@
   color: white;
 }
 
+.ButtonAdd{
+  background-color: #ffffff;
+  color: #510C76;
+  border: none !important;
+}
+
+.ButtonExcel{
+  background-color:#25D366 ;
+  border: none !important;
+}
+
+.ButtonAdd:hover{
+  background-color: #b1b1b1;
+  color: #510C76;
+  border: none !important;
+}
+
+.ButtonExcel:hover{
+  background-color:#00762b ;
+  border: none !important;
+}
+
 /* Responsividad */
 @media (max-width: 768px) {
   .actionButton {
