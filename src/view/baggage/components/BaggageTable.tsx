@@ -4,8 +4,7 @@ import { BaggageCase } from "@/domain/types/BaggageCase";
 import { Button, Form, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { format } from "date-fns";
 import styles from "@/view/baggage/baggage.module.css";
-import { FaInfoCircle, FaSave, FaTimesCircle } from "react-icons/fa";
-
+import { FaPaperclip, FaSave, FaTimesCircle } from "react-icons/fa";
 
 interface BaggageTableProps {
   rows: BaggageCase[];
@@ -18,23 +17,14 @@ interface BaggageTableProps {
   endDate: string;
 }
 
-const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
-  onEdit,
-  onCancel,
-  searchTerm,
-  status,
-  startDate,
-  endDate }) => {
+const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit, onCancel, searchTerm, status, startDate, endDate }) => {
   const [editableRows, setEditableRows] = useState<BaggageCase[]>([]);
   const [selectedCase, setSelectedCase] = useState<BaggageCase | null>(null);
   const [newComment, setNewComment] = useState<string>("");
 
-
   useEffect(() => {
     setEditableRows(rows);
   }, [rows]);
-
-
 
   const handleFieldChange = (
     id: string,
@@ -58,7 +48,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
     );
   };
 
-
   const handleSave = (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
     if (updatedRow) {
@@ -66,48 +55,32 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
     }
   };
 
-
   const handleCancel = () => {
-    console.log("relod")
     setEditableRows(rows);
     setSelectedCase(null);
     setNewComment("");
   };
 
-
-  const handleOpenCommentsModal = (baggageCase: BaggageCase) => {
-    setSelectedCase(baggageCase);
-  };
-
-
-  const handleAddComment = () => {
-    if (selectedCase && newComment.trim() !== "") {
-
-      setEditableRows((prevRows) =>
-        prevRows.map((row) =>
-          row.id === selectedCase.id
-            ? { ...row, comments: [...(row.comments || []), newComment] }
-            : row
-        )
-      );
-      setNewComment("");
+  const handleFileUpload = (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      console.log(`Archivo adjuntado para el caso ${id}:`, file.name);
+      // Aquí se podría añadir lógica para subir el archivo o asociarlo al caso
     }
   };
-
 
   const getStatusColor = (status: string | undefined) => {
     switch (status) {
       case "Abierto":
-        return "green";
-      case "Cerrado":
         return "red";
+      case "Cerrado":
+        return "green";
       case "En espera de pasajero":
         return "orange";
       default:
         return "gray";
     }
   };
-
 
   const columns: TableColumn<BaggageCase>[] = [
     {
@@ -233,7 +206,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
       cell: (row) => (
         <div
           style={{ cursor: "pointer", textDecoration: "underline" }}
-          onClick={() => handleOpenCommentsModal(row)}
+          onClick={() => setSelectedCase(row)}
         >
           {row.comments?.length || 0} Comentarios
         </div>
@@ -243,14 +216,22 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
       name: "Acciones",
       cell: (row) => (
         <div className={styles.actionButtons}>
-          <Button variant="outline-info" size="sm" onClick={() => handleOpenCommentsModal(row)} className={`${styles.actionButton} style.clase`}>
-            <FaInfoCircle />
+          <Button variant="outline-primary" size="sm" className={styles.actionButton}>
+            <label htmlFor={`file-upload-${row.id}`} style={{ cursor: "pointer", margin: 0 }}>
+              <FaPaperclip />
+            </label>
+            <input
+              id={`file-upload-${row.id}`}
+              type="file"
+              style={{ display: "none" }}
+              onChange={(event) => handleFileUpload(row.id, event)}
+            />
           </Button>
           <Button
             variant="outline-success"
             size="sm"
             onClick={() => handleSave(row.id)}
-            className={`${styles.actionButton} style.clase`}
+            className={styles.actionButton}
           >
             <FaSave />
           </Button>
@@ -258,7 +239,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
             variant="outline-danger"
             size="sm"
             onClick={handleCancel}
-            className={`${styles.actionButton} style.clase`}
+            className={styles.actionButton}
           >
             <FaTimesCircle />
           </Button>
@@ -283,13 +264,12 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
         />
       </div>
 
-
       {selectedCase && (
         <Modal
           show={true}
           onHide={() => setSelectedCase(null)}
           size="lg"
-          className={`${styles.modalComment}`}
+          className={styles.modalComment}
         >
           <Modal.Header closeButton>
             <Modal.Title>Comentarios para {selectedCase.passenger_name}</Modal.Title>
@@ -297,7 +277,15 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
           <Modal.Body>
             <ul>
               {selectedCase.comments?.map((comment, index) => (
-                <li key={index} style={{ backgroundColor: "#f8f9fa", margin: "5px 0", padding: "8px", borderRadius: "4px" }}>
+                <li
+                  key={index}
+                  style={{
+                    backgroundColor: "#f8f9fa",
+                    margin: "5px 0",
+                    padding: "8px",
+                    borderRadius: "4px",
+                  }}
+                >
                   {comment}
                 </li>
               ))}
@@ -314,7 +302,23 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
             <Button variant="secondary" onClick={() => setSelectedCase(null)}>
               Cerrar
             </Button>
-            <Button variant="primary" onClick={handleAddComment} style={{ backgroundColor: "#510C76", borderColor: "#510C76" }}>
+            <Button
+              variant="primary"
+              onClick={() => {
+                setEditableRows((prevRows) =>
+                  prevRows.map((row) =>
+                    row.id === selectedCase.id
+                      ? {
+                        ...row,
+                        comments: [...(row.comments || []), newComment],
+                      }
+                      : row
+                  )
+                );
+                setNewComment("");
+              }}
+              style={{ backgroundColor: "#510C76", borderColor: "#510C76" }}
+            >
               Agregar Comentario
             </Button>
           </Modal.Footer>

@@ -7,7 +7,6 @@ import BaggageTable from "@/view/baggage/components/BaggageTable";
 import { BaggageCase } from "@/domain/types/BaggageCase";
 import styles from "@/view/baggage/baggage.module.css";
 
-// Importa la vista de Registro de Pérdida de Equipaje
 import FormReclamoView from "@/view/baggage/form_baggage/form_baggage_view";
 
 const BaggageView: React.FC = () => {
@@ -28,6 +27,38 @@ const BaggageView: React.FC = () => {
 
   const handleSave = async (updatedRows: BaggageCase[]) => {
     console.log("Save", updatedRows);
+
+    try {
+      for (const baggageCase of updatedRows) {
+        if (!baggageCase.id) {
+          console.error("El caso de equipaje no tiene un ID definido:", baggageCase);
+          continue;
+        }
+
+        const baggage_case_id = baggageCase.id;
+        const url = `http://localhost:8000/api/baggage-case/${baggage_case_id}`;
+        const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJEYW5pbG8uQnVzdGlsbG8uZXh0QGFyYWpldC5jb20iLCJleHAiOjE3MzQwOTgxNzh9.OAJhlGGjsW-K1QQMhOERQNujLxvvv7-rA_xtnOHXOxw";
+        console.log(`Guardando caso de equipaje con ID: ${baggage_case_id}`);
+
+        const response = await fetch(url, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify(baggageCase),
+        });
+
+        if (!response.ok) {
+          throw new Error(`Error al guardar el caso con ID: ${baggage_case_id}`);
+        }
+
+        const data = await response.json();
+        console.log(`Respuesta de la API para el caso ${baggage_case_id}:`, data);
+      }
+    } catch (error) {
+      console.error("Error enviando los datos a la API:", error);
+    }
   };
 
   const handleCancel = async (id: string) => {

@@ -44,8 +44,19 @@ const FormReclamoView: React.FC = () => {
         toast.current?.show({ severity: "warn", summary: "Rechazado", detail: "Acción cancelada", life: 3000 });
     };
 
+    // Función para manejar la creación de casos y actualizar la interfaz
+    const handleCreateCase = () => {
+        handleCreateCases(); // Llama a la función que maneja la creación del caso
 
-    const consolePrueba = () => console.log("click")
+        // Limpiar los campos después de la creación
+        setFormData({
+            phone: "",
+            email: "",
+            address: "",
+        });
+        setPnr(""); // Limpia el campo del PNR
+        // Puedes también restablecer otros campos de estado si es necesario
+    };
 
     const popUpCreateCase = (event: { currentTarget: any; }) => {
         confirmPopup({
@@ -56,7 +67,7 @@ const FormReclamoView: React.FC = () => {
             acceptClassName: `${styles.customButton}`,
             rejectClassName: `${styles.customButton} ${styles.customRejectButton}`,
             className: `${styles.customPopup}`,
-            accept: () => handleCreateCases,
+            accept: accept,
             reject
         });
     };
@@ -71,14 +82,9 @@ const FormReclamoView: React.FC = () => {
             className: "custom-confirm-popup"
         });
     };
+
     return (
-
-
         <div className={styles.container}>
-
-
-
-
             <h1 className={styles.title}>Registro de Pérdida de Equipaje</h1>
 
             {loading ? (
@@ -110,7 +116,6 @@ const FormReclamoView: React.FC = () => {
                                 </button>
                             </div>
                         </div>
-
 
                         <div className={styles.formGroup}>
                             <label htmlFor="passenger" className={styles.label}>Pasajero</label>
@@ -235,7 +240,7 @@ const FormReclamoView: React.FC = () => {
                             <button
                                 type="button"
                                 className={styles.createButton}
-                                onClick={handleCreateCases}
+                                onClick={handleCreateCase}      
                                 disabled={loading || selectedLuggage.length === 0}
                             >
                                 Crear Casos

@@ -7,11 +7,9 @@ import {
 } from "@/data/api/baggageAPI";
 import { BaggageCase } from "@/domain/types/BaggageCase";
 
-
-
 export const useBaggageCasesController = () => {
   const [baggageCases, setBaggageCases] = useState<BaggageCase[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState({
     searchTerm: "",
     status: "",
@@ -52,7 +50,8 @@ export const useBaggageCasesController = () => {
       const matchesSearchTerm = searchTerm
         ? ["PNR", "baggage_code", "passenger_name"].some((field) => {
             const fieldValue = caseItem[field as keyof BaggageCase];
-            return typeof fieldValue === "string" && fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
+            return typeof fieldValue === "string" &&
+              fieldValue.toLowerCase().includes(searchTerm.toLowerCase());
           })
         : true;
 
@@ -95,7 +94,7 @@ export const useBaggageCasesController = () => {
         );
       } catch (error) {
         console.error("Error al eliminar los casos:", error);
-      } 
+      }
     },
     []
   );
