@@ -4,7 +4,7 @@ import { BaggageCase } from "@/domain/types/BaggageCase";
 import { Button, Form, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { format } from "date-fns";
 import styles from "@/view/baggage/baggage.module.css";
-import { FaPaperclip, FaSave, FaTimesCircle } from "react-icons/fa";
+import { FaPaperclip, FaSave, FaTimesCircle, FaHistory } from "react-icons/fa";
 
 interface BaggageTableProps {
   rows: BaggageCase[];
@@ -22,6 +22,8 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   const [selectedCase, setSelectedCase] = useState<BaggageCase | null>(null);
   const [newComment, setNewComment] = useState<string>("");
 
+  const [viewMode, setViewMode] = useState<"comments" | "attachments" | "history">("comments");
+
   useEffect(() => {
     setEditableRows(rows);
   }, [rows]);
@@ -35,7 +37,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       prevRows.map((row) => {
         if (row.id === id) {
           if (field.startsWith("contact")) {
-            const contactField = field.split(".")[1];
+            const contactField = field.split(".")[1] as keyof BaggageCase["contact"];
             return {
               ...row,
               contact: { ...row.contact, [contactField]: value },
@@ -59,13 +61,23 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     setEditableRows(rows);
     setSelectedCase(null);
     setNewComment("");
+    setViewMode("comments");
   };
 
   const handleFileUpload = (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (file) {
       console.log(`Archivo adjuntado para el caso ${id}:`, file.name);
-      // Aquí se podría añadir lógica para subir el archivo o asociarlo al caso
+      setEditableRows((prevRows) =>
+        prevRows.map((row) =>
+          row.id === id
+            ? {
+              ...row,
+              attachedFiles: [...(row.attachedFiles || []), { fileName: file.name, file }],
+            }
+            : row
+        )
+      );
     }
   };
 
@@ -206,11 +218,38 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       cell: (row) => (
         <div
           style={{ cursor: "pointer", textDecoration: "underline" }}
-          onClick={() => setSelectedCase(row)}
+          onClick={() => { setSelectedCase(row); setViewMode("comments"); }}
         >
           {row.comments?.length || 0} Comentarios
         </div>
       ),
+    },
+    {
+      name: "Archivos Adjuntos",
+      selector: (row) => row.attachedFiles?.length || 0,
+      sortable: false,
+      cell: (row) => (
+        <div
+          style={{ cursor: "pointer", textDecoration: "underline" }}
+          onClick={() => { setSelectedCase(row); setViewMode("attachments"); }}
+        >
+          {row.attachedFiles?.length || 0} Archivos Adjuntos
+        </div>
+      ),
+    },
+    {
+      name: "Historial",
+      cell: (row) => (
+        <div
+          style={{ cursor: "pointer", textDecoration: "underline" }}
+          onClick={() => { setSelectedCase(row); setViewMode("history"); }}
+        >
+          Ver Historial
+        </div>
+      ),
+      ignoreRowClick: true,
+      allowOverflow: true,
+      button: true,
     },
     {
       name: "Acciones",
@@ -272,54 +311,99 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           className={styles.modalComment}
         >
           <Modal.Header closeButton>
-            <Modal.Title>Comentarios para {selectedCase.passenger_name}</Modal.Title>
+            <Modal.Title>
+              {viewMode === "comments"
+                ? `Comentarios para ${selectedCase.passenger_name}`
+                : viewMode === "attachments"
+                  ? `Archivos Adjuntos para ${selectedCase.passenger_name}`
+                  : `Historial para ${selectedCase.passenger_name}`}
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <ul>
-              {selectedCase.comments?.map((comment, index) => (
-                <li
-                  key={index}
-                  style={{
-                    backgroundColor: "#f8f9fa",
-                    margin: "5px 0",
-                    padding: "8px",
-                    borderRadius: "4px",
+            {viewMode === "comments" ? (
+              <>
+                <ul>
+                  {selectedCase.comments?.map((comment, index) => (
+                    <li
+                      key={index}
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        margin: "5px 0",
+                        padding: "8px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {comment}
+                    </li>
+                  ))}
+                </ul>
+                <Form.Control
+                  type="text"
+                  placeholder="Escribe un comentario..."
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  size="sm"
+                />
+                <Button
+                  variant="outline-primary"
+                  size="sm"
+                  onClick={() => {
+                    if (newComment) {
+                      const updatedRow = editableRows.map((row) =>
+                        row.id === selectedCase.id
+                          ? { ...row, comments: [...(row.comments || []), newComment] }
+                          : row
+                      );
+                      setEditableRows(updatedRow);
+                      setNewComment("");
+                    }
                   }}
+                  style={{ marginTop: "10px" }}
                 >
-                  {comment}
-                </li>
-              ))}
-            </ul>
-            <Form.Control
-              type="text"
-              placeholder="Agregar un comentario"
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              style={{ marginBottom: "10px" }}
-            />
+                  Agregar Comentario
+                </Button>
+              </>
+            ) : viewMode === "attachments" ? (
+              <>
+                <ul>
+                  {selectedCase.attachedFiles?.map((file: { fileName: string }, index: React.Key) => (
+                    <li
+                      key={index}
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        margin: "5px 0",
+                        padding: "8px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {file.fileName}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            ) : (
+              <>
+                <ul>
+                  {selectedCase.history?.map((historyItem: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined, index: React.Key | null | undefined) => (
+                    <li
+                      key={index}
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        margin: "5px 0",
+                        padding: "8px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      {historyItem}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={() => setSelectedCase(null)}>
+            <Button variant="secondary" onClick={handleCancel}>
               Cerrar
-            </Button>
-            <Button
-              variant="primary"
-              onClick={() => {
-                setEditableRows((prevRows) =>
-                  prevRows.map((row) =>
-                    row.id === selectedCase.id
-                      ? {
-                        ...row,
-                        comments: [...(row.comments || []), newComment],
-                      }
-                      : row
-                  )
-                );
-                setNewComment("");
-              }}
-              style={{ backgroundColor: "#510C76", borderColor: "#510C76" }}
-            >
-              Agregar Comentario
             </Button>
           </Modal.Footer>
         </Modal>
