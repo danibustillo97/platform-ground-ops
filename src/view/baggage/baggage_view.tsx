@@ -1,37 +1,45 @@
 "use client"
-import React from "react";
-import { Container, Row, Col, Card, Spinner, Button } from "react-bootstrap";
+import React, { useEffect, useState } from "react";
+import { Container, Row, Col, Card, Spinner, Button, Tabs, Tab } from "react-bootstrap";
 import { useBaggageCasesController } from "@/view/baggage/useBaggageCasesController";
 import Filters from "@/view/baggage/components/Filters";
 import BaggageTable from "@/view/baggage/components/BaggageTable";
 import { BaggageCase } from "@/domain/types/BaggageCase";
 import styles from "@/view/baggage/baggage.module.css";
 
+// Importa la vista de Registro de Pérdida de Equipaje
+import FormReclamoView from "@/view/baggage/form_baggage/form_baggage_view";
+
 const BaggageView: React.FC = () => {
-  const { loading, filters, filteredCases, setFilter, updateCase } =
-    useBaggageCasesController();
+  const [mounted, setMounted] = useState(false);
+  const { loading, filters, filteredCases, setFilter, updateCase } = useBaggageCasesController();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   const handleEdit = (id: string) => {
     console.log("Edit", id);
   };
 
-  const handleSave = (updatedRows: BaggageCase[]) => {
+  const handleSave = async (updatedRows: BaggageCase[]) => {
     console.log("Save", updatedRows);
   };
 
-  const handleCancel = (id: string) => {
-    console.log("Cancel", id);
+  const handleCancel = async (id: string) => {
+    console.log("relod")
   };
 
-  // Funciones de los botones
   const handleExportExcel = () => {
     console.log("Exporting to Excel...");
-    // Aquí agregarías la lógica para exportar los datos a un archivo Excel
   };
 
   const handleAddCase = () => {
     console.log("Adding new baggage case...");
-    // Aquí agregarías la lógica para redirigir a la página o formulario para agregar un nuevo caso
   };
 
   if (loading) {
@@ -48,37 +56,35 @@ const BaggageView: React.FC = () => {
     <Container fluid className="py-4">
       <Row className="mb-4">
         <Col>
-          <Card className="shadow-sm border-0">
-            <Card.Header className={`${styles.CardHeader}`}>
+          <Card className="shadow-lg border-0">
+            <Card.Header className={`${styles.CardHeader}`} style={{ backgroundColor: "#510C76", color: "#fff" }}>
               <Row className="d-flex justify-content-between w-100">
                 <Col xs="auto">
-                  <h5 className="mb-0">Filtros</h5>
+                  <h5 className="mb-0" style={{ fontSize: "1.2rem" }}>Filtros</h5>
                 </Col>
                 <Col xs="auto" className="d-flex justify-content-end">
                   <Button
-                    variant="primary"
+                    variant="light"
                     onClick={handleExportExcel}
                     className={`${styles.ButtonExcel} me-2`}
+                    style={{
+                      backgroundColor: "#fff",
+                      borderColor: "#510C76",
+                      color: "#510C76",
+                    }}
                   >
                     Exportar Excel
-                  </Button>
-                  <Button
-                  
-                    onClick={handleAddCase}
-                    className={`${styles.ButtonAdd}`}
-                  >
-                    Agregar Caso
                   </Button>
                 </Col>
               </Row>
             </Card.Header>
-            <Card.Body>
+            <Card.Body style={{ backgroundColor: "#f7f7f7" }}>
               <Filters
                 searchTerm={filters.searchTerm}
                 status={filters.status}
                 startDate={filters.startDate}
                 endDate={filters.endDate}
-                onChange={setFilter} // Pasamos la función correctamente tipada
+                onChange={setFilter}
               />
             </Card.Body>
           </Card>
@@ -86,21 +92,38 @@ const BaggageView: React.FC = () => {
       </Row>
       <Row>
         <Col>
-          <Card className="shadow-sm border-0">
-            <Card.Header className={`${styles.CardHeader}`}>
-              <h5 className="mb-0">Gestión de Equipajes</h5>
+          <Card className="shadow-lg border-0">
+            <Card.Header className={`${styles.CardHeader}`} style={{ backgroundColor: "#510C76", color: "#fff" }}>
+              <h5 className="mb-0" style={{ fontSize: "1.2rem" }}>Equipajes</h5>
             </Card.Header>
-            <Card.Body>
-              <BaggageTable
-                rows={filteredCases}
-                onSaveChanges={handleSave}
-                onEdit={handleEdit}
-                onCancel={handleCancel}
-                searchTerm={""}
-                status={""}
-                startDate={""}
-                endDate={""}
-              />
+            <Card.Body style={{ backgroundColor: "#f7f7f7" }}>
+              <Tabs defaultActiveKey="gestion" id="baggage-tabs" className="mb-3" style={{ borderColor: "#510C76" }}>
+                <Tab
+                  eventKey="gestion"
+                  title="Gestión de Equipaje"
+                  className="border-0"
+                  style={{ color: "#510C76", fontWeight: "600" }}
+                >
+                  <BaggageTable
+                    rows={filteredCases}
+                    onSaveChanges={handleSave}
+                    onEdit={handleEdit}
+                    onCancel={handleCancel}
+                    searchTerm={""}
+                    status={""}
+                    startDate={""}
+                    endDate={""}
+                  />
+                </Tab>
+                <Tab
+                  eventKey="agregar"
+                  title="Agregar Equipaje"
+                  className="border-0"
+                  style={{ color: "#510C76", fontWeight: "600" }}
+                >
+                  <FormReclamoView />
+                </Tab>
+              </Tabs>
             </Card.Body>
           </Card>
         </Col>

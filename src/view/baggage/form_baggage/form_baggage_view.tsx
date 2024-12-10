@@ -47,19 +47,19 @@ const FormReclamoView: React.FC = () => {
 
     const consolePrueba = () => console.log("click")
 
-        const popUpCreateCase = (event: { currentTarget: any; }) => {
-            confirmPopup({
-                target: event.currentTarget,
-                message: 'Are you sure you want to proceed?',
-                icon: 'pi pi-exclamation-triangle',
-                defaultFocus: 'accept',
-                acceptClassName: `${styles.customButton}`,
-                rejectClassName: `${styles.customButton} ${styles.customRejectButton}`,
-                className: `${styles.customPopup}`,
-                accept: () => handleCreateCases,
-                reject
-            });
-        };
+    const popUpCreateCase = (event: { currentTarget: any; }) => {
+        confirmPopup({
+            target: event.currentTarget,
+            message: 'Are you sure you want to proceed?',
+            icon: 'pi pi-exclamation-triangle',
+            defaultFocus: 'accept',
+            acceptClassName: `${styles.customButton}`,
+            rejectClassName: `${styles.customButton} ${styles.customRejectButton}`,
+            className: `${styles.customPopup}`,
+            accept: () => handleCreateCases,
+            reject
+        });
+    };
 
     const popUpBack = (event: { currentTarget: any }) => {
         confirmPopup({
@@ -75,21 +75,8 @@ const FormReclamoView: React.FC = () => {
 
 
         <div className={styles.container}>
-            <div className="container d-flex">
-                <div className="row">
-                    <div className="col-md-6 d-flex align-items-center">
-                        <button
-                            type="button"
-                            className={styles.backButton}
-                            onClick={popUpBack}
-                        >
-                            <ArrowBackIcon />
-                        </button>
-                        <span className={styles.backText}>Volver</span>
-                    </div>
 
-                </div>
-            </div>
+
 
 
             <h1 className={styles.title}>Registro de Pérdida de Equipaje</h1>
@@ -248,7 +235,7 @@ const FormReclamoView: React.FC = () => {
                             <button
                                 type="button"
                                 className={styles.createButton}
-                                onClick={popUpCreateCase}
+                                onClick={handleCreateCases}
                                 disabled={loading || selectedLuggage.length === 0}
                             >
                                 Crear Casos

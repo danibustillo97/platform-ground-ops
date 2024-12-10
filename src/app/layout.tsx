@@ -48,6 +48,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <SessionProvider>
       <RedirectHandler />
+      
       <html lang="es">  {/* Etiqueta html añadida aquí */}
         <body>         {/* Etiqueta body añadida aquí */}
           {!isLoginPage && <Navbar toggleSidebar={toggleSidebar} />}

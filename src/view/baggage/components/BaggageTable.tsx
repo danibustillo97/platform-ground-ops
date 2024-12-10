@@ -6,24 +6,20 @@ import { format } from "date-fns";
 import styles from "@/view/baggage/baggage.module.css";
 import { FaInfoCircle, FaSave, FaTimesCircle } from "react-icons/fa";
 
+
 interface BaggageTableProps {
   rows: BaggageCase[];
   onSaveChanges: (updatedRows: BaggageCase[]) => void;
   onEdit: (id: string) => void;
   onCancel: (id: string) => void;
-  searchTerm: string;     // Filtro por término de búsqueda
-  status: string;         // Filtro por estado
-  startDate: string;      // Filtro por fecha de inicio
-  endDate: string;    
-      // Filtro por fecha de finalización
-  
+  searchTerm: string;
+  status: string;
+  startDate: string;
+  endDate: string;
 }
-
-
 
 const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
   onEdit,
-
   onCancel,
   searchTerm,
   status,
@@ -33,12 +29,13 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
   const [selectedCase, setSelectedCase] = useState<BaggageCase | null>(null);
   const [newComment, setNewComment] = useState<string>("");
 
-  // Sincronizar editableRows con rows iniciales
+
   useEffect(() => {
     setEditableRows(rows);
   }, [rows]);
 
-  // Manejar cambios en campos editables
+
+
   const handleFieldChange = (
     id: string,
     field: keyof BaggageCase | "contact.phone" | "contact.email",
@@ -61,7 +58,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
     );
   };
 
-  // Guardar cambios
+
   const handleSave = (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
     if (updatedRow) {
@@ -69,22 +66,23 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
     }
   };
 
-  // Cancelar edición
+
   const handleCancel = () => {
+    console.log("relod")
     setEditableRows(rows);
-    setSelectedCase(null); // Borrar la selección del caso
-    setNewComment(""); // Limpiar el campo de comentario
+    setSelectedCase(null);
+    setNewComment("");
   };
 
-  // Manejar apertura de los comentarios en el modal
+
   const handleOpenCommentsModal = (baggageCase: BaggageCase) => {
     setSelectedCase(baggageCase);
   };
 
-  // Agregar un nuevo comentario
+
   const handleAddComment = () => {
     if (selectedCase && newComment.trim() !== "") {
-      // Agregar el comentario en el array de comentarios de la fila seleccionada
+
       setEditableRows((prevRows) =>
         prevRows.map((row) =>
           row.id === selectedCase.id
@@ -92,11 +90,11 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
             : row
         )
       );
-      setNewComment(""); // Limpiar el campo de comentario
+      setNewComment("");
     }
   };
 
-  // Colores de los estatus
+
   const getStatusColor = (status: string | undefined) => {
     switch (status) {
       case "Abierto":
@@ -110,7 +108,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
     }
   };
 
-  // Columnas de la tabla
+
   const columns: TableColumn<BaggageCase>[] = [
     {
       name: "PNR",
@@ -230,23 +228,23 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
     },
     {
       name: "Comentarios",
-      selector: (row) => row.comments?.length || 0, // Mostrar cantidad de comentarios
+      selector: (row) => row.comments?.length || 0,
       sortable: false,
       cell: (row) => (
         <div
           style={{ cursor: "pointer", textDecoration: "underline" }}
-          onClick={() => handleOpenCommentsModal(row)} // Abrir el modal para agregar comentarios
+          onClick={() => handleOpenCommentsModal(row)}
         >
           {row.comments?.length || 0} Comentarios
         </div>
-      ), // Mostrar la cantidad de comentarios y hacer clic para ver la lista
+      ),
     },
     {
       name: "Acciones",
       cell: (row) => (
         <div className={styles.actionButtons}>
           <Button variant="outline-info" size="sm" onClick={() => handleOpenCommentsModal(row)} className={`${styles.actionButton} style.clase`}>
-            <FaInfoCircle /> {/* Icono de información */}
+            <FaInfoCircle />
           </Button>
           <Button
             variant="outline-success"
@@ -254,7 +252,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
             onClick={() => handleSave(row.id)}
             className={`${styles.actionButton} style.clase`}
           >
-            <FaSave /> {/* Icono de guardar */}
+            <FaSave />
           </Button>
           <Button
             variant="outline-danger"
@@ -262,7 +260,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
             onClick={handleCancel}
             className={`${styles.actionButton} style.clase`}
           >
-            <FaTimesCircle /> {/* Icono de cancelar */}
+            <FaTimesCircle />
           </Button>
         </div>
       ),
@@ -285,13 +283,13 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges,
         />
       </div>
 
-      {/* Modal para agregar comentarios */}
+
       {selectedCase && (
         <Modal
           show={true}
           onHide={() => setSelectedCase(null)}
           size="lg"
-          className= {`${styles.modalComment}`}
+          className={`${styles.modalComment}`}
         >
           <Modal.Header closeButton>
             <Modal.Title>Comentarios para {selectedCase.passenger_name}</Modal.Title>

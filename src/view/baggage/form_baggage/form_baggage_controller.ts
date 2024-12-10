@@ -29,7 +29,7 @@ export const useFormBaggageController = () => {
     }[]>([]);
     const [formData, setFormData] = useState({ phone: "", email: "", address: "" });
     
-    // Estado para el manejo de alertas
+
     const [alert, setAlert] = useState<{ type: 'success' | 'warning' | 'error'; message: string } | null>(null);
 
     useEffect(() => {
@@ -133,7 +133,7 @@ export const useFormBaggageController = () => {
 
             return {
                 baggage_code: luggageItem.luggage,
-                pnr: pnr,
+                PNR: pnr,
                 contact: {
                     phone: luggageItem.phone,
                     email: luggageItem.email
