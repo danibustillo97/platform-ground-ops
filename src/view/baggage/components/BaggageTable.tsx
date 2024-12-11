@@ -5,6 +5,10 @@ import { Button, Form, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { format } from "date-fns";
 import styles from "@/view/baggage/baggage.module.css";
 import { FaPaperclip, FaSave, FaTimesCircle, FaHistory } from "react-icons/fa";
+import { SiMinutemailer } from "react-icons/si";
+import CustomDropdown from "./CustomDropdown";
+
+
 
 interface BaggageTableProps {
   rows: BaggageCase[];
@@ -49,6 +53,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       })
     );
   };
+  
 
   const handleSave = (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
@@ -56,6 +61,26 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       onSaveChanges(editableRows);
     }
   };
+
+
+  const handleSendEmail = async () => {
+    console.log("Click")
+    const emailData = {
+      to: 'danibustillo97@gmail.com',
+      text: 'Aqui realizo pruebas',
+    };
+  
+    const response = await fetch('/api/sendEmail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emailData),
+    });
+  
+    const data = await response.json();
+    console.log(data.message);
+  }
 
   const handleCancel = () => {
     setEditableRows(rows);
@@ -99,16 +124,19 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "PNR",
       selector: (row) => row.PNR || "-",
       sortable: true,
+      width:"80px"
     },
     {
-      name: "Código",
+      name: "BAGTAG",
       selector: (row) => row.baggage_code || "-",
       sortable: true,
+      width:"110px"
     },
     {
       name: "Nombre",
       selector: (row) => row.passenger_name || "-",
       sortable: true,
+      width:"250px",
       cell: (row) => (
         <Form.Control
           value={row.passenger_name || ""}
@@ -121,6 +149,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "Correo",
       selector: (row) => row.contact.email || "-",
       sortable: true,
+      width:"250px",
       cell: (row) => (
         <Form.Control
           value={row.contact.email || ""}
@@ -133,6 +162,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "Teléfono",
       selector: (row) => row.contact.phone || "-",
       sortable: true,
+      width:"1  50px",
       cell: (row) => (
         <Form.Control
           value={row.contact.phone || ""}
@@ -145,6 +175,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "Descripción",
       selector: (row) => row.description || "-",
       sortable: true,
+      width:"250px",
       cell: (row) => (
         <Form.Control
           value={row.description || ""}
@@ -169,28 +200,9 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "Estatus",
       selector: (row) => row.status || "-",
       sortable: true,
+      width:"200px",
       cell: (row) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <span
-            style={{
-              width: "10px",
-              height: "10px",
-              borderRadius: "50%",
-              backgroundColor: getStatusColor(row.status),
-              marginRight: "8px",
-            }}
-          />
-          <Form.Control
-            as="select"
-            value={row.status || ""}
-            onChange={(e) => handleFieldChange(row.id, "status", e.target.value)}
-            size="sm"
-          >
-            <option value="Abierto">Abierto</option>
-            <option value="Cerrado">Cerrado</option>
-            <option value="En espera de pasajero">En espera de pasajero</option>
-          </Form.Control>
-        </div>
+        <CustomDropdown row={row} handleFieldChange={handleFieldChange} />
       ),
     },
     {
@@ -198,6 +210,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       selector: (row) =>
         row.date_create ? format(new Date(row.date_create), "dd/MM/yyyy") : "-",
       sortable: true,
+      
       cell: (row) => (
         <OverlayTrigger
           placement="top"
@@ -253,6 +266,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
     {
       name: "Acciones",
+      width:"250px",
       cell: (row) => (
         <div className={styles.actionButtons}>
           <Button variant="outline-primary" size="sm" className={styles.actionButton}>
@@ -281,6 +295,15 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
             className={styles.actionButton}
           >
             <FaTimesCircle />
+          </Button>
+
+          <Button
+            variant="outline-danger"
+            size="sm"
+            onClick={handleSendEmail}
+            className={styles.actionButton}
+          >
+            <SiMinutemailer />
           </Button>
         </div>
       ),

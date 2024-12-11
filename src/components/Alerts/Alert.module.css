@@ -6,48 +6,55 @@
     align-items: center;
     padding: 15px 20px;
     border-radius: 5px;
-    margin: 10px auto; /* Centrado automático */
+    margin: 10px auto; 
     font-family: 'Roboto', sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     color: #fff;
-    position: fixed; /* Cambiado a fixed */
-    top: 20px; /* Espacio desde la parte superior */
-    left: 50%; /* Centrado horizontal */
-    transform: translateX(-50%); /* Centrado horizontal */
+    position: fixed; 
+    top: 20px; 
+    left: 50%; 
+    transform: translateX(-50%); 
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
     transition: opacity 0.3s ease, transform 0.3s ease;
-    max-width: 90%; /* Limitar el ancho máximo para móviles */
-    width: 400px; /* Ancho fijo para pantallas grandes */
-    animation: bounceIn 0.5s ease forwards; /* Animación de entrada */
-    z-index: 1000; /* Asegúrate de que sea un valor alto */
+    max-width: 90%; 
+    width: 500px; 
+    animation: bounceIn 0.5s ease forwards;
+    z-index: 10000; 
 }
 
 .success {
-    background-color: #4caf50; /* Verde */
-    border-left: 5px solid #3e8e41; /* Borde verde más oscuro */
+    background-color: #4caf50;
+    border-left: 5px solid #3e8e41; 
 }
 
 .warning {
-    background-color: #ff9800; /* Amarillo */
-    border-left: 5px solid #e68a00; /* Borde amarillo más oscuro */
+    background-color: #ff9800; 
+    border-left: 5px solid #e68a00; 
 }
 
 .error {
-    background-color: #f44336; /* Rojo */
-    border-left: 5px solid #d32f2f; /* Borde rojo más oscuro */
+    background-color: #f44336; 
+    border-left: 5px solid #d32f2f; 
 }
 
 .closeButton {
     background: none;
     border: none;
     color: white;
-    font-size: 20px;
+    font-size: 2rem;
     cursor: pointer;
-    padding-left: 15px;
+
+    outline:invert;
+    
 }
 
 .closeButton:hover {
     opacity: 0.7;
+}
+
+.iconError{
+    font-size: 2rem;
+
 }
 
 /* Animación de entrada tipo "bounce" */

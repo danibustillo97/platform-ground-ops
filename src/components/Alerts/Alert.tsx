@@ -2,6 +2,8 @@
 
 import React from 'react';
 import styles from './Alert.module.css';
+import { MdOutlineReportGmailerrorred } from "react-icons/md";
+
 
 interface AlertProps {
   type: 'success' | 'warning' | 'error';
@@ -13,7 +15,7 @@ const Alert: React.FC<AlertProps> = ({ type, message, onClose }) => {
   const iconMap = {
     success: '✅',
     warning: '⚠️',
-    error: '❌',
+    error: <MdOutlineReportGmailerrorred className={styles.iconError}/>,
   };
 
   return (

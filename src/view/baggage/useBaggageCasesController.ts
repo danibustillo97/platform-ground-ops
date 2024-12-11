@@ -17,7 +17,7 @@ export const useBaggageCasesController = () => {
     endDate: "",
   });
 
-  // Función para cargar casos desde la API
+
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -63,7 +63,7 @@ export const useBaggageCasesController = () => {
     });
   }, [filters, baggageCases]);
 
-  // Actualizar un caso
+
   const updateCase = useCallback(
     async (updatedCase: BaggageCase) => {
       try {
@@ -81,7 +81,7 @@ export const useBaggageCasesController = () => {
     []
   );
 
-  // Eliminar casos
+
   const deleteCases = useCallback(
     async (ids: string[]) => {
       try {
@@ -99,7 +99,7 @@ export const useBaggageCasesController = () => {
     []
   );
 
-  // Establecer filtros
+ 
   const setFilter = (key: keyof typeof filters, value: string) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };

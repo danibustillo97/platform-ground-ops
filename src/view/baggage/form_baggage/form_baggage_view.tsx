@@ -44,18 +44,16 @@ const FormReclamoView: React.FC = () => {
         toast.current?.show({ severity: "warn", summary: "Rechazado", detail: "Acción cancelada", life: 3000 });
     };
 
-    // Función para manejar la creación de casos y actualizar la interfaz
     const handleCreateCase = () => {
-        handleCreateCases(); // Llama a la función que maneja la creación del caso
+        handleCreateCases(); 
 
-        // Limpiar los campos después de la creación
+
         setFormData({
             phone: "",
             email: "",
             address: "",
         });
-        setPnr(""); // Limpia el campo del PNR
-        // Puedes también restablecer otros campos de estado si es necesario
+        setPnr(""); 
     };
 
     const popUpCreateCase = (event: { currentTarget: any; }) => {
@@ -114,6 +112,15 @@ const FormReclamoView: React.FC = () => {
                                 >
                                     {pnrAdded ? <CheckCircleIcon /> : <AddCircleOutlineIcon />}
                                 </button>
+                                {pnrAdded && (
+                                    <button
+                                        type="button"
+                                        className={styles.cancelButton}
+                                        onClick={() => setPnr("")}
+                                    >
+                                        Cancelar
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -204,50 +211,45 @@ const FormReclamoView: React.FC = () => {
                                         </div>
                                         <div className={styles.luggageField}>
                                             <label htmlFor={`issue-${id}`} className={styles.label}>Tipo de Problema</label>
+
+
                                             <select
                                                 id={`issue-${id}`}
                                                 className={styles.select}
                                                 value={issue}
                                                 onChange={(e) => handleIssueChange(id, e.target.value)}
                                             >
-                                                <option value="">Seleccionar tipo</option>
-                                                <option value="Daño">Daño</option>
-                                                <option value="Pérdida">Pérdida</option>
-                                                <option value="Retraso">Retraso</option>
-                                                <option value="Sobrante">Sobrante</option>
+                                                <option value="">Seleccionar problema</option>
+                                                <option value="delayed">Retraso</option>
+                                                <option value="lost">Pérdida</option>
+                                                <option value="damaged">Daño</option>
                                             </select>
                                         </div>
-                                        {issue === 'Retraso' && (
-                                            <div className={styles.luggageField}>
-                                                <div className={styles.inlineField}>
-                                                    <label htmlFor="address" className={styles.label}>Dirección de envío</label>
-                                                    <input
-                                                        type="text"
-                                                        id="address"
-                                                        className={styles.input}
-                                                        value={formData.address}
-                                                        disabled={!pnrAdded}
-                                                    />
-                                                </div>
-                                            </div>
-                                        )}
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        <div className={styles.buttonContainer}>
+                        <div className={styles.formActions}>
                             <button
                                 type="button"
-                                className={styles.createButton}
-                                onClick={handleCreateCase}      
-                                disabled={loading || selectedLuggage.length === 0}
+                                className={styles.backButton}
+                                onClick={popUpBack}
                             >
-                                Crear Casos
+                                <ArrowBackIcon /> Volver
+                            </button>
+                            <button
+                                type="button"
+                                className={styles.submitButton}
+                                onClick={popUpCreateCase}
+                                disabled={!pnrAdded || selectedLuggage.length === 0}
+                            >
+                                Crear Caso
                             </button>
                         </div>
                     </form>
                     <Toast ref={toast} />
+                    <ConfirmPopup />
                 </>
             )}
         </div>
