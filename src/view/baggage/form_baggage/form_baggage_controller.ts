@@ -23,7 +23,7 @@ export const useFormBaggageController = () => {
         departureDate: string;
         fromAirport: string;
         toAirport: string;
-        passengerName: string;
+        passengerName: string; 
         description: string;
         issue: string;
     }[]>([]);

@@ -124,6 +124,11 @@
     background: #4CAF50;
 }
 
+
+.pnrButton.error {
+    background: #ea0000;
+}
+
 .pnrButton.success:hover {
     background: #45a049;
 }

@@ -6,6 +6,7 @@ import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import DeleteOutlineIcon from "@mui/icons-material/DeleteOutline";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
+import { MdOutlineClear } from "react-icons/md";
 import Alert from "@/components/Alerts/Alert";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
 import { Toast } from "primereact/toast";
@@ -45,16 +46,28 @@ const FormReclamoView: React.FC = () => {
     };
 
     const handleCreateCase = () => {
-        handleCreateCases(); 
-
-
+        handleCreateCases();
         setFormData({
             phone: "",
             email: "",
             address: "",
         });
-        setPnr(""); 
+        setPnr("");
     };
+
+    const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const address = e.target.value;
+        // Validación simple: "Cra" o "Calle" seguido de número
+        const regex = /^(Cra|Calle|Av\.|APT)\s?\d+.*$/;
+        
+        if (regex.test(address)) {
+            setFormData({ ...formData, address });
+        } else {
+            // Opcional: Si no se cumple el formato, podrías mostrar un mensaje de error
+            setFormData({ ...formData, address: address });  // solo actualiza si es válido
+        }
+    };
+    
 
     const popUpCreateCase = (event: { currentTarget: any; }) => {
         confirmPopup({
@@ -79,6 +92,16 @@ const FormReclamoView: React.FC = () => {
             reject,
             className: "custom-confirm-popup"
         });
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files ? e.target.files[0] : null;
+        console.log("Archivo seleccionado:", file);
+    };
+
+    const handleCancelPnr = () => {
+        setPnr("");
+        setFormData({ phone: "", email: "", address: "" });
     };
 
     return (
@@ -112,16 +135,16 @@ const FormReclamoView: React.FC = () => {
                                 >
                                     {pnrAdded ? <CheckCircleIcon /> : <AddCircleOutlineIcon />}
                                 </button>
-                                {pnrAdded && (
-                                    <button
-                                        type="button"
-                                        className={styles.cancelButton}
-                                        onClick={() => setPnr("")}
-                                    >
-                                        Cancelar
-                                    </button>
-                                )}
+                                <button
+                                    type="button"
+                                    className={`${styles.pnrButton} ${pnrAdded ? styles.error : ""}`}
+                                    onClick={handleCancelPnr}
+                                    disabled={!pnrAdded}
+                                >
+                                    {!pnrAdded ? <MdOutlineClear /> : <MdOutlineClear />}
+                                </button>
                             </div>
+
                         </div>
 
                         <div className={styles.formGroup}>
@@ -211,45 +234,67 @@ const FormReclamoView: React.FC = () => {
                                         </div>
                                         <div className={styles.luggageField}>
                                             <label htmlFor={`issue-${id}`} className={styles.label}>Tipo de Problema</label>
-
-
                                             <select
                                                 id={`issue-${id}`}
                                                 className={styles.select}
                                                 value={issue}
                                                 onChange={(e) => handleIssueChange(id, e.target.value)}
                                             >
-                                                <option value="">Seleccionar problema</option>
-                                                <option value="delayed">Retraso</option>
-                                                <option value="lost">Pérdida</option>
-                                                <option value="damaged">Daño</option>
+                                                <option value="">Seleccionar tipo</option>
+                                                <option value="Daño">Daño</option>
+                                                <option value="Pérdida">Pérdida</option>
+                                                <option value="Retraso">Retraso</option>
+                                                <option value="Sobrante">Sobrante</option>
                                             </select>
                                         </div>
+                                        {issue === 'Daño' && (
+                                            <div className={styles.luggageField}>
+                                                <label htmlFor="file" className={styles.label}>Adjuntar Archivo</label>
+                                                <input
+                                                    type="file"
+                                                    id="file"
+                                                    className={styles.input}
+                                                    onChange={handleFileChange}
+                                                />
+                                            </div>
+                                        )}
+                                        {issue === 'Retraso' && (
+                                            <div className={styles.luggageField}>
+                                            <label htmlFor={`address-${id}`} className={styles.label}>Dirección</label>
+                                            <div className={styles.addressContainer}>
+                                                <input
+                                                    type="text"
+                                                    id={`address-${id}`}
+                                                    className={styles.input}
+                                                    placeholder="Ej. Cra Calle 45 #123 APT 202"
+                                                    value={formData.address}
+                                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                                    // Se pueden agregar validaciones para asegurarse de que la dirección cumpla con el formato
+                                                />
+                                                <small className={styles.infoText}>
+                                                    Usa prefijos como: "Cra", "Calle", "Av.", "APT", etc. Ejemplo: "Cra 15 #45-67 APT 305"
+                                                </small>
+                                            </div>
+                                        </div>
+                                        
+                                        )}
                                     </div>
                                 </div>
                             ))}
                         </div>
 
-                        <div className={styles.formActions}>
+                        <div className={styles.buttonContainer}>
                             <button
                                 type="button"
-                                className={styles.backButton}
-                                onClick={popUpBack}
+                                className={styles.createButton}
+                                onClick={handleCreateCase}
+                                disabled={loading || selectedLuggage.length === 0}
                             >
-                                <ArrowBackIcon /> Volver
-                            </button>
-                            <button
-                                type="button"
-                                className={styles.submitButton}
-                                onClick={popUpCreateCase}
-                                disabled={!pnrAdded || selectedLuggage.length === 0}
-                            >
-                                Crear Caso
+                                Crear Casos
                             </button>
                         </div>
                     </form>
                     <Toast ref={toast} />
-                    <ConfirmPopup />
                 </>
             )}
         </div>
