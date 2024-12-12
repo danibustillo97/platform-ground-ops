@@ -25,11 +25,10 @@ export interface BaggageCase {
   status: string;
   date_create: string;
   number_ticket_zendesk: string;
-  comments?: string[];
+  comments?: ({ text: string; createdAt: string } | string)[];
   attachedFiles?: { fileName: string; file: File }[];
-  history?: { action: string; date: string }[]; 
+  history?: { action: string; date: string; description?: string }[];
 }
-
 
 export interface ChartData {
   name: string;

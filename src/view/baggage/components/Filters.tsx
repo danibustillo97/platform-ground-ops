@@ -26,8 +26,8 @@ const Filters: React.FC<FilterProps> = ({
   endDate,
   onChange,
 }) => (
-  // Contenedor del formulario con 100% de ancho fijo
-  <div style={{ width: "100%", overflowX: "auto", marginBottom: "20px" }}>
+
+  <div style={{ width: "100%",  marginBottom: "20px" }}>
     <Form>
       <Row className="g-3">
         {/* Campo de búsqueda */}

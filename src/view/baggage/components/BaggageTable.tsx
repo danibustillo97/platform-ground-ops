@@ -53,7 +53,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       })
     );
   };
-  
+
 
   const handleSave = (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
@@ -69,7 +69,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       to: 'danibustillo97@gmail.com',
       text: 'Aqui realizo pruebas',
     };
-  
+
     const response = await fetch('/api/sendEmail', {
       method: 'POST',
       headers: {
@@ -77,16 +77,33 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       },
       body: JSON.stringify(emailData),
     });
-  
+
     const data = await response.json();
     console.log(data.message);
   }
 
+  const formatName = (name: string): string => {
+    // Dividir el nombre completo por el separador "/"
+    const parts = name.split("/");
+
+    // Si el nombre tiene partes separadas por "/", elige la primera y la segunda como nombre y apellido.
+    if (parts.length > 1) {
+      const firstName = parts[0].trim();
+      const lastName = parts[1].trim();
+      return `${firstName} ${lastName}`;
+    }
+
+    // Si no hay "/", solo se devuelve el nombre tal cual.
+    return name;
+  };
+
+
+
   const handleCancel = () => {
     setEditableRows(rows);
     setSelectedCase(null);
-    setNewComment("");
     setViewMode("comments");
+
   };
 
   const handleFileUpload = (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
@@ -106,6 +123,27 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     }
   };
 
+  const handleAddComment = () => {
+    if (newComment) {
+      const updatedRow = editableRows.map((row) =>
+        row.id === selectedCase?.id
+          ? {
+            ...row,
+            comments: [
+              ...(row.comments || []),
+              { text: newComment, createdAt: new Date().toISOString() },
+            ],
+          }
+          : row
+      );
+      setEditableRows(updatedRow);
+
+      setSelectedCase(updatedRow.find(row => row.id === selectedCase?.id) || null);
+      setNewComment("");
+    }
+  };
+
+
   const getStatusColor = (status: string | undefined) => {
     switch (status) {
       case "Abierto":
@@ -124,19 +162,19 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "PNR",
       selector: (row) => row.PNR || "-",
       sortable: true,
-      width:"80px"
+      width: "80px"
     },
     {
       name: "BAGTAG",
       selector: (row) => row.baggage_code || "-",
       sortable: true,
-      width:"110px"
+      width: "110px"
     },
     {
       name: "Nombre",
       selector: (row) => row.passenger_name || "-",
       sortable: true,
-      width:"250px",
+      width: "250px",
       cell: (row) => (
         <Form.Control
           value={row.passenger_name || ""}
@@ -149,7 +187,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "Correo",
       selector: (row) => row.contact.email || "-",
       sortable: true,
-      width:"250px",
+      width: "250px",
       cell: (row) => (
         <Form.Control
           value={row.contact.email || ""}
@@ -162,7 +200,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "Teléfono",
       selector: (row) => row.contact.phone || "-",
       sortable: true,
-      width:"1  50px",
+      width: "1  50px",
       cell: (row) => (
         <Form.Control
           value={row.contact.phone || ""}
@@ -175,7 +213,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "Descripción",
       selector: (row) => row.description || "-",
       sortable: true,
-      width:"250px",
+      width: "250px",
       cell: (row) => (
         <Form.Control
           value={row.description || ""}
@@ -200,7 +238,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "Estatus",
       selector: (row) => row.status || "-",
       sortable: true,
-      width:"200px",
+      width: "200px",
       cell: (row) => (
         <CustomDropdown row={row} handleFieldChange={handleFieldChange} />
       ),
@@ -210,7 +248,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       selector: (row) =>
         row.date_create ? format(new Date(row.date_create), "dd/MM/yyyy") : "-",
       sortable: true,
-      
+
       cell: (row) => (
         <OverlayTrigger
           placement="top"
@@ -266,7 +304,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
     {
       name: "Acciones",
-      width:"250px",
+      width: "250px",
       cell: (row) => (
         <div className={styles.actionButtons}>
           <Button variant="outline-primary" size="sm" className={styles.actionButton}>
@@ -334,99 +372,187 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           className={styles.modalComment}
         >
           <Modal.Header closeButton>
-            <Modal.Title>
+            <Modal.Title
+              style={{
+                fontSize: "1.2rem",  // Ajuste del tamaño de la fuente para que no sea tan grande
+                color: "#333",       // Color de texto más suave
+                fontWeight: "500",   // Peso de fuente para que no sea tan fuerte
+                textTransform: "capitalize", // Asegurarte de que las palabras estén capitalizadas
+                letterSpacing: "0.5px", // Espaciado de letras para que se vea más ordenado
+                lineHeight: "1.5",   // Espaciado entre líneas para mejorar la legibilidad
+              }}
+            >
               {viewMode === "comments"
-                ? `Comentarios para ${selectedCase.passenger_name}`
+                ? `Comentarios para ${formatName(selectedCase.passenger_name)}`
                 : viewMode === "attachments"
-                  ? `Archivos Adjuntos para ${selectedCase.passenger_name}`
-                  : `Historial para ${selectedCase.passenger_name}`}
+                  ? `Archivos Adjuntos para ${formatName(selectedCase.passenger_name)}`
+                  : `Historial para ${formatName(selectedCase.passenger_name)}`}
             </Modal.Title>
+
           </Modal.Header>
           <Modal.Body>
             {viewMode === "comments" ? (
               <>
-                <ul>
-                  {selectedCase.comments?.map((comment, index) => (
-                    <li
-                      key={index}
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        margin: "5px 0",
-                        padding: "8px",
-                        borderRadius: "4px",
-                      }}
-                    >
-                      {comment}
-                    </li>
-                  ))}
-                </ul>
+                <table
+                  style={{
+                    width: "100%",
+                    borderCollapse: "collapse",
+                    marginBottom: "20px",
+                  }}
+                >
+                  <thead>
+                    <tr>
+                      <th
+                        style={{
+                          textAlign: "left",
+                          padding: "8px",
+                          backgroundColor: "#f1f1f1",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
+                        Comentario
+                      </th>
+                      <th
+                        style={{
+                          textAlign: "left",
+                          padding: "8px",
+                          backgroundColor: "#f1f1f1",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
+                        Fecha
+                      </th>
+                      <th
+                        style={{
+                          textAlign: "left",
+                          padding: "8px",
+                          backgroundColor: "#f1f1f1",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
+                        Hora
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {selectedCase?.comments
+                      ?.slice()
+                      .reverse()
+                      .map((comment, index) => {
+                        const formattedDate = (typeof comment !== "string" && comment.createdAt)
+                          ? new Date(comment.createdAt).toLocaleDateString("es-DO", {
+                            year: "numeric",
+                            month: "2-digit",
+                            day: "2-digit",
+                          })
+                          : "Sin fecha";
+
+                        const formattedTime = (typeof comment !== "string" && comment.createdAt)
+                          ? new Date(comment.createdAt).toLocaleTimeString("es-DO", {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            second: "2-digit",
+                          })
+                          : "Sin hora";
+
+                        return (
+                          <tr key={index}>
+                            <td
+                              style={{
+                                padding: "8px",
+                                borderBottom: "1px solid #ddd",
+                                backgroundColor: "#fff",
+                                wordWrap: "break-word", // Hacer que el texto del comentario haga salto de línea
+                                maxWidth: "400px", // Limitar el ancho para comentarios largos
+                              }}
+                            >
+                              {typeof comment === "string" ? comment : comment.text}
+                            </td>
+                            <td
+                              style={{
+                                padding: "8px",
+                                borderBottom: "1px solid #ddd",
+                                backgroundColor: "#fff",
+                              }}
+                            >
+                              {formattedDate || "Sin fecha"}
+                            </td>
+                            <td
+                              style={{
+                                padding: "8px",
+                                borderBottom: "1px solid #ddd",
+                                backgroundColor: "#fff",
+                              }}
+                            >
+                              {formattedTime || "Sin hora"}
+                            </td>
+                          </tr>
+                        );
+                      })}
+                  </tbody>
+                </table>
                 <Form.Control
                   type="text"
                   placeholder="Escribe un comentario..."
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   size="sm"
+                  style={{
+                    width: "100%",
+                    resize: "none", // Impide que el campo se redimensione manualmente
+                  }}
                 />
                 <Button
                   variant="outline-primary"
                   size="sm"
-                  onClick={() => {
-                    if (newComment) {
-                      const updatedRow = editableRows.map((row) =>
-                        row.id === selectedCase.id
-                          ? { ...row, comments: [...(row.comments || []), newComment] }
-                          : row
-                      );
-                      setEditableRows(updatedRow);
-                      setNewComment("");
-                    }
-                  }}
+                  onClick={handleAddComment}
                   style={{ marginTop: "10px" }}
                 >
                   Agregar Comentario
                 </Button>
               </>
-            ) : viewMode === "attachments" ? (
-              <>
-                <ul>
-                  {selectedCase.attachedFiles?.map((file: { fileName: string }, index: React.Key) => (
-                    <li
-                      key={index}
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        margin: "5px 0",
-                        padding: "8px",
-                        borderRadius: "4px",
-                      }}
-                    >
-                      {file.fileName}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            ) : (
-              <>
-                <ul>
-                  {selectedCase.history?.map((historyItem: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined, index: React.Key | null | undefined) => (
-                    <li
-                      key={index}
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        margin: "5px 0",
-                        padding: "8px",
-                        borderRadius: "4px",
-                      }}
-                    >
-                      {historyItem}
-                    </li>
-                  ))}
-                </ul>
-              </>
-            )}
+            ) : viewMode === "attachments"
+              ? (
+                <>
+                  <ul>
+                    {selectedCase.attachedFiles?.map((file: { fileName: string }, index: React.Key) => (
+                      <li
+                        key={index}
+                        style={{
+                          backgroundColor: "#f8f9fa",
+                          margin: "5px 0",
+                          padding: "8px",
+                          borderRadius: "4px",
+                        }}
+                      >
+                        {file.fileName}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <>
+                  <ul>
+                    {selectedCase.history?.map((historyItem: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined, index: React.Key | null | undefined) => (
+                      <li
+                        key={index}
+                        style={{
+                          backgroundColor: "#f8f9fa",
+                          margin: "5px 0",
+                          padding: "8px",
+                          borderRadius: "4px",
+                        }}
+                      >
+                        {historyItem}
+                      </li>
+                    ))}
+                  </ul>
+                </>
+              )}
           </Modal.Body>
           <Modal.Footer>
-            <Button variant="secondary" onClick={handleCancel}>
-              Cerrar
+            <Button variant="danger" onClick={handleCancel}>
+              Clear
             </Button>
           </Modal.Footer>
         </Modal>
