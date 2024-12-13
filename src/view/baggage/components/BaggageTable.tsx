@@ -4,7 +4,7 @@ import { BaggageCase } from "@/domain/types/BaggageCase";
 import { Button, Form, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { format } from "date-fns";
 import styles from "@/view/baggage/baggage.module.css";
-import { FaPaperclip, FaSave, FaTimesCircle, FaHistory } from "react-icons/fa";
+import { FaPaperclip, FaSave, FaTimesCircle, FaHistory, FaTrashAlt } from "react-icons/fa";
 import { SiMinutemailer } from "react-icons/si";
 import CustomDropdown from "./CustomDropdown";
 
@@ -21,7 +21,7 @@ interface BaggageTableProps {
   endDate: string;
 }
 
-const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit, onCancel, searchTerm, status, startDate, endDate }) => {
+const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit, onCancel }) => {
   const [editableRows, setEditableRows] = useState<BaggageCase[]>([]);
   const [selectedCase, setSelectedCase] = useState<BaggageCase | null>(null);
   const [newComment, setNewComment] = useState<string>("");
@@ -34,25 +34,19 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 
   const handleFieldChange = (
     id: string,
-    field: keyof BaggageCase | "contact.phone" | "contact.email",
+    field: keyof BaggageCase,
     value: string
   ) => {
     setEditableRows((prevRows) =>
       prevRows.map((row) => {
         if (row.id === id) {
-          if (field.startsWith("contact")) {
-            const contactField = field.split(".")[1] as keyof BaggageCase["contact"];
-            return {
-              ...row,
-              contact: { ...row.contact, [contactField]: value },
-            };
-          }
           return { ...row, [field]: value };
         }
         return row;
       })
     );
   };
+
 
 
   const handleSave = (id: string) => {
@@ -83,17 +77,15 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   }
 
   const formatName = (name: string): string => {
-    // Dividir el nombre completo por el separador "/"
+
     const parts = name.split("/");
 
-    // Si el nombre tiene partes separadas por "/", elige la primera y la segunda como nombre y apellido.
     if (parts.length > 1) {
       const firstName = parts[0].trim();
       const lastName = parts[1].trim();
       return `${firstName} ${lastName}`;
     }
 
-    // Si no hay "/", solo se devuelve el nombre tal cual.
     return name;
   };
 
@@ -131,17 +123,57 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
             ...row,
             comments: [
               ...(row.comments || []),
-              { text: newComment, createdAt: new Date().toISOString() },
+              {
+                id: crypto.randomUUID(),
+                text: newComment,
+                created_at: new Date().toISOString(),
+              },
             ],
           }
           : row
       );
-      setEditableRows(updatedRow);
 
-      setSelectedCase(updatedRow.find(row => row.id === selectedCase?.id) || null);
+      setEditableRows(updatedRow);
+      setSelectedCase(updatedRow.find((row) => row.id === selectedCase?.id) || null);
       setNewComment("");
     }
   };
+
+  const handleDeleteComment = async (comentId: string) => {
+    try {
+      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/delete_coment/${comentId}`, {
+        method: "DELETE",
+      });
+  
+      if (!response.ok) {
+        throw new Error("Error al eliminar el comentario");
+      }
+  
+      // Actualizamos el estado de editableRows y selectedCase
+      setEditableRows((prevRows) =>
+        prevRows.map((row) => {
+          if (row.id === selectedCase?.id) {
+            const updatedComments = row.comments?.filter((comment) => comment.id !== comentId) || [];
+            return { ...row, comments: updatedComments };
+          }
+          return row;
+        })
+      );
+  
+      setSelectedCase((prevState) => {
+        if (!prevState) return prevState;
+        const updatedComments = prevState.comments?.filter((comment) => comment.id !== comentId) || [];
+        return { ...prevState, comments: updatedComments };
+      });
+  
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un error al eliminar el comentario.");
+    }
+  };
+  
+  
+
 
 
   const getStatusColor = (status: string | undefined) => {
@@ -185,26 +217,26 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
     {
       name: "Correo",
-      selector: (row) => row.contact.email || "-",
+      selector: (row) => row.contact_phone || "-",
       sortable: true,
       width: "250px",
       cell: (row) => (
         <Form.Control
-          value={row.contact.email || ""}
-          onChange={(e) => handleFieldChange(row.id, "contact.email", e.target.value)}
+          value={row.contact_email || ""}
+          onChange={(e) => handleFieldChange(row.id, "contact_email", e.target.value)}
           size="sm"
         />
       ),
     },
     {
       name: "Teléfono",
-      selector: (row) => row.contact.phone || "-",
+      selector: (row) => row.contact_phone || "-",
       sortable: true,
       width: "1  50px",
       cell: (row) => (
         <Form.Control
-          value={row.contact.phone || ""}
-          onChange={(e) => handleFieldChange(row.id, "contact.phone", e.target.value)}
+          value={row.contact_phone || ""}
+          onChange={(e) => handleFieldChange(row.id, "contact_phone", e.target.value)}
           size="sm"
         />
       ),
@@ -374,12 +406,12 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           <Modal.Header closeButton>
             <Modal.Title
               style={{
-                fontSize: "1.2rem",  // Ajuste del tamaño de la fuente para que no sea tan grande
-                color: "#333",       // Color de texto más suave
-                fontWeight: "500",   // Peso de fuente para que no sea tan fuerte
-                textTransform: "capitalize", // Asegurarte de que las palabras estén capitalizadas
-                letterSpacing: "0.5px", // Espaciado de letras para que se vea más ordenado
-                lineHeight: "1.5",   // Espaciado entre líneas para mejorar la legibilidad
+                fontSize: "1.2rem",
+                color: "#333",
+                fontWeight: "500",
+                textTransform: "capitalize",
+                letterSpacing: "0.5px",
+                lineHeight: "1.5",
               }}
             >
               {viewMode === "comments"
@@ -432,6 +464,16 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                       >
                         Hora
                       </th>
+                      <th
+                        style={{
+                          textAlign: "center",
+                          padding: "8px",
+                          backgroundColor: "#f1f1f1",
+                          borderBottom: "1px solid #ddd",
+                        }}
+                      >
+                        Acciones
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
@@ -439,16 +481,16 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                       ?.slice()
                       .reverse()
                       .map((comment, index) => {
-                        const formattedDate = (typeof comment !== "string" && comment.createdAt)
-                          ? new Date(comment.createdAt).toLocaleDateString("es-DO", {
+                        const formattedDate = comment.created_at
+                          ? new Date(comment.created_at).toLocaleDateString("es-DO", {
                             year: "numeric",
                             month: "2-digit",
                             day: "2-digit",
                           })
                           : "Sin fecha";
 
-                        const formattedTime = (typeof comment !== "string" && comment.createdAt)
-                          ? new Date(comment.createdAt).toLocaleTimeString("es-DO", {
+                        const formattedTime = comment.created_at
+                          ? new Date(comment.created_at).toLocaleTimeString("es-DO", {
                             hour: "2-digit",
                             minute: "2-digit",
                             second: "2-digit",
@@ -462,11 +504,11 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                                 padding: "8px",
                                 borderBottom: "1px solid #ddd",
                                 backgroundColor: "#fff",
-                                wordWrap: "break-word", // Hacer que el texto del comentario haga salto de línea
-                                maxWidth: "400px", // Limitar el ancho para comentarios largos
+                                wordWrap: "break-word",
+                                maxWidth: "400px",
                               }}
                             >
-                              {typeof comment === "string" ? comment : comment.text}
+                              {comment.text}
                             </td>
                             <td
                               style={{
@@ -486,6 +528,23 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                             >
                               {formattedTime || "Sin hora"}
                             </td>
+                            <td
+                              style={{
+                                textAlign: "center",
+                                padding: "8px",
+                                borderBottom: "1px solid #ddd",
+                                backgroundColor: "#fff",
+                              }}
+                            >
+                              <Button
+                                variant="outline-danger"
+                                size="sm"
+                                onClick={() => handleDeleteComment(comment.id)}
+                                title="Eliminar comentario"
+                              >
+                                <FaTrashAlt />
+                              </Button>
+                            </td>
                           </tr>
                         );
                       })}
@@ -499,7 +558,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                   size="sm"
                   style={{
                     width: "100%",
-                    resize: "none", // Impide que el campo se redimensione manualmente
+                    resize: "none",
                   }}
                 />
                 <Button
@@ -510,6 +569,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                 >
                   Agregar Comentario
                 </Button>
+
               </>
             ) : viewMode === "attachments"
               ? (

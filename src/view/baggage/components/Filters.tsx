@@ -1,7 +1,6 @@
 import React from "react";
 import { Form, Row, Col } from "react-bootstrap";
 
-// Definir los filtros
 const filters = {
   searchTerm: "",
   status: "",
@@ -49,12 +48,12 @@ const Filters: React.FC<FilterProps> = ({
             <Form.Label>Estado</Form.Label>
             <Form.Select
               value={status}
-              onChange={(e) => onChange("status", e.target.value)} // Aquí se pasa la clave "status"
+              onChange={(e) => onChange("status", e.target.value)} 
             >
               <option value="">Selecciona un estado</option>
               <option value="Abierto">Abierto</option>
               <option value="Cerrado">Cerrado</option>
-              <option value="En espera">En espera</option>
+              <option value="En espera">En espera de pasajero</option>
             </Form.Select>
           </Form.Group>
         </Col>

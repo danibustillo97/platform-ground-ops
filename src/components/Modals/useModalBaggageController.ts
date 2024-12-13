@@ -5,14 +5,14 @@ const useModalBaggageController = (
   details: BaggageCase,
   onSave: (updatedDetails: BaggageCase) => void
 ) => {
-  const [phone, setPhone] = useState<string>(details.contact.phone);
-  const [email, setEmail] = useState<string>(details.contact.email);
-  const [status, setStatus] = useState<Status>(details.status as Status); // Asegúrate de que sea del tipo correcto
+  const [phone, setPhone] = useState<string>(details.contact_phone);
+  const [email, setEmail] = useState<string>(details.contact_email);
+  const [status, setStatus] = useState<Status>(details.status as Status); 
 
   useEffect(() => {
-    setPhone(details.contact.phone);
-    setEmail(details.contact.email);
-    setStatus(details.status as Status); // Convertir a Status
+    setPhone(details.contact_phone);
+    setEmail(details.contact_email);
+    setStatus(details.status as Status); 
   }, [details]);
 
   const handlePhoneChange = (e: React.ChangeEvent<HTMLInputElement>) => {

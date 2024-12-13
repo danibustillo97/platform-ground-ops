@@ -5,7 +5,7 @@ import { v4 as uuidv4 } from "uuid";
 import { getSession } from "next-auth/react";
 import { getPassengerData, createBaggageCases } from "../../../data/repositories/baggageRepository";
 import { PassengerData } from "../../../domain/types/PassengerData";
-import Alert from "@/components/Alerts/Alert"; 
+import Alert from "@/components/Alerts/Alert";
 
 export const useFormBaggageController = () => {
     const [loading, setLoading] = useState(true);
@@ -23,12 +23,12 @@ export const useFormBaggageController = () => {
         departureDate: string;
         fromAirport: string;
         toAirport: string;
-        passengerName: string; 
+        passengerName: string;
         description: string;
         issue: string;
     }[]>([]);
     const [formData, setFormData] = useState({ phone: "", email: "", address: "" });
-    
+
 
     const [alert, setAlert] = useState<{ type: 'success' | 'warning' | 'error'; message: string } | null>(null);
 
@@ -134,16 +134,12 @@ export const useFormBaggageController = () => {
             return {
                 baggage_code: luggageItem.luggage,
                 PNR: pnr,
-                contact: {
-                    phone: luggageItem.phone,
-                    email: luggageItem.email
-                },
-                flight_info: {
-                    flightNumber: luggageItem.flightNum || "",
-                    departureDate: luggageItem.departureDate || "",
-                    fromAirport: luggageItem.fromAirport || "",
-                    toAirport: luggageItem.toAirport || ""
-                },
+                contact_phone: luggageItem.phone,
+                contact_email: luggageItem.email,
+                flight_number: luggageItem.flightNum || "",
+                departure_date: luggageItem.departureDate || "",
+                from_airport: luggageItem.fromAirport || "",
+                to_airport: luggageItem.toAirport || "",
                 passenger_name: luggageItem.passengerName || "",
                 description: luggageItem.description || "",
                 issue_type: luggageItem.issue || "",

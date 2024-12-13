@@ -255,6 +255,7 @@ const FormReclamoView: React.FC = () => {
                                                     id="file"
                                                     className={styles.input}
                                                     onChange={handleFileChange}
+                                                    multiple
                                                 />
                                             </div>
                                         )}

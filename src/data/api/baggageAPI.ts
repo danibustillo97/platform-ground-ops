@@ -1,6 +1,7 @@
 import { BaggageCase } from "@/types/BaggageCase";
 
-const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
+// const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const apiURL = 'https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net'
 
 export const fetchPassengerDataAPI = async (pnr: string, token: string) => {
     try {
