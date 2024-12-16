@@ -132,10 +132,10 @@ export const useFormBaggageController = () => {
             const direccionEnvio = luggageItem.issue === 'Retraso' ? formData.address : null;
 
             return {
-                baggage_code: luggageItem.luggage,
-                PNR: pnr,
-                contact_phone: luggageItem.phone,
-                contact_email: luggageItem.email,
+                baggage_code: luggageItem.luggage || "",
+                PNR: pnr || "",
+                contact_phone: luggageItem.phone || "",
+                contact_email: luggageItem.email || "",
                 flight_number: luggageItem.flightNum || "",
                 departure_date: luggageItem.departureDate || "",
                 from_airport: luggageItem.fromAirport || "",
@@ -143,13 +143,12 @@ export const useFormBaggageController = () => {
                 passenger_name: luggageItem.passengerName || "",
                 description: luggageItem.description || "",
                 issue_type: luggageItem.issue || "",
-                direccion_envio: direccionEnvio || "Null",
+                number_ticket_zendesk: "12345", 
                 pruebas_url: pruebasUrl || "Null",
-                created_agente_name: session?.user.name || "",
-                date_create: new Date().toISOString(),
-                last_updated: new Date().toISOString(),
-                number_ticket_zendesk: "12345",
+                direccion_envio: direccionEnvio || "Null",
+                comments: [], 
             };
+            
         });
 
         if (token) {

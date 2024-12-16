@@ -203,6 +203,19 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       width: "110px"
     },
     {
+      name: "Ticket Zendesk",
+      selector: (row) => row.number_ticket_zendesk || "-",
+      sortable: true,
+      width: "120px"
+    },
+    {
+      name: "Station",
+      selector: (row) => row.from_airport || "-",
+      sortable: true,
+      width: "110px"
+    },
+
+    {
       name: "Nombre",
       selector: (row) => row.passenger_name || "-",
       sortable: true,
