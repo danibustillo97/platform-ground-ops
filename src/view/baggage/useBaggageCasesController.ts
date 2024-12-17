@@ -10,6 +10,7 @@ import { BaggageCase } from "@/domain/types/BaggageCase";
 export const useBaggageCasesController = () => {
   const [baggageCases, setBaggageCases] = useState<BaggageCase[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  
   const [filters, setFilters] = useState({
     searchTerm: "",
     status: "",
@@ -35,7 +36,6 @@ export const useBaggageCasesController = () => {
     fetchData();
   }, []);
 
-  // Filtro memoizado
   const filteredCases = useMemo(() => {
     const { searchTerm, status, startDate, endDate } = filters;
     return baggageCases.filter((caseItem) => {

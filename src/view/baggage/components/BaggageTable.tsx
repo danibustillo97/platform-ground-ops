@@ -7,7 +7,7 @@ import styles from "@/view/baggage/baggage.module.css";
 import { FaPaperclip, FaSave, FaTimesCircle, FaHistory, FaTrashAlt } from "react-icons/fa";
 import { SiMinutemailer } from "react-icons/si";
 import CustomDropdown from "./CustomDropdown";
-
+import { getSession } from "next-auth/react";
 
 
 interface BaggageTableProps {
@@ -171,6 +171,46 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       alert("Hubo un error al eliminar el comentario.");
     }
   };
+
+
+  const handleDeleteCases = async (ids: string,) =>{
+    const session = await getSession();
+    const token = session?.user.access_token as string;
+    try {
+      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${ids}   `, {
+        method: "DELETE",
+        headers: {
+          "ngrok-skip-browser-warning": "true",
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`, 
+      },
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar el comentario");
+      }
+
+      setEditableRows((prevRows) =>
+        prevRows.map((row) => {
+          if (row.id === selectedCase?.id) {
+            const updatedComments = row.comments?.filter((comment) => comment.id !== ids) || [];
+            return { ...row, comments: updatedComments };
+          }
+          return row;
+        })
+      );
+
+      setSelectedCase((prevState) => {
+        if (!prevState) return prevState;
+        const updatedComments = prevState.comments?.filter((comment) => comment.id !== ids) || [];
+        return { ...prevState, comments: updatedComments };
+      });
+
+    } catch (error) {
+      console.error(error);
+      alert("Hubo un error al eliminar el comentario.");
+    }
+  }
 
 
 
@@ -374,7 +414,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           <Button
             variant="outline-danger"
             size="sm"
-            onClick={handleCancel}
+            onClick={() => handleDeleteCases(row.id)}
             className={styles.actionButton}
           >
             <FaTimesCircle />

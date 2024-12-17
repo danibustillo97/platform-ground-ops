@@ -62,7 +62,7 @@ const authOptions: NextAuthOptions = {
                     }
 
                     return {
-                        id: data.user.email, // O usa otro identificador si es necesario
+                        id: data.user.email, 
                         access_token: data.access_token,
                         email: data.user.email,
                         name: data.user.name,
