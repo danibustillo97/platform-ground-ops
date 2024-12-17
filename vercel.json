@@ -1,10 +1,4 @@
 {
-    "version": 2,
-    "builds": [
-      {
-        "src": "src/app/api/auth/[...nextauth]/route.ts",
-        "use": "@vercel/node"
-      }
-    ]
+    "version": 2
   }
   
