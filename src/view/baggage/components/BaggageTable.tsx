@@ -144,11 +144,11 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/delete_coment/${comentId}`, {
         method: "DELETE",
       });
-  
+
       if (!response.ok) {
         throw new Error("Error al eliminar el comentario");
       }
-  
+
       // Actualizamos el estado de editableRows y selectedCase
       setEditableRows((prevRows) =>
         prevRows.map((row) => {
@@ -159,20 +159,20 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           return row;
         })
       );
-  
+
       setSelectedCase((prevState) => {
         if (!prevState) return prevState;
         const updatedComments = prevState.comments?.filter((comment) => comment.id !== comentId) || [];
         return { ...prevState, comments: updatedComments };
       });
-  
+
     } catch (error) {
       console.error(error);
       alert("Hubo un error al eliminar el comentario.");
     }
   };
-  
-  
+
+
 
 
 
@@ -606,7 +606,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
               ) : (
                 <>
                   <ul>
-                    {selectedCase.history?.map((historyItem: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined, index: React.Key | null | undefined) => (
+                    {selectedCase.history?.map((historyItem, index) => (
                       <li
                         key={index}
                         style={{
@@ -616,9 +616,16 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                           borderRadius: "4px",
                         }}
                       >
-                        {historyItem}
+                        <strong>Acción:</strong> {historyItem.action} <br />
+                        <strong>Fecha:</strong> {historyItem.date} <br />
+                        {historyItem.description && (
+                          <>
+                            <strong>Descripción:</strong> {historyItem.description}
+                          </>
+                        )}
                       </li>
                     ))}
+
                   </ul>
                 </>
               )}

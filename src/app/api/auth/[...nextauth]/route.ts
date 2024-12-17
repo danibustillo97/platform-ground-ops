@@ -1,7 +1,5 @@
-import NextAuth, {User, NextAuthConfig} from "next-auth";
+import NextAuth, { NextAuthOptions, User as NextAuthUser } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-
-const url_local = "http://localhost:8000"
 
 interface AuthUser {
     access_token: string;
@@ -12,7 +10,7 @@ interface AuthUser {
     };
 }
 
-interface ExtendedNextAuthUser extends User {
+interface ExtendedNextAuthUser extends NextAuthUser {
     access_token: string; 
     name: string;
 }
@@ -22,7 +20,7 @@ interface ExtendedJWT {
     name?: string;
 }
 
-const authOptions: NextAuthConfig = {
+const authOptions: NextAuthOptions = {
     secret: process.env.NEXTAUTH_SECRET,
     providers: [
         CredentialsProvider({
@@ -34,20 +32,22 @@ const authOptions: NextAuthConfig = {
             async authorize(credentials) {
                 try {
                     const res = await fetch(
-                        // `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login/login`,
-                        `${url_local}/api/login/login`,
+                        `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/login/login`,
                         {
-                          method: "POST",
-                          body: new URLSearchParams({
-                            grant_type: 'password',
-                            username: credentials?.email ? String(credentials.email) : '', 
-                            password: credentials?.password ? String(credentials.password) : '', 
-                          }),
-                          headers: {
-                            "Content-Type": "application/x-www-form-urlencoded",
-                          },
+                            method: "POST",
+                            body: new URLSearchParams({
+                                grant_type: 'password',
+                                username: credentials?.email || '',
+                                password: credentials?.password || '',
+                                // Añadir otros parámetros requeridos si son necesarios
+                                // client_id: 'your_client_id',
+                                // client_secret: 'your_client_secret',
+                            }),
+                            headers: {
+                                "Content-Type": "application/x-www-form-urlencoded",
+                            },
                         }
-                      );
+                    );
 
                     if (!res.ok) {
                         const errorData = await res.json();
@@ -62,7 +62,7 @@ const authOptions: NextAuthConfig = {
                     }
 
                     return {
-                        id: data.user.email, 
+                        id: data.user.email, // O usa otro identificador si es necesario
                         access_token: data.access_token,
                         email: data.user.email,
                         name: data.user.name,
