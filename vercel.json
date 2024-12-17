@@ -8,8 +8,8 @@
     ],
     "routes": [
       {
-        "src": "/api/auth/[...nextauth]",
-        "dest": "/src/app/api/auth/[...nextauth]/route.ts"
+        "src": "/api/auth/(.*)",
+        "dest": "src/app/api/auth/[...nextauth]/route.ts"
       }
     ]
   }
