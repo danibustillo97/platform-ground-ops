@@ -12,14 +12,12 @@ const useLoginController = () => {
         const formErrors: { username?: string; password?: string } = {};
         if (!formData.username) formErrors.username = 'El usuario es obligatorio';
         if (!formData.password) formErrors.password = 'La contraseña es obligatoria';
-        
-        // Actualizar errores solo si hay cambios
+
         setErrors(prevErrors => ({
             ...prevErrors,
-            general: null, // Limpiar el mensaje de error general al validar
+            general: null, 
             ...formErrors,
         }));
-        
         return formErrors;
     };
 
@@ -43,7 +41,7 @@ const useLoginController = () => {
             if (res?.error) {
                 setErrors(prevErrors => ({
                     ...prevErrors,
-                    general: res.error,
+                    general: res?.error || null, 
                 }));
                 return;
             }
@@ -61,12 +59,18 @@ const useLoginController = () => {
         }
     };
 
+
+    const handleLoginEntraId = async (e: React.FormEvent<HTMLFormElement>) => {
+        
+    }
+
     return {
         formData,
         errors,
         loading,
         handleChange,
         handleSubmit,
+        handleLoginEntraId
     };
 };
 

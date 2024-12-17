@@ -1,4 +1,3 @@
-/* styles/Alert.module.css */
 
 .alert {
     display: flex;
@@ -57,7 +56,7 @@
 
 }
 
-/* Animación de entrada tipo "bounce" */
+
 @keyframes bounceIn {
     0% {
         transform: translate(-50%, -30%); /* Empieza un poco más arriba */
@@ -75,15 +74,15 @@
     }
 }
 
-/* Ajustes para dispositivos móviles */
+
 @media (max-width: 480px) {
     .alert {
-        font-size: 14px; /* Tamaño de fuente más pequeño */
-        padding: 10px 15px; /* Menos padding */
-        max-width: 90%; /* Ajuste el ancho a un 90% de la pantalla */
-        width: 100%; /* Permite que la alerta se ajuste */
+        font-size: 14px; 
+        padding: 10px 15px; 
+        max-width: 90%; 
+        width: 100%;
     }
     .closeButton {
-        font-size: 18px; /* Tamaño de fuente más pequeño para el botón de cierre */
+        font-size: 18px; 
     }
 }
