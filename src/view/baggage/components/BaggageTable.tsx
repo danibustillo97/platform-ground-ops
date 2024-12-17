@@ -190,21 +190,9 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
         throw new Error("Error al eliminar el comentario");
       }
 
-      setEditableRows((prevRows) =>
-        prevRows.map((row) => {
-          if (row.id === selectedCase?.id) {
-            const updatedComments = row.comments?.filter((comment) => comment.id !== ids) || [];
-            return { ...row, comments: updatedComments };
-          }
-          return row;
-        })
-      );
+      setEditableRows((prevRows) => prevRows.filter((row) => row.id !== ids));
+      setSelectedCase(null);
 
-      setSelectedCase((prevState) => {
-        if (!prevState) return prevState;
-        const updatedComments = prevState.comments?.filter((comment) => comment.id !== ids) || [];
-        return { ...prevState, comments: updatedComments };
-      });
 
     } catch (error) {
       console.error(error);
