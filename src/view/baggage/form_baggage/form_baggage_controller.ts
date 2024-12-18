@@ -329,7 +329,7 @@ export const useFormBaggageController = () => {
                             .replace("${caseInfo.issue_type}", caseInfo.issue_type),
                     };
 
-                    const emailResponse = await fetch('http://localhost:8000/api/email/send-email/', {
+                    const emailResponse = await fetch('https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/email/send-email/', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -386,7 +386,7 @@ export const useFormBaggageController = () => {
         handleDescriptionChange,
         handleIssueChange,
         handleCreateCases,
-        alert, // Retorna el estado de alertas
-        setAlert, // Para poder actualizar el estado de alertas desde el componente padre
+        alert,
+        setAlert, 
     };
 };
