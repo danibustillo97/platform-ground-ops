@@ -39,9 +39,6 @@ const authOptions: NextAuthOptions = {
                                 grant_type: 'password',
                                 username: credentials?.email || '',
                                 password: credentials?.password || '',
-                                // Añadir otros parámetros requeridos si son necesarios
-                                // client_id: 'your_client_id',
-                                // client_secret: 'your_client_secret',
                             }),
                             headers: {
                                 "Content-Type": "application/x-www-form-urlencoded",
