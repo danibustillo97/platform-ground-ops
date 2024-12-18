@@ -47,27 +47,29 @@ const FormReclamoView: React.FC = () => {
 
     const handleCreateCase = () => {
         handleCreateCases();
+     
+    };
+
+    const resetForm = () => {
         setFormData({
             phone: "",
             email: "",
             address: "",
         });
         setPnr("");
+        setAlert(null);
     };
 
     const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const address = e.target.value;
-        // Validación simple: "Cra" o "Calle" seguido de número
         const regex = /^(Cra|Calle|Av\.|APT)\s?\d+.*$/;
-        
+
         if (regex.test(address)) {
             setFormData({ ...formData, address });
         } else {
-            // Opcional: Si no se cumple el formato, podrías mostrar un mensaje de error
-            setFormData({ ...formData, address: address });  // solo actualiza si es válido
+            setFormData({ ...formData, address: address });
         }
     };
-    
 
     const popUpCreateCase = (event: { currentTarget: any; }) => {
         confirmPopup({
@@ -144,7 +146,6 @@ const FormReclamoView: React.FC = () => {
                                     {!pnrAdded ? <MdOutlineClear /> : <MdOutlineClear />}
                                 </button>
                             </div>
-
                         </div>
 
                         <div className={styles.formGroup}>
@@ -261,23 +262,21 @@ const FormReclamoView: React.FC = () => {
                                         )}
                                         {issue === 'Retraso' && (
                                             <div className={styles.luggageField}>
-                                            <label htmlFor={`address-${id}`} className={styles.label}>Dirección</label>
-                                            <div className={styles.addressContainer}>
-                                                <input
-                                                    type="text"
-                                                    id={`address-${id}`}
-                                                    className={styles.input}
-                                                    placeholder="Ej. Cra Calle 45 #123 APT 202"
-                                                    value={formData.address}
-                                                    onChange={(e) => setFormData({ ...formData, address: e.target.value })}
-                                                    // Se pueden agregar validaciones para asegurarse de que la dirección cumpla con el formato
-                                                />
-                                                <small className={styles.infoText}>
-                                                    Usa prefijos como: "Cra", "Calle", "Av.", "APT", etc. Ejemplo: "Cra 15 #45-67 APT 305"
-                                                </small>
+                                                <label htmlFor={`address-${id}`} className={styles.label}>Dirección</label>
+                                                <div className={styles.addressContainer}>
+                                                    <input
+                                                        type="text"
+                                                        id={`address-${id}`}
+                                                        className={styles.input}
+                                                        placeholder="Ej. Cra Calle 45 #123 APT 202"
+                                                        value={formData.address}
+                                                        onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                                    />
+                                                    <small className={styles.infoText}>
+                                                        Usa prefijos como: "Cra", "Calle", "Av.", "APT", etc. Ejemplo: "Cra 15 #45-67 APT 305"
+                                                    </small>
+                                                </div>
                                             </div>
-                                        </div>
-                                        
                                         )}
                                     </div>
                                 </div>
