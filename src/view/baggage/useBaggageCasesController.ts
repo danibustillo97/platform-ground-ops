@@ -36,6 +36,9 @@ export const useBaggageCasesController = () => {
     fetchData();
   }, []);
 
+
+
+
   const filteredCases = useMemo(() => {
     const { searchTerm, status, startDate, endDate } = filters;
     return baggageCases.filter((caseItem) => {

@@ -9,7 +9,6 @@ import { SiMinutemailer } from "react-icons/si";
 import CustomDropdown from "./CustomDropdown";
 import { getSession } from "next-auth/react";
 
-
 interface BaggageTableProps {
   rows: BaggageCase[];
   onSaveChanges: (updatedRows: BaggageCase[]) => void;
@@ -25,11 +24,11 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   const [editableRows, setEditableRows] = useState<BaggageCase[]>([]);
   const [selectedCase, setSelectedCase] = useState<BaggageCase | null>(null);
   const [newComment, setNewComment] = useState<string>("");
-
   const [viewMode, setViewMode] = useState<"comments" | "attachments" | "history">("comments");
 
   useEffect(() => {
-    setEditableRows(rows);
+    const sortedRows = [...rows].sort((a, b) => new Date(b.date_create).getTime() - new Date(a.date_create).getTime());
+    setEditableRows(sortedRows);
   }, [rows]);
 
   const handleFieldChange = (
@@ -47,8 +46,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     );
   };
 
-
-
   const handleSave = (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
     if (updatedRow) {
@@ -56,9 +53,8 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     }
   };
 
-
   const handleSendEmail = async () => {
-    console.log("Click")
+    console.log("Click");
     const emailData = {
       to: 'danibustillo97@gmail.com',
       text: 'Aqui realizo pruebas',
@@ -77,25 +73,19 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   }
 
   const formatName = (name: string): string => {
-
     const parts = name.split("/");
-
     if (parts.length > 1) {
       const firstName = parts[0].trim();
       const lastName = parts[1].trim();
       return `${firstName} ${lastName}`;
     }
-
     return name;
   };
-
-
 
   const handleCancel = () => {
     setEditableRows(rows);
     setSelectedCase(null);
     setViewMode("comments");
-
   };
 
   const handleFileUpload = (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
@@ -139,9 +129,9 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     }
   };
 
-  const handleDeleteComment = async (comentId: string) => {
+  const handleDeleteComment = async (commentId: string) => {
     try {
-      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/delete_coment/${comentId}`, {
+      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/delete_comment/${commentId}`, {
         method: "DELETE",
       });
 
@@ -153,7 +143,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       setEditableRows((prevRows) =>
         prevRows.map((row) => {
           if (row.id === selectedCase?.id) {
-            const updatedComments = row.comments?.filter((comment) => comment.id !== comentId) || [];
+            const updatedComments = row.comments?.filter((comment) => comment.id !== commentId) || [];
             return { ...row, comments: updatedComments };
           }
           return row;
@@ -162,7 +152,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 
       setSelectedCase((prevState) => {
         if (!prevState) return prevState;
-        const updatedComments = prevState.comments?.filter((comment) => comment.id !== comentId) || [];
+        const updatedComments = prevState.comments?.filter((comment) => comment.id !== commentId) || [];
         return { ...prevState, comments: updatedComments };
       });
 
@@ -172,37 +162,31 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     }
   };
 
-
-  const handleDeleteCases = async (ids: string,) =>{
+  const handleDeleteCases = async (id: string) => {
     const session = await getSession();
     const token = session?.user.access_token as string;
     try {
-      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${ids}   `, {
+      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${id}`, {
         method: "DELETE",
         headers: {
           "ngrok-skip-browser-warning": "true",
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`, 
-      },
+          "Authorization": `Bearer ${token}`,
+        },
       });
 
       if (!response.ok) {
-        throw new Error("Error al eliminar el comentario");
+        throw new Error("Error al eliminar el caso");
       }
 
-      setEditableRows((prevRows) => prevRows.filter((row) => row.id !== ids));
+      setEditableRows((prevRows) => prevRows.filter((row) => row.id !== id));
       setSelectedCase(null);
-
 
     } catch (error) {
       console.error(error);
-      alert("Hubo un error al eliminar el comentario.");
+      alert("Hubo un error al eliminar el caso.");
     }
   }
-
-
-
-
 
   const getStatusColor = (status: string | undefined) => {
     switch (status) {
@@ -242,7 +226,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       sortable: true,
       width: "110px"
     },
-
     {
       name: "Nombre",
       selector: (row) => row.passenger_name || "-",
@@ -273,7 +256,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "Teléfono",
       selector: (row) => row.contact_phone || "-",
       sortable: true,
-      width: "1  50px",
+      width: "150px",
       cell: (row) => (
         <Form.Control
           value={row.contact_phone || ""}
@@ -321,7 +304,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       selector: (row) =>
         row.date_create ? format(new Date(row.date_create), "dd/MM/yyyy") : "-",
       sortable: true,
-
       cell: (row) => (
         <OverlayTrigger
           placement="top"
@@ -407,7 +389,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           >
             <FaTimesCircle />
           </Button>
-
           <Button
             variant="outline-danger"
             size="sm"
@@ -461,7 +442,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                   ? `Archivos Adjuntos para ${formatName(selectedCase.passenger_name)}`
                   : `Historial para ${formatName(selectedCase.passenger_name)}`}
             </Modal.Title>
-
           </Modal.Header>
           <Modal.Body>
             {viewMode === "comments" ? (
@@ -610,7 +590,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                 >
                   Agregar Comentario
                 </Button>
-
               </>
             ) : viewMode === "attachments"
               ? (
@@ -653,7 +632,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         )}
                       </li>
                     ))}
-
                   </ul>
                 </>
               )}

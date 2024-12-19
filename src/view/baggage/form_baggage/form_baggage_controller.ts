@@ -126,7 +126,7 @@ export const useFormBaggageController = () => {
         const token = session?.user.access_token;
 
         const formattedData = selectedLuggage.map((luggageItem) => {
-            const baggageCaseId = uuidv4();
+            const baggageCaseId = luggageItem.id;
             const pruebasUrl = luggageItem.issue === 'Daño' ? formData.address : null;
             const direccionEnvio = luggageItem.issue === 'Retraso' ? formData.address : null;
 
