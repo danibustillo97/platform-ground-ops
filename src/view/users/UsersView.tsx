@@ -213,16 +213,18 @@ const UsersView: React.FC = () => {
                 <Card.Body>
                   <Card.Title className="text-center  fw-bold" style={{ color: '#ACBFDC' }}>{user.name}</Card.Title>
                   <Card.Text className="text-center text-muted mb-3" style={{ color: '#dee2e6' }}>{user.email}</Card.Text>
+                  <hr />
                   <div className="d-flex justify-content-center mb-3">
-                    {/* Mostrar las estaciones seleccionadas */}
+              
                     <div className="d-flex flex-wrap">
                       {userStations.map((station) => (
-                        <Badge key={station} bg="primary" className="me-2 mb-2">
+                        <Badge key={station} style={{backgroundColor: '#510C76'}} className="me-2 mb-2">
                           {station}
                         </Badge>
                       ))}
                     </div>
-                    {/* Dropdown para las estaciones */}
+                    
+
                     <DropdownButton
                       id="dropdown-stations"
                       title="Estaciones"
@@ -314,7 +316,7 @@ const UsersView: React.FC = () => {
           <Button variant="secondary" onClick={() => setShowModal(false)}>
             Cerrar
           </Button>
-          <Button variant="primary" onClick={handleSaveUser}>
+          <Button style={{backgroundColor: '#510C76'}} onClick={handleSaveUser}>
             Guardar Cambios
           </Button>
         </Modal.Footer>
