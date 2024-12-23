@@ -32,4 +32,6 @@
     phone: string;
     rol: string;
     estacion: string[];
+    isOnline: boolean; 
+    image?: string;
   }

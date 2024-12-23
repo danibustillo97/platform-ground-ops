@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
@@ -6,6 +6,28 @@ import { getSession } from "next-auth/react";
 import { getPassengerData, createBaggageCases } from "../../../data/repositories/baggageRepository";
 import { PassengerData } from "../../../domain/types/PassengerData";
 import Alert from "@/components/Alerts/Alert";
+import axios from "axios";
+
+interface LogActionPayload {
+    userId: string;
+    actionType: string;
+    actionDetails: string;
+}
+
+/**
+ * Logs a user action to the backend.
+ * @param userId - The ID of the user performing the action.
+ * @param actionType - The type of action being performed.
+ * @param actionDetails - Details about the action.
+ */
+const logUserAction = async (userId: string, actionType: string, actionDetails: string): Promise<void> => {
+    const payload: LogActionPayload = { userId, actionType, actionDetails };
+    try {
+        await axios.post('/api/log-action', payload);
+    } catch (error) {
+        console.error('Error logging user action:', error);
+    }
+};
 
 export const useFormBaggageController = () => {
     const [loading, setLoading] = useState(true);
@@ -28,9 +50,25 @@ export const useFormBaggageController = () => {
         issue: string;
     }[]>([]);
     const [formData, setFormData] = useState({ phone: "", email: "", address: "" });
-
     const [alert, setAlert] = useState<{ type: 'success' | 'warning' | 'error'; message: string } | null>(null);
+    const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
+    /**
+     * Fetches the current user session and sets the user ID.
+     */
+    useEffect(() => {
+        const fetchSession = async () => {
+            const session = await getSession();
+            if (session) {
+                setCurrentUserId(session.user.access_token);
+            }
+        };
+        fetchSession();
+    }, []);
+
+    /**
+     * Fetches passenger data if PNR is added.
+     */
     useEffect(() => {
         if (pnrAdded) {
             fetchPassengerData(pnr);
@@ -38,12 +76,22 @@ export const useFormBaggageController = () => {
         setLoading(false);
     }, [pnrAdded, pnr]);
 
+    /**
+     * Handles adding a PNR and logs the action.
+     */
     const handleAddPnr = () => {
         if (pnr.trim()) {
             setPnrAdded(true);
+            if (currentUserId) {
+                logUserAction(currentUserId, 'ADD_PNR', `PNR ${pnr} added`);
+            }
         }
     };
 
+    /**
+     * Fetches passenger data from the repository.
+     * @param pnr - The PNR to fetch data for.
+     */
     const fetchPassengerData = async (pnr: string) => {
         try {
             const session = await getSession();
@@ -57,6 +105,10 @@ export const useFormBaggageController = () => {
         }
     };
 
+    /**
+     * Handles passenger change and logs the action.
+     * @param e - The change event.
+     */
     const handlePassengerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const passenger = e.target.value;
         setSelectedPassenger(passenger);
@@ -75,9 +127,16 @@ export const useFormBaggageController = () => {
                         : item
                 )
             );
+            if (currentUserId) {
+                logUserAction(currentUserId, 'PASSENGER_CHANGE', `Passenger changed to ${passenger}`);
+            }
         }
     };
 
+    /**
+     * Handles luggage selection and logs the action.
+     * @param e - The change event.
+     */
     const handleLuggageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const luggage = e.target.value;
         const passengerInfo = passengerData.find((p) => p.Pax_Name === selectedPassenger);
@@ -98,29 +157,58 @@ export const useFormBaggageController = () => {
                     issue: "Lost",
                 },
             ]);
+            if (currentUserId) {
+                logUserAction(currentUserId, 'LUGGAGE_SELECT', `Luggage ${luggage} selected for passenger ${passengerInfo.Pax_Name}`);
+            }
         }
     };
 
+    /**
+     * Handles removing luggage and logs the action.
+     * @param id - The ID of the luggage to remove.
+     */
     const handleRemoveLuggage = (id: string) => {
         setSelectedLuggage(selectedLuggage.filter((item) => item.id !== id));
+        if (currentUserId) {
+            logUserAction(currentUserId, 'LUGGAGE_REMOVE', `Luggage with ID ${id} removed`);
+        }
     };
 
+    /**
+     * Handles description change and logs the action.
+     * @param id - The ID of the luggage.
+     * @param value - The new description.
+     */
     const handleDescriptionChange = (id: string, value: string) => {
         setSelectedLuggage((prevLuggage) =>
             prevLuggage.map((item) =>
                 item.id === id ? { ...item, description: value } : item
             )
         );
+        if (currentUserId) {
+            logUserAction(currentUserId, 'DESCRIPTION_CHANGE', `Description changed for luggage with ID ${id}`);
+        }
     };
 
+    /**
+     * Handles issue change and logs the action.
+     * @param id - The ID of the luggage.
+     * @param value - The new issue.
+     */
     const handleIssueChange = (id: string, value: string) => {
         setSelectedLuggage((prevLuggage) =>
             prevLuggage.map((item) =>
                 item.id === id ? { ...item, issue: value } : item
             )
         );
+        if (currentUserId) {
+            logUserAction(currentUserId, 'ISSUE_CHANGE', `Issue changed for luggage with ID ${id}`);
+        }
     };
 
+    /**
+     * Handles creating cases and logs the action.
+     */
     const handleCreateCases = async () => {
         const session = await getSession();
         const token = session?.user.access_token;
@@ -259,8 +347,8 @@ export const useFormBaggageController = () => {
 
             <!-- Content -->
             <div class="content">
-                <p>Estimado/a <strong>DELGADO/YHESICAPAOLAMRS</strong>,</p>
-                <p>Se ha abierto el caso para la gestión de su equipaje: <strong>0000563569</strong>.</p>
+                <p>Estimado/a <strong>${caseInfo.passenger_name}</strong>,</p>
+                <p>Se ha abierto el caso para la gestión de su equipaje: <strong>${caseInfo.baggage_case_id}</strong>.</p>
 
                 <h2>Detalles del caso:</h2>
                 <div class="details">
@@ -309,8 +397,6 @@ export const useFormBaggageController = () => {
     </div>
 </body>
 </html>
-
-
                     `;
 
                     const emailData = {
@@ -348,6 +434,10 @@ export const useFormBaggageController = () => {
                 await Promise.all(emailPromises);
 
                 setAlert({ type: 'success', message: 'Los casos de equipaje se han creado exitosamente y se ha enviado un correo electrónico de confirmación.' });
+                if (currentUserId) {
+                    logUserAction(currentUserId, 'CREATE_CASES', 'Cases created successfully');
+                }
+                window.location.reload();   
             } catch (error) {
                 if (error instanceof Error) {
                     if (error.message.includes("400")) {
@@ -387,6 +477,6 @@ export const useFormBaggageController = () => {
         handleIssueChange,
         handleCreateCases,
         alert,
-        setAlert, 
+        setAlert,
     };
 };

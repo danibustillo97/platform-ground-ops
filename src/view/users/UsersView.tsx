@@ -1,5 +1,4 @@
 "use client";
-
 import React, { useState, useEffect } from "react";
 import {
   fetchAllUsers,
@@ -9,42 +8,25 @@ import {
 } from "@/view/users/userController";
 import { User, UserCreate } from "@/entities/User";
 import {
-  Box,
-  Typography,
-  TextField,
+  Container,
+  Row,
+  Col,
   Button,
+  Form,
+  Modal,
+  Spinner,
   Card,
-  CardContent,
-  CardActions,
-  Avatar,
-  Grid,
-  IconButton,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  CircularProgress,
-  Tooltip,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  SelectChangeEvent,
-  ListItemText,
-  Checkbox,
-} from "@mui/material";
-import { FaPlus } from "react-icons/fa";
-import { AiOutlineUserDelete } from "react-icons/ai";
-import { LiaUserEditSolid } from "react-icons/lia";
-import { MdOutlineDeleteSweep } from "react-icons/md";
+  Dropdown,
+  DropdownButton,
+  DropdownItem,
+  Badge,
+} from "react-bootstrap";
+import { FaEdit, FaEnvelope, FaComments, FaEllipsisV } from "react-icons/fa";
 
 const UsersView: React.FC = () => {
   const [usersData, setUsersData] = useState<User[]>([]);
-  const [assigningUser, setAssigningUser] = useState<User | null>(null);
-  const [assignedStations, setAssignedStations] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
   const [editingUser, setEditingUser] = useState<User | null>(null);
   const [userForm, setUserForm] = useState<UserCreate>({
     name: "",
@@ -55,20 +37,10 @@ const UsersView: React.FC = () => {
     password: "",
   });
 
+  const roles = ["Admin", "User", "Manager"];
+
   const airportStations = [
-    "SDQ",
-    "CTG",
-    "BOG",
-    "MDE",
-    "AUA",
-    "CUR",
-    "PUJ",
-    "EZE",
-    "YUL",
-    "STI",
-    "LIM",
-    "YYZ",
-    "KIN",
+    "SDQ", "CTG", "BOG", "MDE", "AUA", "CUR", "PUJ", "EZE", "YUL", "STI", "LIM", "YYZ", "KIN",
   ];
 
   useEffect(() => {
@@ -95,45 +67,14 @@ const UsersView: React.FC = () => {
     }
   };
 
-  const handleAssignStations = (user: User) => {
-    setAssigningUser(user);
-    setAssignedStations(Array.isArray(user.estacion) ? user.estacion : []);
-  };
-
-  const handleSaveStations = async () => {
-    if (!assigningUser) return;
-
+  const handleSaveUser = async () => {
     try {
-      const updatedUser = { ...assigningUser, estacion: assignedStations };
-      await updateExistingUser(assigningUser.id, updatedUser);
-      fetchUsers();
-      setAssigningUser(null);
-      setAssignedStations([]);
-    } catch (error) {
-      console.error("Error al asignar estaciones:", error);
-    }
-  };
-
-  const handleCancelAssignStations = () => {
-    setAssigningUser(null);
-    setAssignedStations([]);
-  };
-
-  const handleSaveUser = async (user: UserCreate) => {
-    try {
-      const userToSave: User = {
-        id: editingUser ? editingUser.id : Math.floor(Math.random() * 1000000),
-        ...user,
-      };
-
       if (editingUser) {
-        await updateExistingUser(editingUser.id, userToSave);
+        await updateExistingUser(editingUser.id, { ...editingUser, ...userForm });
       } else {
-        await createNewUser(userToSave);
+        await createNewUser({ id: Math.random(), isOnline: false, ...userForm });
       }
-
       setShowModal(false);
-      resetUserForm();
       fetchUsers();
     } catch (error) {
       console.error("Error al guardar el usuario:", error);
@@ -155,11 +96,6 @@ const UsersView: React.FC = () => {
 
   const handleAddUser = () => {
     setEditingUser(null);
-    resetUserForm();
-    setShowModal(true);
-  };
-
-  const resetUserForm = () => {
     setUserForm({
       name: "",
       email: "",
@@ -168,243 +104,222 @@ const UsersView: React.FC = () => {
       estacion: [],
       password: "",
     });
+    setShowModal(true);
   };
 
-  const handleCloseModal = () => {
-    setShowModal(false);
-    setEditingUser(null);
+  const handleSelectStation = (station: string) => {
+    const updatedStations = userForm.estacion.includes(station)
+      ? userForm.estacion.filter(st => st !== station) // Remove if already selected
+      : [...userForm.estacion, station]; // Add if not selected
+    setUserForm({ ...userForm, estacion: updatedStations });
   };
 
-  const handleChangeEstacion = (event: SelectChangeEvent<string[]>) => {
-    const { value } = event.target;
-    setUserForm({
-      ...userForm,
-      estacion: typeof value === "string" ? value.split(",") : value,
-    });
-  };
+  // Asegurarse de que 'estacion' es un arreglo antes de intentar usarlo
+  const userStations = Array.isArray(userForm.estacion) ? userForm.estacion : [];
 
-  const handleAssignedStationsChange = (event: SelectChangeEvent<string[]>) => {
-    const { value } = event.target;
-    setAssignedStations(typeof value === "string" ? value.split(",") : value);
-  };
+  const [filter, setFilter] = useState<{ name: string; rol: string; estacion: string }>({
+    name: "",
+    rol: "",
+    estacion: "",
+  });
 
-  const filteredUsers = usersData.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  useEffect(() => {
+    // Apply filter logic here if needed
+    // For example, you can filter usersData based on the filter state
+  }, [filter]);
 
   return (
-    <Box sx={{ padding: 4 }}>
-      <Typography variant="h4" component="h1" gutterBottom>
-        Gestión de Usuarios
-      </Typography>
-      <TextField
-        label="Buscar usuarios..."
-        variant="outlined"
-        fullWidth
-        value={searchTerm}
-        onChange={(e) => setSearchTerm(e.target.value)}
-        sx={{ marginBottom: 3 }}
-      />
-      {loading ? (
-        <Box
-          sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            height: "50vh",
-          }}
-        >
-          <CircularProgress />
-        </Box>
-      ) : (
-        <Grid container spacing={3}>
-          {filteredUsers.length > 0 ? (
-            filteredUsers.map((user) => (
-              <Grid item xs={12} sm={6} md={4} key={user.id}>
-                <Card>
-                  <CardContent>
-                    <Box
-                      sx={{
-                        display: "flex",
-                        alignItems: "center",
-                        marginBottom: 2,
-                      }}
-                    >
-                      <Avatar
-                        src="https://via.placeholder.com/56"
-                        alt={user.name}
-                        sx={{ width: 56, height: 56, marginRight: 2 }}
-                      />
-                      <Typography variant="h6">{user.name}</Typography>
-                    </Box>
-                    <Typography variant="body2">
-                      <strong>Email:</strong> {user.email}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Teléfono:</strong> {user.phone}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Rol:</strong> {user.rol}
-                    </Typography>
-                    <Typography variant="body2">
-                      <strong>Estaciones:</strong>{user.estacion ? user.estacion : "No asignada" }
-                   
-                    </Typography>
-                  </CardContent>
-                  <CardActions>
-                    <Tooltip title="Editar">
-                      <IconButton
-                        color="primary"
-                        onClick={() => handleEditUser(user)}
-                      >
-                        <LiaUserEditSolid />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Eliminar">
-                      <IconButton
-                        color="error"
-                        onClick={() => handleDelete(user.id)}
-                      >
-                        <MdOutlineDeleteSweep />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Asignar Estaciones">
-                      <IconButton
-                        color="secondary"
-                        onClick={() => handleAssignStations(user)}
-                      >
-                        <FaPlus />
-                      </IconButton>
-                    </Tooltip>
-                  </CardActions>
-                </Card>
-              </Grid>
-            ))
-          ) : (
-            <Typography>No se encontraron usuarios.</Typography>
-          )}
-        </Grid>
-      )}
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={handleAddUser}
-        startIcon={<FaPlus />}
-        sx={{ position: "fixed", bottom: 16, right: 16 }}
-      >
+    <Container fluid className="py-5">
+      <h2 className="text-center mb-5 text-primary fw-bold">Gestión de Usuarios</h2>
+
+      {/* Filtros */}
+      <Row className="mb-4">
+        <Col sm={12} md={4}>
+          <Form.Control
+            type="text"
+            placeholder="Filtrar por nombre"
+            value={filter.name}
+            onChange={(e) => setFilter({ ...filter, name: e.target.value })}
+          />
+        </Col>
+        <Col sm={12} md={4}>
+          <DropdownButton
+            id="dropdown-rol"
+            title="Filtrar por Rol"
+            variant="outline-secondary"
+            className="w-100"
+            onSelect={(rol) => setFilter({ ...filter, rol: rol || "" })}
+          >
+            <Dropdown.Item eventKey="">Todos</Dropdown.Item>
+            {roles.map((rol) => (
+              <Dropdown.Item key={rol} eventKey={rol}>
+                {rol}
+              </Dropdown.Item>
+            ))}
+          </DropdownButton>
+        </Col>
+        <Col sm={12} md={4}>
+          <DropdownButton
+            id="dropdown-stations"
+            title="Filtrar por Estación"
+            variant="outline-secondary"
+            className="w-100"
+            onSelect={(station) => setFilter({ ...filter, estacion: station || "" })}
+          >
+            <Dropdown.Item eventKey="">Todas</Dropdown.Item>
+            {airportStations.map((station) => (
+              <Dropdown.Item key={station} eventKey={station}>
+                {station}
+              </Dropdown.Item>
+            ))}
+          </DropdownButton>
+        </Col>
+      </Row>
+
+      {/* Botón "Añadir Usuario" */}
+      <Button className="mb-4 rounded-pill px-4 py-2 fw-bold" onClick={handleAddUser} style={{ backgroundColor: '#510C76', color: '#fff' }}>
         Añadir Usuario
       </Button>
 
-      {/* Modal de usuario */}
-      <Dialog open={showModal} onClose={handleCloseModal} fullWidth>
-        <DialogTitle>
-          {editingUser ? "Editar Usuario" : "Añadir Usuario"}
-        </DialogTitle>
-        <DialogContent>
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Nombre"
-            value={userForm.name}
-            onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
-          />
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Correo"
-            value={userForm.email}
-            onChange={(e) =>
-              setUserForm({ ...userForm, email: e.target.value })
-            }
-          />
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Teléfono"
-            value={userForm.phone}
-            onChange={(e) =>
-              setUserForm({ ...userForm, phone: e.target.value })
-            }
-          />
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Estaciones</InputLabel>
-            <Select
-              multiple
-              value={userForm.estacion}
-              onChange={handleChangeEstacion}
-              renderValue={(selected) => selected.join(", ")}
-            >
-              {airportStations.map((station) => (
-                <MenuItem key={station} value={station}>
-                  <Checkbox checked={userForm.estacion.includes(station)} />
-                  <ListItemText primary={station} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            fullWidth
-            margin="dense"
-            label="Rol"
-            value={userForm.rol}
-            onChange={(e) => setUserForm({ ...userForm, rol: e.target.value })}
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCloseModal} color="secondary">
-            Cancelar
-          </Button>
-          <Button
-            onClick={() => handleSaveUser(userForm)}
-            color="primary"
-            variant="contained"
-          >
-            Guardar
-          </Button>
-        </DialogActions>
-      </Dialog>
+      {loading ? (
+        <div className="d-flex justify-content-center align-items-center" style={{ height: "50vh" }}>
+          <Spinner animation="border" variant="primary" />
+        </div>
+      ) : (
+        <Row>
+          {usersData.map((user) => (
+            <Col key={user.id} sm={12} md={6} lg={3} xl={3} className="mb-4">
+              <Card className="shadow-sm border-0">
+                <div className="position-relative">
+                  <div className="container justify-content-center d-flex align-items-center position-relative">
+                  <div className={`position-absolute top-0 start-0 mt-1 ms-1 ${user.isOnline ? 'bg-success' : 'bg-danger'} rounded-circle`} style={{ width: '12px', height: '12px' }} />
+                  <span className="position-absolute top-0 start-0 mt-1 ms-4 " style={{color:"#510C76", fontSize:"0.6rem"}}>{user.isOnline ? 'Online' : 'Disconnected'}</span>
+                  </div>
+                  <Card.Img
+                    variant="top"
+                    src={`https://i.pravatar.cc/150?img=12`}
+                    className="img-fluid rounded-circle mx-auto d-block"
+                    style={{ width: '80px', height: '80px' }}
+                  />
+                  <Dropdown align="end" className="position-absolute top-0 end-0 m-2">
+                    <Dropdown.Toggle variant="link" id="dropdown-custom-components">
+                      <FaEllipsisV />
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu>
+                      <Dropdown.Item onClick={() => handleDelete(user.id)}>Eliminar</Dropdown.Item>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+                <Card.Body>
+                  <Card.Title className="text-center  fw-bold" style={{ color: '#ACBFDC' }}>{user.name}</Card.Title>
+                  <Card.Text className="text-center text-muted mb-3" style={{ color: '#dee2e6' }}>{user.email}</Card.Text>
+                  <div className="d-flex justify-content-center mb-3">
+                    {/* Mostrar las estaciones seleccionadas */}
+                    <div className="d-flex flex-wrap">
+                      {userStations.map((station) => (
+                        <Badge key={station} bg="primary" className="me-2 mb-2">
+                          {station}
+                        </Badge>
+                      ))}
+                    </div>
+                    {/* Dropdown para las estaciones */}
+                    <DropdownButton
+                      id="dropdown-stations"
+                      title="Estaciones"
+                      variant="outline-secondary"
+                      className="w-auto"
+                    >
+                      {airportStations.map((station) => (
+                        <Dropdown.Item
+                          key={station}
+                          active={userForm.estacion.includes(station)}
+                          onClick={() => handleSelectStation(station)}
+                        >
+                          {station}
+                        </Dropdown.Item>
+                      ))}
+                    </DropdownButton>
+                  </div>
+                  <div className="d-flex justify-content-between">
+                    <Button
+                      variant="outline-primary"
+                      onClick={() => handleEditUser(user)}
+                      title="Editar"
+                      className="flex-grow-1 mx-1"
+                      style={{ backgroundColor: '#510C76', color: '#fff' }}
+                    >
+                      <FaEdit />
+                    </Button>
+                    <Button
+                      variant="outline-info"
+                      onClick={() => console.log("Enviar mensaje a", user.name)}
+                      title="Mensaje"
+                      className="flex-grow-1 mx-1"
+                    >
+                      <FaComments />
+                    </Button>
+                    <Button
+                      variant="outline-success"
+                      onClick={() => console.log("Enviar email a", user.email)}
+                      title="Email"
+                      className="flex-grow-1 mx-1"
+                    >
+                      <FaEnvelope />
+                    </Button>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
 
-      {/* Modal para asignar estaciones */}
-      <Dialog
-        open={!!assigningUser}
-        onClose={handleCancelAssignStations}
-        fullWidth
-      >
-        <DialogTitle>Asignar Estaciones</DialogTitle>
-        <DialogContent>
-          <FormControl fullWidth margin="dense">
-            <InputLabel>Estaciones</InputLabel>
-            <Select
-              multiple
-              value={assignedStations}
-              onChange={handleAssignedStationsChange}
-              renderValue={(selected) => selected.join(", ")}
-            >
-              {airportStations.map((station) => (
-                <MenuItem key={station} value={station}>
-                  <Checkbox checked={assignedStations.includes(station)} />
-                  <ListItemText primary={station} />
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleCancelAssignStations} color="secondary">
-            Cancelar
+
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{editingUser ? "Editar Usuario" : "Añadir Usuario"}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formName" className="mb-3">
+              <Form.Label>Nombre</Form.Label>
+              <Form.Control
+                type="text"
+                value={userForm.name}
+                onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formEmail" className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                value={userForm.email}
+                onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                required
+              />
+            </Form.Group>
+            <Form.Group controlId="formPhone" className="mb-3">
+              <Form.Label>Teléfono</Form.Label>
+              <Form.Control
+                type="text"
+                value={userForm.phone}
+                onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })}
+                required
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cerrar
           </Button>
-          <Button
-            onClick={handleSaveStations}
-            color="primary"
-            variant="contained"
-          >
-            Guardar
+          <Button variant="primary" onClick={handleSaveUser}>
+            Guardar Cambios
           </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+        </Modal.Footer>
+      </Modal>
+    </Container>
   );
 };
 

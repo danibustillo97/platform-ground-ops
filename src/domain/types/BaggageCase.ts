@@ -21,12 +21,14 @@ export interface BaggageCase {
   status: string;
   date_create: string;
   number_ticket_zendesk: string;
+  agentId?: string; 
+  station?: string; 
   comments?: {
     id: string;
     text: string;
     created_at: string;
   }[];
-  attachedFiles?: { fileName: string; file: File }[];
+  attachedFiles?: { fileUrl: string; file: File }[];
   history?: { action: string; date: string; description?: string }[];
 }
 

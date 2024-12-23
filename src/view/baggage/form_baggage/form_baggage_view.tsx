@@ -10,6 +10,7 @@ import { MdOutlineClear } from "react-icons/md";
 import Alert from "@/components/Alerts/Alert";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
 import { Toast } from "primereact/toast";
+import { scan } from 'react-scan'
 
 const FormReclamoView: React.FC = () => {
     const {
@@ -103,7 +104,7 @@ const FormReclamoView: React.FC = () => {
 
     const handleCancelPnr = () => {
         setPnr("");
-        setFormData({ phone: "", email: "", address: "" });
+        window.location.reload();
     };
 
     return (
