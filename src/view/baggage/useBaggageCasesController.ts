@@ -126,7 +126,7 @@ export const useBaggageCasesController = () => {
     async (ids: string[]) => {
       try {
         const session = await getSession();
-        const sessionToken = session?.user.access_token as string; // Token de la sesión
+        const sessionToken = session?.user.access_token as string; 
         if (!sessionToken) {
           throw new Error("Token de sesión no disponible.");
         }
