@@ -70,7 +70,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   useEffect(() => {
     const fetchData = async () => {
       const agentsData = await fetchAllUsers();
-      setAgents(agentsData.filter(user => user.rol === 'agente'));
+      setAgents(agentsData.filter(user => user.rol ));
     };
     fetchData();
   }, []);

@@ -31,7 +31,7 @@
     email: string;
     phone: string;
     rol: string;
-    estacion: string[];
+    estacion: string;
     isOnline: boolean; 
     image?: string;
   }

@@ -37,7 +37,7 @@ const UsersView: React.FC = () => {
     password: "",
   });
 
-  const roles = ["Admin", "User", "Manager"];
+  const roles = ["Admin", "User", "Agente"];
 
   const airportStations = [
     "SDQ", "CTG", "BOG", "MDE", "AUA", "CUR", "PUJ", "EZE", "YUL", "STI", "LIM", "YYZ", "KIN",
@@ -69,10 +69,13 @@ const UsersView: React.FC = () => {
 
   const handleSaveUser = async () => {
     try {
+      const estacionString = userForm.estacion
+        .map(station => station.match(/.{1,3}/g)?.join('') || '') // Agrupar en grupos de tres
+        .join(','); // Convertir el array en una cadena separada por comas
       if (editingUser) {
-        await updateExistingUser(editingUser.id, { ...editingUser, ...userForm });
+        await updateExistingUser(editingUser.id, { ...editingUser, ...userForm, estacion: estacionString });
       } else {
-        await createNewUser({ id: Math.random(), isOnline: false, ...userForm });
+        await createNewUser({ id: Math.random(), isOnline: false, ...userForm, estacion: estacionString });
       }
       setShowModal(false);
       fetchUsers();
@@ -130,16 +133,17 @@ const UsersView: React.FC = () => {
 
   return (
     <Container fluid className="py-5">
-      <h2 className="text-center mb-5 text-primary fw-bold">Gestión de Usuarios</h2>
+      <h2 className="text-center mb-5 fw-bold" style={{ color: '#510C76' }}>Gestión de Usuarios</h2>
 
       {/* Filtros */}
-      <Row className="mb-4">
+      <Row className="mb-4 bg-light p-3 rounded">
         <Col sm={12} md={4}>
           <Form.Control
             type="text"
             placeholder="Filtrar por nombre"
             value={filter.name}
             onChange={(e) => setFilter({ ...filter, name: e.target.value })}
+            className="border-0 bg-light"
           />
         </Col>
         <Col sm={12} md={4}>
@@ -147,7 +151,7 @@ const UsersView: React.FC = () => {
             id="dropdown-rol"
             title="Filtrar por Rol"
             variant="outline-secondary"
-            className="w-100"
+            className="w-100 border-0 bg-light"
             onSelect={(rol) => setFilter({ ...filter, rol: rol || "" })}
           >
             <Dropdown.Item eventKey="">Todos</Dropdown.Item>
@@ -163,7 +167,7 @@ const UsersView: React.FC = () => {
             id="dropdown-stations"
             title="Filtrar por Estación"
             variant="outline-secondary"
-            className="w-100"
+            className="w-100 border-0 bg-light"
             onSelect={(station) => setFilter({ ...filter, estacion: station || "" })}
           >
             <Dropdown.Item eventKey="">Todas</Dropdown.Item>
@@ -192,8 +196,8 @@ const UsersView: React.FC = () => {
               <Card className="shadow-sm border-0">
                 <div className="position-relative">
                   <div className="container justify-content-center d-flex align-items-center position-relative">
-                  <div className={`position-absolute top-0 start-0 mt-1 ms-1 ${user.isOnline ? 'bg-success' : 'bg-danger'} rounded-circle`} style={{ width: '12px', height: '12px' }} />
-                  <span className="position-absolute top-0 start-0 mt-1 ms-4 " style={{color:"#510C76", fontSize:"0.6rem"}}>{user.isOnline ? 'Online' : 'Disconnected'}</span>
+                    <div className={`position-absolute top-0 start-0 mt-1 ms-1 ${user.isOnline ? 'bg-success' : 'bg-danger'} rounded-circle`} style={{ width: '12px', height: '12px' }} />
+                    <span className="position-absolute top-0 start-0 mt-1 ms-4 " style={{ color: "#510C76", fontSize: "0.6rem" }}>{user.isOnline ? 'Online' : 'Disconnected'}</span>
                   </div>
                   <Card.Img
                     variant="top"
@@ -211,36 +215,24 @@ const UsersView: React.FC = () => {
                   </Dropdown>
                 </div>
                 <Card.Body>
-                  <Card.Title className="text-center  fw-bold" style={{ color: '#ACBFDC' }}>{user.name}</Card.Title>
+                  <Card.Title className="text-center fw-bold" style={{ color: '#510C76' }}>{user.name}</Card.Title>
                   <Card.Text className="text-center text-muted mb-3" style={{ color: '#dee2e6' }}>{user.email}</Card.Text>
+                  <Card.Text className="text-center text-muted mb-3" style={{ color: '#dee2e6' }}>Rol: {user.rol}</Card.Text>
                   <hr />
                   <div className="d-flex justify-content-center mb-3">
-              
                     <div className="d-flex flex-wrap">
-                      {userStations.map((station) => (
-                        <Badge key={station} style={{backgroundColor: '#510C76'}} className="me-2 mb-2">
-                          {station}
+                      {Array.isArray(user.estacion) ? (
+                        user.estacion.map((station) => (
+                          <Badge key={station} style={{ backgroundColor: '#510C76' }} className="me-2 mb-2">
+                            {station}
+                          </Badge>
+                        ))
+                      ) : (
+                        <Badge style={{ backgroundColor: '#510C76' }} className="me-2 mb-2">
+                          No Stations
                         </Badge>
-                      ))}
+                      )}
                     </div>
-                    
-
-                    <DropdownButton
-                      id="dropdown-stations"
-                      title="Estaciones"
-                      variant="outline-secondary"
-                      className="w-auto"
-                    >
-                      {airportStations.map((station) => (
-                        <Dropdown.Item
-                          key={station}
-                          active={userForm.estacion.includes(station)}
-                          onClick={() => handleSelectStation(station)}
-                        >
-                          {station}
-                        </Dropdown.Item>
-                      ))}
-                    </DropdownButton>
                   </div>
                   <div className="d-flex justify-content-between">
                     <Button
@@ -276,51 +268,118 @@ const UsersView: React.FC = () => {
         </Row>
       )}
 
-
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
-        <Modal.Header closeButton>
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered style={{ zIndex: 1050 }}>
+        <Modal.Header closeButton className="border-0 bg-primary text-white">
           <Modal.Title>{editingUser ? "Editar Usuario" : "Añadir Usuario"}</Modal.Title>
         </Modal.Header>
-        <Modal.Body>
+        <Modal.Body className="px-4 py-4">
           <Form>
             <Form.Group controlId="formName" className="mb-3">
-              <Form.Label>Nombre</Form.Label>
+              <Form.Label className="fw-bold">Nombre</Form.Label>
               <Form.Control
                 type="text"
                 value={userForm.name}
                 onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
                 required
+                className="form-control-lg"
+                placeholder="Ingrese el nombre completo"
               />
             </Form.Group>
+
             <Form.Group controlId="formEmail" className="mb-3">
-              <Form.Label>Email</Form.Label>
+              <Form.Label className="fw-bold">Email</Form.Label>
               <Form.Control
                 type="email"
                 value={userForm.email}
                 onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
                 required
+                className="form-control-lg"
+                placeholder="Ingrese el correo electrónico"
               />
             </Form.Group>
+
             <Form.Group controlId="formPhone" className="mb-3">
-              <Form.Label>Teléfono</Form.Label>
+              <Form.Label className="fw-bold">Teléfono</Form.Label>
               <Form.Control
                 type="text"
                 value={userForm.phone}
                 onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })}
                 required
+                className="form-control-lg"
+                placeholder="Ingrese el número de teléfono"
               />
+            </Form.Group>
+
+            {!editingUser && (
+              <Form.Group controlId="formPassword" className="mb-3">
+                <Form.Label className="fw-bold">Contraseña</Form.Label>
+                <Form.Control
+                  type="password"
+                  value={userForm.password}
+                  onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                  required
+                  className="form-control-lg"
+                  placeholder="Ingrese la contraseña"
+                />
+              </Form.Group>
+            )}
+
+            <Form.Group controlId="formEstaciones" className="mb-3">
+              <Form.Label className="fw-bold">Estaciones</Form.Label>
+              <div className="d-flex flex-wrap">
+                {airportStations.map((station) => (
+                  <Form.Check
+                    key={station}
+                    type="checkbox"
+                    label={station}
+                    checked={userForm.estacion.includes(station)}
+                    onChange={() => handleSelectStation(station)}
+                    className="me-3 mb-2"
+                    style={{ fontWeight: "500" }}
+                  />
+                ))}
+              </div>
+            </Form.Group>
+
+            <Form.Group controlId="formRole" className="mb-3">
+              <Form.Label className="fw-bold">Rol</Form.Label>
+              <Form.Control
+                as="select"
+                value={userForm.rol}
+                onChange={(e) => setUserForm({ ...userForm, rol: e.target.value })}
+                required
+                className="form-control-lg"
+              >
+                <option value="">Seleccione un rol</option>
+                {roles.map((rol) => (
+                  <option key={rol} value={rol}>
+                    {rol}
+                  </option>
+                ))}
+              </Form.Control>
             </Form.Group>
           </Form>
         </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
+
+        <Modal.Footer className="border-0">
+          <Button
+            variant="secondary"
+            onClick={() => setShowModal(false)}
+            className="rounded-pill px-4 py-2"
+            style={{ backgroundColor: "#d9534f", color: "#fff" }}
+          >
             Cerrar
           </Button>
-          <Button style={{backgroundColor: '#510C76'}} onClick={handleSaveUser}>
+          <Button
+            style={{ backgroundColor: "#510C76" }}
+            onClick={handleSaveUser}
+            className="rounded-pill px-4 py-2"
+          >
             Guardar Cambios
           </Button>
         </Modal.Footer>
       </Modal>
+
     </Container>
   );
 };
