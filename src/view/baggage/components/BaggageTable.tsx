@@ -458,17 +458,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       width: "250px",
       cell: (row) => (
         <div className={styles.actionButtons}>
-          <Button variant="outline-primary" size="sm" className={styles.actionButton}>
-            <label htmlFor={`file-upload-${row.id}`} style={{ cursor: "pointer", margin: 0 }}>
-              <FaPaperclip />
-            </label>
-            <input
-              id={`file-upload-${row.id}`}
-              type="file"
-              style={{ display: "none" }}
-              onChange={(event) => handleFileUpload(row.id, event)}
-            />
-          </Button>
+       
           <Button
             variant="outline-success"
             size="sm"
@@ -485,14 +475,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           >
             <FaTimesCircle />
           </Button>
-          <Button
-            variant="outline-danger"
-            size="sm"
-            onClick={handleSendEmail}
-            className={styles.actionButton}
-          >
-            <SiMinutemailer />
-          </Button>
+         
         </div>
       ),
       ignoreRowClick: true,

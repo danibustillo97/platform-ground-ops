@@ -36,7 +36,8 @@ const BaggageView: React.FC = () => {
         }
 
         const baggage_case_id = baggageCase.id;
-        const url = `http://localhost:8000/api/baggage-case/${baggage_case_id}`;
+        // const url = `http://localhost:8000/api/baggage-case/${baggage_case_id}`;
+        const url = `https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${baggage_case_id}`;
         const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJEYW5pbG8uQnVzdGlsbG8uZXh0QGFyYWpldC5jb20iLCJleHAiOjE3MzQwOTgxNzh9.OAJhlGGjsW-K1QQMhOERQNujLxvvv7-rA_xtnOHXOxw";
         console.log(`Guardando caso de equipaje con ID: ${baggage_case_id}`);
 
