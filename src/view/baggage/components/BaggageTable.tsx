@@ -11,6 +11,7 @@ import CustomDropdown from "./CustomDropdown";
 import { getSession } from "next-auth/react";
 import { fetchAllUsers } from "@/view/users/userController";
 import { BlobServiceClient } from "@azure/storage-blob";
+import AgentDropdown from "./AgentDropdown";
 
 interface BaggageTableProps {
   rows: BaggageCase[];
@@ -70,7 +71,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   useEffect(() => {
     const fetchData = async () => {
       const agentsData = await fetchAllUsers();
-      setAgents(agentsData.filter(user => user.rol ));
+      setAgents(agentsData.filter(user => user.rol));
     };
     fetchData();
   }, []);
@@ -296,27 +297,28 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
     {
       name: "Agente",
+      width: "180px",
       selector: (row) => row.agentId || "-",
       sortable: true,
       cell: (row) => (
-        <Form.Control
-          as="select"
-          value={row.agentId || ""}
-          onChange={(e) => handleAgentChange(row.id, e.target.value)}
-          size="sm"
-        >
-          <option value="">Seleccionar Agente</option>
-          {agents.map((agent) => (
-            <option key={agent.id} value={agent.id}>
-              {agent.name}
-            </option>
-          ))}
-        </Form.Control>
+        <Form.Group>
+          <div >
+            <AgentDropdown
+              value={row.agentId || ""}
+              onChange={(value) => handleAgentChange(row.id, value)}
+              agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
+            />
+          
+          </div>
+        </Form.Group>
       ),
+      
+
     },
+
     {
       name: "Estación",
-      selector: (row) => "-",
+      selector: (row) => row.estacion || "-",
       sortable: true,
       width: "110px",
     },
@@ -335,7 +337,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
     {
       name: "Correo",
-      selector: (row) => row.contact_phone || "-",
+      selector: (row) => row.contact_email || "-",
       sortable: true,
       width: "250px",
       cell: (row) => (
@@ -515,9 +517,9 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
         prevRows.map((row) =>
           row.id === selectedCase.id
             ? {
-                ...row,
-                attachedFiles: [...(row.attachedFiles || []), { fileUrl: url, file: selectedFile }],
-              }
+              ...row,
+              attachedFiles: [...(row.attachedFiles || []), { fileUrl: url, file: selectedFile }],
+            }
             : row
         )
       );
@@ -778,7 +780,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
               )}
           </Modal.Body>
           {/* <Modal.Footer>
-           
+
           </Modal.Footer> */}
         </Modal>
       )}
@@ -787,3 +789,4 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 };
 
 export default BaggageTable;
+

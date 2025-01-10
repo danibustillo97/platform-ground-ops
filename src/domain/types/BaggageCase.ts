@@ -13,7 +13,7 @@ export interface BaggageCase {
   contact_email: string;
   flight_number: string;
   departure_date: string;
-  from_airport: string; 
+  from_airport: string;
   to_airport: string;
   passenger_name: string;
   description: string;
@@ -21,8 +21,8 @@ export interface BaggageCase {
   status: string;
   date_create: string;
   number_ticket_zendesk: string;
-  agentId?: string; 
-  station?: string; 
+  agentId?: string;
+  estacion?: string;
   comments?: {
     id: string;
     text: string;
@@ -30,6 +30,7 @@ export interface BaggageCase {
   }[];
   attachedFiles?: { fileUrl: string; file: File }[];
   history?: { action: string; date: string; description?: string }[];
+  agent_Asigned?: string;
 }
 
 

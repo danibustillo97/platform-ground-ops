@@ -12,7 +12,6 @@
     rol: string;
     estacion: string[];
     password?: string;
-
   }
 
   export interface UserUpdate {
@@ -25,7 +24,6 @@
   }
 
   export interface User{
-    
     id: number;
     name: string;
     email: string;

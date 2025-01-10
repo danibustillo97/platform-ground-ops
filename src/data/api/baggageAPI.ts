@@ -1,6 +1,7 @@
 import { BaggageCase } from "@/types/BaggageCase";
 
 const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
+// const apiURL = "http://localhost:8000";
 
 export const fetchPassengerDataAPI = async (pnr: string, token: string) => {
     try {
@@ -10,7 +11,6 @@ export const fetchPassengerDataAPI = async (pnr: string, token: string) => {
                 method: "GET",
                 headers: {
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,  
                 },
             }
         );
@@ -99,7 +99,7 @@ export const putBaggageCasesAPI = async (id_passenger: any, baggageCases: any, t
                 headers: {
                     "ngrok-skip-browser-warning": "true",
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,  
+         
                 },
                 body: JSON.stringify(baggageCases),
             },
@@ -123,13 +123,11 @@ export const deleteBaggageCasesAPI = async (ids: string[], token: string) => {
         const response = await fetch(
             `${apiURL}/api/baggage-case/`, 
             {
-                method: "DELETE",
-                headers: {
-                    "ngrok-skip-browser-warning": "true",
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`, 
-                },
-                body: JSON.stringify(ids), 
+            method: "DELETE",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(ids), 
             }
         );
 
