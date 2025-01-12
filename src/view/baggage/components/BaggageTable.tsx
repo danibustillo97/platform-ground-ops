@@ -10,7 +10,6 @@ import { SiMinutemailer } from "react-icons/si";
 import CustomDropdown from "./CustomDropdown";
 import { getSession } from "next-auth/react";
 import { fetchAllUsers } from "@/view/users/userController";
-import { BlobServiceClient } from "@azure/storage-blob";
 import AgentDropdown from "./AgentDropdown";
 
 interface BaggageTableProps {
@@ -24,41 +23,14 @@ interface BaggageTableProps {
   endDate: string;
 }
 
-const AZURE_STORAGE_ACCOUNT_URL = "https://arajetstdatalake.blob.core.windows.net/odsgroundops";
-let blobServiceClient: BlobServiceClient | null = null;
+interface FileObject {
+  fileUrl: string;
+  file: File;
+}
 
-const initializeBlobServiceClient = (blobSasToken: string) => {
-  blobServiceClient = new BlobServiceClient(`${AZURE_STORAGE_ACCOUNT_URL}?${blobSasToken}`);
-};
-
-const uploadImageToAzure = async (
-  file: File | Blob,
-  containerName: string,
-  fileName: string
-): Promise<string> => {
-  try {
-    if (!blobServiceClient) {
-      throw new Error("El cliente de servicio de blobs no ha sido inicializado.");
-    }
-
-    const containerClient = blobServiceClient.getContainerClient(containerName);
-
-    const exists = await containerClient.exists();
-    if (!exists) {
-      throw new Error(`El contenedor '${containerName}' no existe.`);
-    }
-
-    const blockBlobClient = containerClient.getBlockBlobClient(fileName);
-    await blockBlobClient.uploadData(file, {
-      blobHTTPHeaders: { blobContentType: file.type }
-    });
-
-    return blockBlobClient.url;
-  } catch (error) {
-    console.error("Error al subir la imagen a Azure:", error);
-    throw new Error("No se pudo subir la imagen.");
-  }
-};
+interface SelectedCase {
+  attachedFiles?: FileObject[];
+}
 
 const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit, onCancel }) => {
   const [editableRows, setEditableRows] = useState<BaggageCase[]>([]);
@@ -67,6 +39,9 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   const [viewMode, setViewMode] = useState<"comments" | "attachments" | "history">("comments");
   const [agents, setAgents] = useState<User[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [files, setFiles] = useState<FileObject[]>(selectedCase?.attachedFiles || []);
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -155,29 +130,55 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     setViewMode("comments");
   };
 
-  const handleFileUpload = async (id: string, event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      try {
-        const session = await getSession();
-        const token = session?.user.access_token as string;
-        initializeBlobServiceClient(token);
-        const url = await uploadImageToAzure(file, 'your-container-name', file.name);
-        console.log(`Archivo adjuntado para el caso ${id}:`, url);
-        setEditableRows((prevRows) =>
-          prevRows.map((row) =>
-            row.id === id
-              ? {
-                ...row,
-                attachedFiles: [...(row.attachedFiles || []), { fileUrl: url, file }],
-              }
-              : row
-          )
-        );
-      } catch (error) {
-        console.error("Error al subir la imagen:", error);
+  const uploadImage = async (file: File) => {
+    setUploading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", "AraDataLoad");
+
+      const response = await fetch(`https://api.cloudinary.com/v1_1/dbxlcscfu/image/upload`, {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Error subiendo la imagen a Cloudinary");
       }
+
+      const data = await response.json();
+
+      const newFile: FileObject = { fileUrl: data.secure_url, file };
+      setFiles((prevFiles) => [...prevFiles, newFile]);
+
+      // Actualizar el estado de editableRows con la nueva URL de la imagen
+      setEditableRows((prevRows) =>
+        prevRows.map((row) =>
+          row.id === selectedCase?.id
+            ? {
+              ...row,
+              attachedFiles: [...(row.attachedFiles || []), newFile],
+            }
+            : row
+        )
+      );
+
+      setSelectedFile(null);
+    } catch (error) {
+      console.error("Error subiendo la imagen:", error);
+    } finally {
+      setUploading(false);
     }
+  }
+
+  const showImageInLarge = (imageUrl: string) => {
+    setSelectedImage(imageUrl); // Establecer la URL de la imagen seleccionada para verla en grande
+  };
+
+  // Función para cerrar el modal de la imagen grande
+  const closeModal = () => {
+    setSelectedImage(null); // Limpiar la imagen seleccionada cuando se cierra el modal
   };
 
   const handleAddComment = () => {
@@ -214,7 +215,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
         throw new Error("Error al eliminar el comentario");
       }
 
-      // Actualizamos el estado de editableRows y selectedCase
       setEditableRows((prevRows) =>
         prevRows.map((row) => {
           if (row.id === selectedCase?.id) {
@@ -308,11 +308,10 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
               onChange={(value) => handleAgentChange(row.id, value)}
               agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
             />
-          
+
           </div>
         </Form.Group>
       ),
-      
 
     },
 
@@ -458,7 +457,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       width: "250px",
       cell: (row) => (
         <div className={styles.actionButtons}>
-       
+
           <Button
             variant="outline-success"
             size="sm"
@@ -475,7 +474,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           >
             <FaTimesCircle />
           </Button>
-         
+
         </div>
       ),
       ignoreRowClick: true,
@@ -484,36 +483,9 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
   ];
 
-  const uploadImage = async (selectedFile: File) => {
-    if (!selectedCase) {
-      console.error("No case selected.");
-      return;
-    }
-
-    try {
-      const session = await getSession();
-      const token = session?.user.access_token as string;
-      initializeBlobServiceClient(token);
-      const url = await uploadImageToAzure(selectedFile, 'your-container-name', selectedFile.name);
-      console.log(`Archivo adjuntado para el caso ${selectedCase.id}:`, url);
-      setEditableRows((prevRows) =>
-        prevRows.map((row) =>
-          row.id === selectedCase.id
-            ? {
-              ...row,
-              attachedFiles: [...(row.attachedFiles || []), { fileUrl: url, file: selectedFile }],
-            }
-            : row
-        )
-      );
-    } catch (error) {
-      console.error("Error al subir la imagen:", error);
-    }
-  };
-
   return (
     <div className={styles.pageContainer}>
-      <div className={styles.tableContainer}>
+      <div className={styles.tableContainer} style={{ minHeight: '100vh' }}>
         <DataTable
           columns={columns}
           data={editableRows}
@@ -700,28 +672,41 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
             ) : viewMode === "attachments"
               ? (
                 <>
-                  <ul>
-                    {selectedCase.attachedFiles?.map((file: { fileUrl: string }, index: React.Key) => (
+                  <ul style={{ display: 'flex', flexWrap: 'wrap', padding: 0 }}>
+                    {files.map((file: FileObject, index: React.Key) => (
                       <li
                         key={index}
                         style={{
                           backgroundColor: "#f8f9fa",
-                          margin: "5px 0",
+                          margin: "5px",
                           padding: "8px",
                           borderRadius: "4px",
+                          listStyleType: 'none',  // Elimina los puntos de la lista
+                          display: 'inline-block', // Hace que los elementos se alineen al lado
+                          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                          width: '120px', // Tamaño de cada imagen
+                          cursor: 'pointer',
                         }}
                       >
-                        <a href={file.fileUrl} target="_blank" rel="noopener noreferrer">
-                          {file.fileUrl}
-                        </a>
+                        {/* Imagen que se puede hacer clic para verla en grande */}
+                        <img
+                          src={file.fileUrl}
+                          alt={`Uploaded Image ${index}`}
+                          style={{ maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '4px' }}
+                          onClick={() => showImageInLarge(file.fileUrl)} // Hacer clic para ver la imagen grande
+                        />
                       </li>
                     ))}
                   </ul>
+
+                  {/* Campo de selección de archivo */}
                   <Form.Control
                     type="file"
                     onChange={handleFileChange}
                     style={{ marginTop: "10px" }}
                   />
+
+                  {/* Botón para guardar imagen */}
                   <Button
                     variant="primary"
                     onClick={() => {
@@ -732,9 +717,27 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                       }
                     }}
                     style={{ marginTop: "10px" }}
+                    disabled={uploading}
                   >
-                    Guardar imagen
+                    {uploading ? "Subiendo..." : "Guardar imagen"}
                   </Button>
+
+                  {/* Modal para mostrar la imagen en tamaño completo */}
+                  <Modal show={selectedImage !== null} onHide={closeModal}>
+                    <Modal.Header closeButton>
+                      <Modal.Title>Imagen en tamaño completo</Modal.Title>
+                    </Modal.Header>
+                    <Modal.Body>
+                      {selectedImage && (
+                        <img
+                          src={selectedImage}
+                          alt="Vista previa grande"
+                          style={{ width: '100%', height: 'auto' }}
+                        />
+                      )}
+                    </Modal.Body>
+                  </Modal>
+
                 </>
               ) : (
                 <>
@@ -764,7 +767,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           </Modal.Body>
           {/* <Modal.Footer>
 
-          </Modal.Footer> */}
+        </Modal.Footer> */}
         </Modal>
       )}
     </div>
@@ -772,4 +775,3 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 };
 
 export default BaggageTable;
-
