@@ -210,9 +210,13 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 
   const handleDeleteComment = async (commentId: string) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/baggage-case/delete_comment/${commentId}`, {
+      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/delete_comment/${commentId}`, {
         method: "DELETE",
       });
+
+      // const response = await fetch(`http://localhost:8000/api/baggage-case/delete_comment/${commentId}`, {
+      //   method: "DELETE",
+      // });
 
       if (!response.ok) {
         throw new Error("Error al eliminar el comentario");
@@ -244,7 +248,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     const session = await getSession();
     const token = session?.user.access_token as string;
     try {
-      const response = await fetch(`http://localhost:8000/api/baggage-case/${id}`, {
+      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${id}`, {
         method: "DELETE",
         headers: {
           "ngrok-skip-browser-warning": "true",
@@ -252,6 +256,15 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           "Authorization": `Bearer ${token}`,
         },
       });
+
+      // const response = await fetch(`http://localhost:8000/api/baggage-case/${id}`, {
+      //   method: "DELETE",
+      //   headers: {
+      //     "ngrok-skip-browser-warning": "true",
+      //     "Content-Type": "application/json",
+      //     "Authorization": `Bearer ${token}`,
+      //   },
+      // });
 
       if (!response.ok) {
         throw new Error("Error al eliminar el caso");
@@ -684,15 +697,15 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         margin: "5px",
                         padding: "8px",
                         borderRadius: "4px",
-                        listStyleType: 'none',  // Elimina los puntos de la lista
-                        display: 'inline-block', // Hace que los elementos se alineen al lado
+                        listStyleType: 'none',  
+                        display: 'inline-block', 
                         boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                        width: '120px', // Tamaño de cada imagen
+                        width: '120px', 
                         cursor: 'pointer',
-                        position: 'relative', // Para posicionar el botón de eliminar
+                        position: 'relative', 
                       }}
                     >
-                      {/* Botón de eliminar en la esquina superior derecha */}
+                 
                       <Button
                         variant="outline-danger"
                         size="sm"
@@ -706,12 +719,12 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                       >
                         <FaTimesCircle />
                       </Button>
-                      {/* Imagen que se puede hacer clic para verla en grande */}
+              
                       <img
                         src={file.fileUrl}
                         alt={`Uploaded Image ${index}`}
                         style={{ maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '4px' }}
-                        onClick={() => showImageInLarge(file.fileUrl)} // Hacer clic para ver la imagen grande
+                        onClick={() => showImageInLarge(file.fileUrl)} 
                       />
                       {file.mediaSave && (
                         <div style={{ textAlign: 'center', marginTop: '5px' }}>
@@ -732,15 +745,15 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         margin: "5px",
                         padding: "8px",
                         borderRadius: "4px",
-                        listStyleType: 'none',  // Elimina los puntos de la lista
-                        display: 'inline-block', // Hace que los elementos se alineen al lado
+                        listStyleType: 'none',  
+                        display: 'inline-block', 
                         boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                        width: '120px', // Tamaño de cada imagen
+                        width: '120px', 
                         cursor: 'pointer',
-                        position: 'relative', // Para posicionar el botón de eliminar
+                        position: 'relative', 
                       }}
                     >
-                      {/* Botón de eliminar en la esquina superior derecha */}
+            
                       <Button
                         variant="outline-danger"
                         size="sm"
@@ -759,20 +772,20 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         src={file.fileUrl}
                         alt={`Uploaded Image ${index}`}
                         style={{ maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '4px' }}
-                        onClick={() => showImageInLarge(file.fileUrl)} // Hacer clic para ver la imagen grande
+                        onClick={() => showImageInLarge(file.fileUrl)} 
                       />
                     </li>
                   ))}
                 </ul>
 
-                {/* Campo de selección de archivo */}
+         
                 <Form.Control
                   type="file"
                   onChange={handleFileChange}
                   style={{ marginTop: "10px" }}
                 />
 
-                {/* Botón para guardar imagen */}
+  
                 <Button
                   variant="primary"
                   onClick={() => {
@@ -788,7 +801,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                   {uploading ? "Subiendo..." : "Guardar imagen"}
                 </Button>
 
-                {/* Modal para mostrar la imagen en tamaño completo */}
                 <Modal show={selectedImage !== null} onHide={closeModal}>
                   <Modal.Header closeButton>
                     <Modal.Title>Imagen en tamaño completo</Modal.Title>
