@@ -24,8 +24,10 @@ interface BaggageTableProps {
 }
 
 interface FileObject {
+  id_case: string;
   fileUrl: string;
   file: File;
+  mediaSave?: boolean; // Nueva propiedad para indicar si la imagen está guardada en la base de datos
 }
 
 interface SelectedCase {
@@ -40,7 +42,8 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   const [agents, setAgents] = useState<User[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [files, setFiles] = useState<FileObject[]>(selectedCase?.attachedFiles || []);
+  const [filesToUpload, setFilesToUpload] = useState<FileObject[]>([]); // Imágenes que se están subiendo actualmente
+  const [savedFiles, setSavedFiles] = useState<FileObject[]>(selectedCase?.attachedFiles || []); // Imágenes ya guardadas
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
   useEffect(() => {
@@ -55,6 +58,12 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     const sortedRows = [...rows].sort((a, b) => new Date(b.date_create).getTime() - new Date(a.date_create).getTime());
     setEditableRows(sortedRows);
   }, [rows]);
+
+  useEffect(() => {
+    if (selectedCase) {
+      setSavedFiles(selectedCase.attachedFiles || []);
+    }
+  }, [selectedCase]);
 
   const handleFieldChange = (
     id: string,
@@ -91,7 +100,13 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   const handleSave = (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
     if (updatedRow) {
-      onSaveChanges(editableRows);
+      // Asegúrate de que attachedFiles esté incluido en la fila actualizada
+      const updatedRowWithFiles = {
+        ...updatedRow,
+        attachedFiles: [...updatedRow.attachedFiles || [], ...filesToUpload],
+      };
+      console.log("Guardando fila:", updatedRowWithFiles); // Log de depuración
+      onSaveChanges([updatedRowWithFiles]);
     }
   };
 
@@ -149,20 +164,8 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 
       const data = await response.json();
 
-      const newFile: FileObject = { fileUrl: data.secure_url, file };
-      setFiles((prevFiles) => [...prevFiles, newFile]);
-
-      // Actualizar el estado de editableRows con la nueva URL de la imagen
-      setEditableRows((prevRows) =>
-        prevRows.map((row) =>
-          row.id === selectedCase?.id
-            ? {
-              ...row,
-              attachedFiles: [...(row.attachedFiles || []), newFile],
-            }
-            : row
-        )
-      );
+      const newFile: FileObject = { fileUrl: data.secure_url, id_case: selectedCase!.id, file, mediaSave: false };
+      setFilesToUpload((prevFiles) => [...prevFiles, newFile]);
 
       setSelectedFile(null);
     } catch (error) {
@@ -173,7 +176,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   }
 
   const showImageInLarge = (imageUrl: string) => {
-    setSelectedImage(imageUrl); // Establecer la URL de la imagen seleccionada para verla en grande
+    setSelectedImage(imageUrl);
   };
 
   // Función para cerrar el modal de la imagen grande
@@ -207,7 +210,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 
   const handleDeleteComment = async (commentId: string) => {
     try {
-      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/delete_comment/${commentId}`, {
+      const response = await fetch(`http://localhost:8000/api/baggage-case/delete_comment/${commentId}`, {
         method: "DELETE",
       });
 
@@ -241,7 +244,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     const session = await getSession();
     const token = session?.user.access_token as string;
     try {
-      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${id}`, {
+      const response = await fetch(`http://localhost:8000/api/baggage-case/${id}`, {
         method: "DELETE",
         headers: {
           "ngrok-skip-browser-warning": "true",
@@ -302,19 +305,16 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       sortable: true,
       cell: (row) => (
         <Form.Group>
-          <div >
+          <div>
             <AgentDropdown
               value={row.agentId || ""}
               onChange={(value) => handleAgentChange(row.id, value)}
               agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
             />
-
           </div>
         </Form.Group>
       ),
-
     },
-
     {
       name: "Estación",
       selector: (row) => row.estacion || "-",
@@ -457,7 +457,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       width: "250px",
       cell: (row) => (
         <div className={styles.actionButtons}>
-
           <Button
             variant="outline-success"
             size="sm"
@@ -474,7 +473,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           >
             <FaTimesCircle />
           </Button>
-
         </div>
       ),
       ignoreRowClick: true,
@@ -669,101 +667,134 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                   Agregar Comentario
                 </Button>
               </>
-            ) : viewMode === "attachments"
-              ? (
-                <>
-                  <ul style={{ display: 'flex', flexWrap: 'wrap', padding: 0 }}>
-                    {files.map((file: FileObject, index: React.Key) => (
-                      <li
-                        key={index}
-                        style={{
-                          backgroundColor: "#f8f9fa",
-                          margin: "5px",
-                          padding: "8px",
-                          borderRadius: "4px",
-                          listStyleType: 'none',  // Elimina los puntos de la lista
-                          display: 'inline-block', // Hace que los elementos se alineen al lado
-                          boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                          width: '120px', // Tamaño de cada imagen
-                          cursor: 'pointer',
-                        }}
-                      >
-                        {/* Imagen que se puede hacer clic para verla en grande */}
-                        <img
-                          src={file.fileUrl}
-                          alt={`Uploaded Image ${index}`}
-                          style={{ maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '4px' }}
-                          onClick={() => showImageInLarge(file.fileUrl)} // Hacer clic para ver la imagen grande
-                        />
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* Campo de selección de archivo */}
-                  <Form.Control
-                    type="file"
-                    onChange={handleFileChange}
-                    style={{ marginTop: "10px" }}
-                  />
-
-                  {/* Botón para guardar imagen */}
-                  <Button
-                    variant="primary"
-                    onClick={() => {
-                      if (selectedFile) {
-                        uploadImage(selectedFile);
-                      } else {
-                        console.error("No se ha seleccionado un archivo.");
-                      }
-                    }}
-                    style={{ marginTop: "10px" }}
-                    disabled={uploading}
-                  >
-                    {uploading ? "Subiendo..." : "Guardar imagen"}
-                  </Button>
-
-                  {/* Modal para mostrar la imagen en tamaño completo */}
-                  <Modal show={selectedImage !== null} onHide={closeModal}>
-                    <Modal.Header closeButton>
-                      <Modal.Title>Imagen en tamaño completo</Modal.Title>
-                    </Modal.Header>
-                    <Modal.Body>
-                      {selectedImage && (
-                        <img
-                          src={selectedImage}
-                          alt="Vista previa grande"
-                          style={{ width: '100%', height: 'auto' }}
-                        />
+            ) : viewMode === "attachments" ? (
+              <>
+                <h4>Imágenes ya guardadas</h4>
+                <ul style={{ display: 'flex', flexWrap: 'wrap', padding: 0 }}>
+                  {savedFiles.map((file: FileObject, index: React.Key) => (
+                    <li
+                      key={index}
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        margin: "5px",
+                        padding: "8px",
+                        borderRadius: "4px",
+                        listStyleType: 'none',  // Elimina los puntos de la lista
+                        display: 'inline-block', // Hace que los elementos se alineen al lado
+                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                        width: '120px', // Tamaño de cada imagen
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {/* Imagen que se puede hacer clic para verla en grande */}
+                      <img
+                        src={file.fileUrl}
+                        alt={`Uploaded Image ${index}`}
+                        style={{ maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '4px' }}
+                        onClick={() => showImageInLarge(file.fileUrl)} // Hacer clic para ver la imagen grande
+                      />
+                      {file.mediaSave && (
+                        <div style={{ textAlign: 'center', marginTop: '5px' }}>
+                          <small>Media Save</small>
+                        </div>
                       )}
-                    </Modal.Body>
-                  </Modal>
+                    </li>
+                  ))}
+                </ul>
 
-                </>
-              ) : (
-                <>
-                  <ul>
-                    {selectedCase.history?.map((historyItem, index) => (
-                      <li
-                        key={index}
-                        style={{
-                          backgroundColor: "#f8f9fa",
-                          margin: "5px 0",
-                          padding: "8px",
-                          borderRadius: "4px",
-                        }}
-                      >
-                        <strong>Acción:</strong> {historyItem.action} <br />
-                        <strong>Fecha:</strong> {historyItem.date} <br />
-                        {historyItem.description && (
-                          <>
-                            <strong>Descripción:</strong> {historyItem.description}
-                          </>
-                        )}
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
+                <h4>Imágenes por subir</h4>
+                <ul style={{ display: 'flex', flexWrap: 'wrap', padding: 0 }}>
+                  {filesToUpload.map((file: FileObject, index: React.Key) => (
+                    <li
+                      key={index}
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        margin: "5px",
+                        padding: "8px",
+                        borderRadius: "4px",
+                        listStyleType: 'none',  // Elimina los puntos de la lista
+                        display: 'inline-block', // Hace que los elementos se alineen al lado
+                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
+                        width: '120px', // Tamaño de cada imagen
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {/* Imagen que se puede hacer clic para verla en grande */}
+                      <img
+                        src={file.fileUrl}
+                        alt={`Uploaded Image ${index}`}
+                        style={{ maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '4px' }}
+                        onClick={() => showImageInLarge(file.fileUrl)} // Hacer clic para ver la imagen grande
+                      />
+                    </li>
+                  ))}
+                </ul>
+
+                {/* Campo de selección de archivo */}
+                <Form.Control
+                  type="file"
+                  onChange={handleFileChange}
+                  style={{ marginTop: "10px" }}
+                />
+
+                {/* Botón para guardar imagen */}
+                <Button
+                  variant="primary"
+                  onClick={() => {
+                    if (selectedFile) {
+                      uploadImage(selectedFile);
+                    } else {
+                      console.error("No se ha seleccionado un archivo.");
+                    }
+                  }}
+                  style={{ marginTop: "10px" }}
+                  disabled={uploading}
+                >
+                  {uploading ? "Subiendo..." : "Guardar imagen"}
+                </Button>
+
+                {/* Modal para mostrar la imagen en tamaño completo */}
+                <Modal show={selectedImage !== null} onHide={closeModal}>
+                  <Modal.Header closeButton>
+                    <Modal.Title>Imagen en tamaño completo</Modal.Title>
+                  </Modal.Header>
+                  <Modal.Body>
+                    {selectedImage && (
+                      <img
+                        src={selectedImage}
+                        alt="Vista previa grande"
+                        style={{ width: '100%', height: 'auto' }}
+                      />
+                    )}
+                  </Modal.Body>
+                </Modal>
+
+              </>
+            ) : (
+              <>
+                <ul>
+                  {selectedCase.history?.map((historyItem, index) => (
+                    <li
+                      key={index}
+                      style={{
+                        backgroundColor: "#f8f9fa",
+                        margin: "5px 0",
+                        padding: "8px",
+                        borderRadius: "4px",
+                      }}
+                    >
+                      <strong>Acción:</strong> {historyItem.action} <br />
+                      <strong>Fecha:</strong> {historyItem.date} <br />
+                      {historyItem.description && (
+                        <>
+                          <strong>Descripción:</strong> {historyItem.description}
+                        </>
+                      )}
+                    </li>
+                  ))}
+                </ul>
+              </>
+            )}
           </Modal.Body>
           {/* <Modal.Footer>
 
