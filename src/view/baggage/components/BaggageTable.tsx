@@ -100,10 +100,10 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   const handleSave = (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
     if (updatedRow) {
-      // Asegúrate de que attachedFiles esté incluido en la fila actualizada
+      // Asegúrate de que solo las imágenes nuevas se envíen a la base de datos
       const updatedRowWithFiles = {
         ...updatedRow,
-        attachedFiles: [...updatedRow.attachedFiles || [], ...filesToUpload],
+        attachedFiles: [...filesToUpload], // Solo incluye las imágenes nuevas
       };
       console.log("Guardando fila:", updatedRowWithFiles); // Log de depuración
       onSaveChanges([updatedRowWithFiles]);
@@ -481,6 +481,11 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
   ];
 
+  const handleDeleteImage = (fileUrl: string) => {
+    setFilesToUpload((prevFiles) => prevFiles.filter((file) => file.fileUrl !== fileUrl));
+    setSavedFiles((prevFiles) => prevFiles.filter((file) => file.fileUrl !== fileUrl));
+  };
+
   return (
     <div className={styles.pageContainer}>
       <div className={styles.tableContainer} style={{ minHeight: '100vh' }}>
@@ -684,8 +689,23 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                         width: '120px', // Tamaño de cada imagen
                         cursor: 'pointer',
+                        position: 'relative', // Para posicionar el botón de eliminar
                       }}
                     >
+                      {/* Botón de eliminar en la esquina superior derecha */}
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        style={{
+                          position: 'absolute',
+                          top: '5px',
+                          right: '5px',
+                          zIndex: 1,
+                        }}
+                        onClick={() => handleDeleteImage(file.fileUrl)}
+                      >
+                        <FaTimesCircle />
+                      </Button>
                       {/* Imagen que se puede hacer clic para verla en grande */}
                       <img
                         src={file.fileUrl}
@@ -717,8 +737,23 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
                         width: '120px', // Tamaño de cada imagen
                         cursor: 'pointer',
+                        position: 'relative', // Para posicionar el botón de eliminar
                       }}
                     >
+                      {/* Botón de eliminar en la esquina superior derecha */}
+                      <Button
+                        variant="outline-danger"
+                        size="sm"
+                        style={{
+                          position: 'absolute',
+                          top: '5px',
+                          right: '5px',
+                          zIndex: 1,
+                        }}
+                        onClick={() => handleDeleteImage(file.fileUrl)}
+                      >
+                        <FaTimesCircle />
+                      </Button>
                       {/* Imagen que se puede hacer clic para verla en grande */}
                       <img
                         src={file.fileUrl}
