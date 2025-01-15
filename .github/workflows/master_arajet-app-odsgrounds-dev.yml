@@ -14,24 +14,23 @@ jobs:
     runs-on: 'ubuntu-latest'
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v2
+    - uses: actions/checkout@v2
 
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v2
 
-    - name: Log in to Docker registry
+    - name: Log in to registry
       uses: docker/login-action@v2
       with:
-        registry: arajetacrodsgroundsdev.azurecr.io
-        username: ${{ secrets.AzureAppService_ContainerUsername_aff00bd45fdd44eabb8df28ee7f1c200 }}
-        password: ${{ secrets.AzureAppService_ContainerPassword_82535e4037214fe78eba9f1ff585a9fc }}
+        registry: https://arajetacrodsgroundsdev.azurecr.io/
+        username: ${{ secrets.AzureAppService_ContainerUsername_5a4cacb36cad40f69a5157a289a88821 }}
+        password: ${{ secrets.AzureAppService_ContainerPassword_d232141a96864a98b7492ae57801df53 }}
 
     - name: Build and push container image to registry
       uses: docker/build-push-action@v3
       with:
         push: true
-        tags: arajetacrodsgroundsdev.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_aff00bd45fdd44eabb8df28ee7f1c200 }}/arajet-app-odsgrounds-dev:${{ github.sha }}
+        tags: arajetacrodsgroundsdev.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_5a4cacb36cad40f69a5157a289a88821 }}/arajetacrodsgroundsdev/arajet-app-odsgrounds-dev:${{ github.sha }}
         file: ./Dockerfile
 
   deploy:
@@ -48,5 +47,5 @@ jobs:
       with:
         app-name: 'arajet-app-odsgrounds-dev'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_12a10ab65d9c41059afa2247c088397e }}
-        images: 'arajetacrodsgroundsdev.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_aff00bd45fdd44eabb8df28ee7f1c200 }}/arajet-app-odsgrounds-dev:${{ github.sha }}'
+        publish-profile: ${{ secrets.AzureAppService_PublishProfile_3d5775550aba4bd39ce9f010967c38c5 }}
+        images: 'arajetacrodsgroundsdev.azurecr.io/${{ secrets.AzureAppService_ContainerUsername_5a4cacb36cad40f69a5157a289a88821 }}/arajetacrodsgroundsdev/arajet-app-odsgrounds-dev:${{ github.sha }}'
