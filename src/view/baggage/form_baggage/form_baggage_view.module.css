@@ -101,6 +101,12 @@
     border-color: #4CAF50;
 }
 
+.option {
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+}
+
 .pnrButton {
     background: #510C76;
     color: white;
@@ -409,4 +415,6 @@
   .customPopup .customRejectButton:hover {
     background-color: #999;
   }
+  
+
   

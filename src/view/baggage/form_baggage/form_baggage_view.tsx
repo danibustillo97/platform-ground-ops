@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import { useFormBaggageController } from "./form_baggage_controller";
 import styles from "@/view/baggage/form_baggage/form_baggage_view.module.css";
 import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline";
@@ -10,7 +10,7 @@ import { MdOutlineClear } from "react-icons/md";
 import Alert from "@/components/Alerts/Alert";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
 import { Toast } from "primereact/toast";
-import { scan } from 'react-scan'
+import Select from 'react-select';
 
 const FormReclamoView: React.FC = () => {
     const {
@@ -21,6 +21,7 @@ const FormReclamoView: React.FC = () => {
         handleAddPnr,
         passengerData,
         selectedPassenger,
+        setSelectedPassenger,
         luggageList,
         selectedLuggage,
         formData,
@@ -33,6 +34,7 @@ const FormReclamoView: React.FC = () => {
         handleCreateCases,
         alert,
         setAlert,
+        resetForm,
     } = useFormBaggageController();
 
     const toast = useRef<Toast>(null);
@@ -48,17 +50,6 @@ const FormReclamoView: React.FC = () => {
 
     const handleCreateCase = () => {
         handleCreateCases();
-     
-    };
-
-    const resetForm = () => {
-        setFormData({
-            phone: "",
-            email: "",
-            address: "",
-        });
-        setPnr("");
-        setAlert(null);
     };
 
     const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,9 +94,27 @@ const FormReclamoView: React.FC = () => {
     };
 
     const handleCancelPnr = () => {
+        resetForm();
         setPnr("");
-        window.location.reload();
     };
+
+    const passengerOptions = passengerData.map((passenger) => ({
+        value: passenger.Pax_Name,
+        label: (
+            <div>
+                <strong>{passenger.Pax_Name}</strong>
+                <br />
+                <small style={{ color: 'gray' }}>{passenger.From_Airport} - {passenger.To_Airport}</small>
+                <br />
+                <small style={{ color: 'gray' }}>"DM-{passenger.Flight_Num}"</small>
+            </div>
+        ),
+    }));
+
+    const luggageOptions = luggageList.map((luggage) => ({
+        value: luggage,
+        label: luggage,
+    }));
 
     return (
         <div className={styles.container}>
@@ -151,18 +160,19 @@ const FormReclamoView: React.FC = () => {
 
                         <div className={styles.formGroup}>
                             <label htmlFor="passenger" className={styles.label}>Pasajero</label>
-                            <select
+                            <Select
                                 id="passenger"
                                 className={styles.select}
-                                value={selectedPassenger}
-                                onChange={handlePassengerChange}
-                                disabled={!pnrAdded}
-                            >
-                                <option value="">Seleccionar pasajero</option>
-                                {passengerData.map((passenger, index) => (
-                                    <option key={index} value={passenger.Pax_Name}>{passenger.Pax_Name}</option>
-                                ))}
-                            </select>
+                                value={passengerOptions.find((option) => option.value === selectedPassenger)}
+                                onChange={(selectedOption) => {
+                                    setSelectedPassenger(selectedOption?.value || "");
+                                    handlePassengerChange({
+                                        target: { value: selectedOption?.value || "" },
+                                    } as React.ChangeEvent<HTMLSelectElement>);
+                                }}
+                                options={passengerOptions}
+                                isDisabled={!pnrAdded}
+                            />
                         </div>
 
                         <div className={styles.inlineFields}>
@@ -192,17 +202,18 @@ const FormReclamoView: React.FC = () => {
 
                         <div className={styles.formGroup}>
                             <label htmlFor="luggage" className={styles.label}>Maleta (Código)</label>
-                            <select
+                            <Select
                                 id="luggage"
                                 className={styles.select}
-                                onChange={handleLuggageSelect}
-                                disabled={!selectedPassenger}
-                            >
-                                <option value="">Seleccionar maleta</option>
-                                {luggageList.map((luggage) => (
-                                    <option key={luggage} value={luggage}>{luggage}</option>
-                                ))}
-                            </select>
+                                value={luggageOptions.find((option) => option.value === selectedLuggage.find((luggage) => luggage.luggage)?.luggage)}
+                                onChange={(selectedOption) => {
+                                    handleLuggageSelect({
+                                        target: { value: selectedOption?.value || "" },
+                                    } as React.ChangeEvent<HTMLSelectElement>);
+                                }}
+                                options={luggageOptions}
+                                isDisabled={!selectedPassenger}
+                            />
                         </div>
 
                         <div className={styles.selectedLuggageContainer}>

@@ -437,7 +437,7 @@ export const useFormBaggageController = () => {
                 if (currentUserId) {
                     logUserAction(currentUserId, 'CREATE_CASES', 'Cases created successfully');
                 }
-                window.location.reload();   
+                resetForm();
             } catch (error) {
                 if (error instanceof Error) {
                     if (error.message.includes("400")) {
@@ -455,6 +455,20 @@ export const useFormBaggageController = () => {
             console.error('Token no disponible. No se puede realizar la operación.');
             setAlert({ type: 'error', message: 'Token no disponible. No se puede realizar la operación.' });
         }
+    };
+
+    const resetForm = () => {
+        setFormData({
+            phone: "",
+            email: "",
+            address: "",
+        });
+        setPnr("");
+        setAlert(null);
+        setSelectedPassenger("");
+        setLuggageList([]);
+        setSelectedLuggage([]);
+        setPnrAdded(false);
     };
 
     return {
@@ -478,5 +492,6 @@ export const useFormBaggageController = () => {
         handleCreateCases,
         alert,
         setAlert,
+        resetForm,
     };
 };
