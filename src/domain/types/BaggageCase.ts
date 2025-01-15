@@ -28,7 +28,7 @@ export interface BaggageCase {
     text: string;
     created_at: string;
   }[];
-  attachedFiles?: { fileUrl: string; id_case:string; file: File; }[];
+  attachedFiles?: { fileUrl: string; id_case: string; file: File; }[];
   history?: { action: string; date: string; description?: string }[];
   agent_Asigned?: string;
 }
@@ -37,7 +37,7 @@ export interface BaggageCase {
 export interface ComentsCases {
   baggage_case_id: string
   text: string
-  created_at:string
+  created_at: string
 }
 
 export interface ChartData {

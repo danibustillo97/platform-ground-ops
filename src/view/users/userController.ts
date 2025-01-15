@@ -16,7 +16,7 @@ export const fetchAllUsers = async (): Promise<User[]> => {
 // Crear un nuevo usuario
 export const createNewUser = async (user: User): Promise<User> => {
     try {
-        // Aquí se asume que el campo 'estacion' es un arreglo de estaciones
+  
         const newUser = await createUser(user);
         return newUser;
     } catch (error) {

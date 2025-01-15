@@ -25,6 +25,3 @@ export interface BaggageCase {
 }
 
 
-export interface UpdateBaggageCase{
-    
-}

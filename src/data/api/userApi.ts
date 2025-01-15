@@ -1,24 +1,27 @@
 // Obtener todos los usuarios
 const apiUrl = "https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net"
-export const getUsers = async () => {
-    const response = await fetch("https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/users/", {
+
+
+export const getUsers = async (limit = 100) => {
+    // const response = await fetch(`http://localhost:8000/api/users/?limit=${limit}`
+    const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/users/?limit=${limit}`, {
         method: "GET",
         headers: {
             "ngrok-skip-browser-warning": "true",
             "Content-Type": "application/json",
         },
     });
-    
+
     if (!response.ok) {
-        const errorText = await response.text(); 
-        console.error("Error fetching users:", errorText); 
+        const errorText = await response.text();
+        console.error("Error fetching users:", errorText);
         throw new Error("Error al obtener los usuarios");
     }
-    
+
     const res = await response.json();
     return res;
-
 };
+
 
 // Crear un nuevo usuario
 export const createUser = async (user: { name: string; email: string }) => {
@@ -27,7 +30,7 @@ export const createUser = async (user: { name: string; email: string }) => {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-             
+
             },
             body: JSON.stringify(user),
         });
@@ -49,7 +52,7 @@ export const updateUser = async (id: number, updatedData: { name?: string; email
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
-              
+
             },
             body: JSON.stringify(updatedData),
         });
@@ -72,7 +75,7 @@ export const deleteUser = async (id: number) => {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
-              
+
             },
         });
 
