@@ -1,3 +1,4 @@
+"use client";
 import React, { useRef, useState } from "react";
 import { useFormBaggageController } from "./form_baggage_controller";
 import styles from "@/view/baggage/form_baggage/form_baggage_view.module.css";
