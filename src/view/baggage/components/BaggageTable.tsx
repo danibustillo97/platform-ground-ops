@@ -47,6 +47,8 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   const [savedFiles, setSavedFiles] = useState<FileObject[]>(selectedCase?.attachedFiles || []); // Imágenes ya guardadas
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
 
+  const stations = ["PUJ", "SDQ", "NLU", "GRU", "LIM", "KIN", "MDE", "SJO", "EZE", "CUR", "AUA", "CTG"];
+
   useEffect(() => {
     const fetchData = async () => {
       const agentsData = await fetchAllUsers();
@@ -91,6 +93,16 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     );
   };
 
+  const handleStationChange = (id: string, station: string) => {
+    setEditableRows((prevRows) =>
+      prevRows.map((row) =>
+        row.id === id
+          ? { ...row, estacion: station }
+          : row
+      )
+    );
+  };
+
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files ? event.target.files[0] : null;
     if (file) {
@@ -101,7 +113,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   const handleSave = (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
     if (updatedRow) {
-
       const updatedRowWithFiles = {
         ...updatedRow,
         attachedFiles: [...filesToUpload],
@@ -210,7 +221,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 
   const handleDeleteComment = async (commentId: string) => {
     try {
-      const response = await fetch(`http://localhost:8000/api/baggage-case/delete_comment/${commentId}`, {
+      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/delete_comment/${commentId}`, {
         method: "DELETE",
       });
 
@@ -244,7 +255,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     const session = await getSession();
     const token = session?.user.access_token as string;
     try {
-      const response = await fetch(`http://localhost:8000/api/baggage-case/${id}`, {
+      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${id}`, {
         method: "DELETE",
         headers: {
           "ngrok-skip-browser-warning": "true",
@@ -320,30 +331,44 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
         </Form.Group>
       ),
     },
-
     {
       name: "From_Airport",
       selector: (row) => row.from_airport || "-",
       sortable: true,
-      width: "80px"
+      width: "130px"
     },
     {
       name: "To_Airport",
       selector: (row) => row.to_airport || "-",
       sortable: true,
-      width: "80px"
+      width: "130px"
     },
     {
       name: "Fligth_Number",
       selector: (row) => row.flight_number || "-",
       sortable: true,
-      width: "80px"
+      width: "130px"
     },
     {
       name: "Estación",
       selector: (row) => row.estacion || "-",
       sortable: true,
       width: "110px",
+      cell: (row) => (
+        <Form.Control
+          as="select"
+          value={row.estacion || ""}
+          onChange={(e) => handleStationChange(row.id, e.target.value)}
+          size="sm"
+        >
+          <option value="">Seleccionar estación</option>
+          {stations.map((station) => (
+            <option key={station} value={station}>
+              {station}
+            </option>
+          ))}
+        </Form.Control>
+      ),
     },
     {
       name: "Nombre",
@@ -391,14 +416,11 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       width: "250px",
       cell: (row) => (
         <Form.Control
-
-
           value={row.description || ""}
           onChange={(e) => handleFieldChange(row.id, "description", e.target.value)}
           size="sm"
           style={{ resize: "none", overflow: "hidden" }}
         />
-
       ),
     },
     {
@@ -516,7 +538,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     }
 
     try {
-      const response = await fetch(`http://localhost:8000/api/baggage-case/attachments/${imageId}`, {
+      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/attachments/${imageId}`, {
         method: "DELETE",
       });
 
@@ -738,7 +760,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         position: 'relative',
                         zIndex: 10000,
 
-
                       }}
                     >
 
@@ -821,13 +842,11 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                   ))}
                 </ul>
 
-
                 <Form.Control
                   type="file"
                   onChange={handleFileChange}
                   style={{ marginTop: "10px" }}
                 />
-
 
                 <Button
                   variant="primary"

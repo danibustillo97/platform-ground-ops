@@ -484,6 +484,7 @@ export const useFormBaggageController = () => {
             phone: "",
             email: "",
             address: "",
+              
         });
         setPnr("");
         setAlert(null);

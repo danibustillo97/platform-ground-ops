@@ -11,8 +11,7 @@ import Alert from "@/components/Alerts/Alert";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
 import { Toast } from "primereact/toast";
 import Select from 'react-select';
-import { CircularProgress } from "@mui/material"; // Importar el cargador
-
+import { CircularProgress } from "@mui/material"; 
 const FormReclamoView: React.FC = () => {
     const {
         loading,
@@ -98,7 +97,7 @@ const FormReclamoView: React.FC = () => {
     const handleCancelPnr = () => {
         resetForm();
         setPnr("");
-        setSelectedPassenger(null); // Limpiar la selección de pasajero
+        setSelectedPassenger(null); 
     };
 
     const passengerOptions = passengerData.map((passenger) => ({
