@@ -6,6 +6,7 @@ const statusOptions = [
   { value: "Abierto", label: "Abierto" },
   { value: "Cerrado", label: "Cerrado" },
   { value: "En espera de pasajero", label: "En espera de pasajero" },
+  { value: "En espera de formulario", label: "En espera de formulario" },
 ];
 
 
@@ -26,10 +27,10 @@ interface CustomDropdownProps {
 
 const CustomDropdown: React.FC<CustomDropdownProps> = ({ row, handleFieldChange }) => {
   const handleChange = (selectedOption: any) => {
-    handleFieldChange(row.id, "status", selectedOption?.value); 
+    handleFieldChange(row.id, "status", selectedOption?.value);
   };
 
- 
+
   function getStatusColor(status: string): string | undefined {
     switch (status) {
       case "Abierto":
@@ -38,13 +39,15 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ row, handleFieldChange 
         return "red";
       case "En espera de pasajero":
         return "yellow";
+        case "En espera de formulario":
+        return "gray";
       default:
         return undefined;
     }
   }
 
   return (
-    <div style={{ display: "flex", alignItems: "center",  width:"100%"}}>
+    <div style={{ display: "flex", alignItems: "center", width: "100%" }}>
       <span
         style={{
           width: "10px",
@@ -63,17 +66,30 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({ row, handleFieldChange 
             ...base,
             minHeight: "30px",
             fontSize: "14px",
-            with:"100%"
+            with: "100%"
+            
           }),
           dropdownIndicator: (base: any) => ({
             ...base,
             padding: "4px",
+        
           }),
           menu: (base: any) => ({
             ...base,
             fontSize: "14px",
-            with:"100%"
+            with: "100%",
+           
           }),
+
+          menuList: (base: any) => ({
+            ...base,
+            padding: "0",
+            scrollbarWidth: "thin",
+            msOverflowStyle: "none",
+          }),
+
+
+           
         }}
         isClearable={false}
       />

@@ -5,8 +5,7 @@ import { User } from "@/entities/User";
 import { Button, Form, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { format } from "date-fns";
 import styles from "@/view/baggage/baggage.module.css";
-import { FaPaperclip, FaSave, FaTimesCircle, FaHistory, FaTrashAlt } from "react-icons/fa";
-import { SiMinutemailer } from "react-icons/si";
+import { FaPaperclip, FaSave, FaTimesCircle, FaHistory, FaTrashAlt, FaEdit } from "react-icons/fa";
 import CustomDropdown from "./CustomDropdown";
 import { getSession } from "next-auth/react";
 import { fetchAllUsers } from "@/view/users/userController";
@@ -43,9 +42,10 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   const [agents, setAgents] = useState<User[]>([]);
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
-  const [filesToUpload, setFilesToUpload] = useState<FileObject[]>([]); // Imágenes que se están subiendo actualmente
-  const [savedFiles, setSavedFiles] = useState<FileObject[]>(selectedCase?.attachedFiles || []); // Imágenes ya guardadas
+  const [filesToUpload, setFilesToUpload] = useState<FileObject[]>([]);
+  const [savedFiles, setSavedFiles] = useState<FileObject[]>(selectedCase?.attachedFiles || []);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [editingRowId, setEditingRowId] = useState<string | null>(null);
 
   const stations = ["PUJ", "SDQ", "NLU", "GRU", "LIM", "KIN", "MDE", "SJO", "EZE", "CUR", "AUA", "CTG"];
 
@@ -110,15 +110,38 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     }
   };
 
-  const handleSave = (id: string) => {
+  const handleSave = async (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
     if (updatedRow) {
       const updatedRowWithFiles = {
         ...updatedRow,
         attachedFiles: [...filesToUpload],
       };
-      console.log("Guardando fila:", updatedRowWithFiles);
-      onSaveChanges([updatedRowWithFiles]);
+
+      // Guardar los cambios en la base de datos
+      const session = await getSession();
+      const token = session?.user.access_token as string;
+      try {
+        const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedRowWithFiles),
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al guardar los cambios");
+        }
+
+        console.log("Guardando fila:", updatedRowWithFiles);
+        onSaveChanges([updatedRowWithFiles]);
+        setEditingRowId(null);
+      } catch (error) {
+        console.error("Error al guardar los cambios:", error);
+        alert("Hubo un error al guardar los cambios.");
+      }
     }
   };
 
@@ -155,6 +178,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     setEditableRows(rows);
     setSelectedCase(null);
     setViewMode("comments");
+    setEditingRowId(null);
   };
 
   const uploadImage = async (file: File) => {
@@ -322,11 +346,15 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       cell: (row) => (
         <Form.Group>
           <div>
-            <AgentDropdown
-              value={row.agentId || ""}
-              onChange={(value) => handleAgentChange(row.id, value)}
-              agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
-            />
+            {editingRowId === row.id ? (
+              <AgentDropdown
+                value={row.agentId || ""}
+                onChange={(value) => handleAgentChange(row.id, value)}
+                agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
+              />
+            ) : (
+              row.agentId || "-"
+            )}
           </div>
         </Form.Group>
       ),
@@ -345,7 +373,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
     {
       name: "Fligth_Number",
-      selector: (row) => row.flight_number || "-",
+      selector: (row) => "DM-"+row.flight_number || "-",
       sortable: true,
       width: "130px"
     },
@@ -353,7 +381,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "Estación",
       selector: (row) => row.estacion || "-",
       sortable: true,
-      width: "110px",
+      width: "150px",
       cell: (row) => (
         <Form.Control
           as="select"
@@ -380,6 +408,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           value={row.passenger_name || ""}
           onChange={(e) => handleFieldChange(row.id, "passenger_name", e.target.value)}
           size="sm"
+          disabled={editingRowId !== row.id}
         />
       ),
     },
@@ -393,6 +422,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           value={row.contact_email || ""}
           onChange={(e) => handleFieldChange(row.id, "contact_email", e.target.value)}
           size="sm"
+          disabled={editingRowId !== row.id}
         />
       ),
     },
@@ -406,6 +436,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           value={row.contact_phone || ""}
           onChange={(e) => handleFieldChange(row.id, "contact_phone", e.target.value)}
           size="sm"
+          disabled={editingRowId !== row.id}
         />
       ),
     },
@@ -420,6 +451,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           onChange={(e) => handleFieldChange(row.id, "description", e.target.value)}
           size="sm"
           style={{ resize: "none", overflow: "hidden" }}
+          disabled={editingRowId !== row.id}
         />
       ),
     },
@@ -432,6 +464,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           value={row.issue_type || ""}
           onChange={(e) => handleFieldChange(row.id, "issue_type", e.target.value)}
           size="sm"
+          disabled={editingRowId !== row.id}
         />
       ),
     },
@@ -441,7 +474,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       sortable: true,
       width: "200px",
       cell: (row) => (
-        <CustomDropdown row={row} handleFieldChange={handleFieldChange} />
+        <CustomDropdown row={row} handleFieldChange={handleFieldChange}  />
       ),
     },
     {
@@ -508,10 +541,20 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       cell: (row) => (
         <div className={styles.actionButtons}>
           <Button
+            variant="outline-primary"
+            size="sm"
+            onClick={() => setEditingRowId(row.id)}
+            className={styles.actionButton}
+            style={{ fontFamily: 'DIM, sans-serif' }}
+          >
+            <FaEdit />
+          </Button>
+          <Button
             variant="outline-success"
             size="sm"
             onClick={() => handleSave(row.id)}
             className={styles.actionButton}
+            style={{ fontFamily: 'DIM, sans-serif' }}
           >
             <FaSave />
           </Button>
@@ -520,6 +563,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
             size="sm"
             onClick={() => handleDeleteCases(row.id)}
             className={styles.actionButton}
+            style={{ fontFamily: 'DIM, sans-serif' }}
           >
             <FaTimesCircle />
           </Button>
@@ -564,6 +608,27 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           highlightOnHover
           striped
           noDataComponent={<div className={styles.noData}>No hay datos para mostrar</div>}
+          customStyles={{
+            headRow: {
+              style: {
+                fontFamily: 'DIM, sans-serif',
+                fontWeight: 'bold',
+                backgroundColor: '#f8f9fa',
+              },
+            },
+            headCells: {
+              style: {
+                fontFamily: 'DIM, sans-serif',
+                fontWeight: 'bold',
+                backgroundColor: '#f8f9fa',
+              },
+            },
+            cells: {
+              style: {
+                fontFamily: 'DIM, sans-serif',
+              },
+            },
+          }}
         />
       </div>
 
@@ -583,6 +648,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                 textTransform: "capitalize",
                 letterSpacing: "0.5px",
                 lineHeight: "1.5",
+                fontFamily: 'DIM, sans-serif',
               }}
             >
               {viewMode === "comments"
@@ -610,6 +676,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                           padding: "8px",
                           backgroundColor: "#f1f1f1",
                           borderBottom: "1px solid #ddd",
+                          fontFamily: 'DIM, sans-serif',
                         }}
                       >
                         Comentario
@@ -620,6 +687,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                           padding: "8px",
                           backgroundColor: "#f1f1f1",
                           borderBottom: "1px solid #ddd",
+                          fontFamily: 'DIM, sans-serif',
                         }}
                       >
                         Fecha
@@ -630,6 +698,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                           padding: "8px",
                           backgroundColor: "#f1f1f1",
                           borderBottom: "1px solid #ddd",
+                          fontFamily: 'DIM, sans-serif',
                         }}
                       >
                         Hora
@@ -640,6 +709,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                           padding: "8px",
                           backgroundColor: "#f1f1f1",
                           borderBottom: "1px solid #ddd",
+                          fontFamily: 'DIM, sans-serif',
                         }}
                       >
                         Acciones
@@ -676,6 +746,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                                 backgroundColor: "#fff",
                                 wordWrap: "break-word",
                                 maxWidth: "400px",
+                                fontFamily: 'DIM, sans-serif',
                               }}
                             >
                               {comment.text}
@@ -685,6 +756,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                                 padding: "8px",
                                 borderBottom: "1px solid #ddd",
                                 backgroundColor: "#fff",
+                                fontFamily: 'DIM, sans-serif',
                               }}
                             >
                               {formattedDate || "Sin fecha"}
@@ -694,6 +766,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                                 padding: "8px",
                                 borderBottom: "1px solid #ddd",
                                 backgroundColor: "#fff",
+                                fontFamily: 'DIM, sans-serif',
                               }}
                             >
                               {formattedTime || "Sin hora"}
@@ -704,6 +777,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                                 padding: "8px",
                                 borderBottom: "1px solid #ddd",
                                 backgroundColor: "#fff",
+                                fontFamily: 'DIM, sans-serif',
                               }}
                             >
                               <Button
@@ -711,6 +785,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                                 size="sm"
                                 onClick={() => handleDeleteComment(comment.id)}
                                 title="Eliminar comentario"
+                                style={{ fontFamily: 'DIM, sans-serif' }}
                               >
                                 <FaTrashAlt />
                               </Button>
@@ -729,20 +804,21 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                   style={{
                     width: "100%",
                     resize: "none",
+                    fontFamily: 'DIM, sans-serif',
                   }}
                 />
                 <Button
                   variant="outline-primary"
                   size="sm"
                   onClick={handleAddComment}
-                  style={{ marginTop: "10px" }}
+                  style={{ marginTop: "10px", fontFamily: 'DIM, sans-serif' }}
                 >
                   Agregar Comentario
                 </Button>
               </>
             ) : viewMode === "attachments" ? (
               <>
-                <h6>Imágenes ya guardadas</h6>
+                <h6 style={{ fontFamily: 'DIM, sans-serif' }}>Imágenes ya guardadas</h6>
                 <ul style={{ display: 'flex', flexWrap: 'wrap', padding: 0 }}>
                   {savedFiles.map((file: FileObject, index: React.Key) => (
                     <li
@@ -759,10 +835,9 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         cursor: 'pointer',
                         position: 'relative',
                         zIndex: 10000,
-
+                        fontFamily: 'DIM, sans-serif',
                       }}
                     >
-
                       <Button
                         variant="outline-danger"
                         size="sm"
@@ -773,12 +848,12 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                           zIndex: 1,
                           backgroundColor: 'rgba(158, 0, 0, 0.84)',
                           color: 'white',
+                          fontFamily: 'DIM, sans-serif',
                         }}
                         onClick={() => { handleDeleteImage(file.fileUrl, file.image_id); console.log(file.image_id); console.log(file.id_case); }}
                       >
                         <FaTimesCircle />
                       </Button>
-
                       <img
                         src={file.fileUrl}
                         alt={`Uploaded Image ${index} ${file.image_id}`}
@@ -786,9 +861,8 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         style={{ maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '4px', zIndex: '20000' }}
                         onClick={() => showImageInLarge(file.fileUrl)}
                       />
-
                       {file.mediaSave && (
-                        <div style={{ textAlign: 'center', marginTop: '15px' }}>
+                        <div style={{ textAlign: 'center', marginTop: '15px', fontFamily: 'DIM, sans-serif' }}>
                           <small>Media Save</small>
                         </div>
                       )}
@@ -796,7 +870,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                   ))}
                 </ul>
 
-                <h6>Imágenes por subir</h6>
+                <h6 style={{ fontFamily: 'DIM, sans-serif' }}>Imágenes por subir</h6>
                 <ul style={{ display: 'flex', flexWrap: 'wrap', padding: 0 }}>
                   {filesToUpload.map((file: FileObject, index: React.Key) => (
                     <li
@@ -812,9 +886,9 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         width: '120px',
                         cursor: 'pointer',
                         position: 'relative',
+                        fontFamily: 'DIM, sans-serif',
                       }}
                     >
-
                       <Button
                         variant="outline-danger"
                         size="sm"
@@ -823,15 +897,14 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                           top: '5px',
                           right: '5px',
                           zIndex: 1,
+                          fontFamily: 'DIM, sans-serif',
                         }}
                         onClick={() => {
                           handleDeleteImage(file.image_id ? file.fileUrl : file.fileUrl);
-
                         }}
                       >
                         <FaTimesCircle />
                       </Button>
-
                       <img
                         src={file.fileUrl}
                         alt={`Uploaded Image ${index}`}
@@ -845,7 +918,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                 <Form.Control
                   type="file"
                   onChange={handleFileChange}
-                  style={{ marginTop: "10px" }}
+                  style={{ marginTop: "10px", fontFamily: 'DIM, sans-serif' }}
                 />
 
                 <Button
@@ -857,16 +930,16 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                       console.error("No se ha seleccionado un archivo.");
                     }
                   }}
-                  style={{ marginTop: "10px" }}
+                  style={{ marginTop: "10px", fontFamily: 'DIM, sans-serif' }}
                   disabled={uploading}
                 >
                   {uploading ? "Subiendo..." : "Guardar imagen"}
                 </Button>
 
                 {/* Modal para mostrar la imagen en tamaño completo */}
-                <Modal show={selectedImage !== null} onHide={closeModal} style={{ zIndex: 20000, marginTop: '50px', animation: 'ease' }}>
+                <Modal show={selectedImage !== null} onHide={closeModal} style={{ zIndex: 20000, marginTop: '50px', animation: 'ease', fontFamily: 'DIM, sans-serif' }}>
                   <Modal.Header closeButton>
-                    <Modal.Title>Preview</Modal.Title>
+                    <Modal.Title style={{ fontFamily: 'DIM, sans-serif' }}>Preview</Modal.Title>
                   </Modal.Header>
                   <Modal.Body>
                     {selectedImage && (
@@ -891,6 +964,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                         margin: "5px 0",
                         padding: "8px",
                         borderRadius: "4px",
+                        fontFamily: 'DIM, sans-serif',
                       }}
                     >
                       <strong>Acción:</strong> {historyItem.action} <br />
@@ -906,9 +980,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
               </>
             )}
           </Modal.Body>
-          {/* <Modal.Footer>
-
-        </Modal.Footer> */}
         </Modal>
       )}
     </div>

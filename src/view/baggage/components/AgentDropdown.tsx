@@ -19,36 +19,38 @@ const AgentDropdown: React.FC<AgentDropdownProps> = ({ value, onChange, agents }
 
   return (
     <Select
-    options={agentOptions}
-    value={agentOptions.find((option) => option.value === value)}
-    onChange={handleChange}
-    styles={{
+      options={agentOptions}
+      value={agentOptions.find((option) => option.value === value)}
+      onChange={handleChange}
+      styles={{
         control: (base: any) => ({
           ...base,
           minHeight: "30px",
           fontSize: "14px",
-          width: "100%",
+          with: "100%"
+
         }),
         dropdownIndicator: (base: any) => ({
           ...base,
           padding: "4px",
+          backgroundColor: "#510C76"
         }),
         menu: (base: any) => ({
           ...base,
           fontSize: "14px",
-          width: "100%",
-          maxHeight: "200px", 
-          overflowY: "auto", 
+          with: "100%",
+
         }),
+
         menuList: (base: any) => ({
           ...base,
-          padding: "0", 
-          scrollbarWidth: "thin", 
+          padding: "0",
+          scrollbarWidth: "thin",
           msOverflowStyle: "none",
         }),
       }}
-    isClearable={false}
-  />
+      isClearable={false}
+    />
   );
 };
 
