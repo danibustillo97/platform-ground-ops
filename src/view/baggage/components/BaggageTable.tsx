@@ -289,7 +289,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       name: "PNR",
       selector: (row) => row.PNR || "-",
       sortable: true,
-      width: "80px"
+      width: "120px"
     },
     {
       name: "BAGTAG",
@@ -319,6 +319,25 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           </div>
         </Form.Group>
       ),
+    },
+
+    {
+      name: "From_Airport",
+      selector: (row) => row.from_airport || "-",
+      sortable: true,
+      width: "80px"
+    },
+    {
+      name: "To_Airport",
+      selector: (row) => row.to_airport || "-",
+      sortable: true,
+      width: "80px"
+    },
+    {
+      name: "Fligth_Number",
+      selector: (row) => row.flight_number || "-",
+      sortable: true,
+      width: "80px"
     },
     {
       name: "Estación",
@@ -372,12 +391,12 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       width: "250px",
       cell: (row) => (
         <Form.Control
-  
-    
+
+
           value={row.description || ""}
           onChange={(e) => handleFieldChange(row.id, "description", e.target.value)}
           size="sm"
-          style={{ resize: "none", overflow: "hidden" }} 
+          style={{ resize: "none", overflow: "hidden" }}
         />
 
       ),

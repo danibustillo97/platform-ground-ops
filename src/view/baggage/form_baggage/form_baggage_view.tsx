@@ -1,4 +1,3 @@
-"use client";
 import React, { useRef, useState } from "react";
 import { useFormBaggageController } from "./form_baggage_controller";
 import styles from "@/view/baggage/form_baggage/form_baggage_view.module.css";
@@ -11,6 +10,7 @@ import Alert from "@/components/Alerts/Alert";
 import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
 import { Toast } from "primereact/toast";
 import Select from 'react-select';
+import { CircularProgress } from "@mui/material"; // Importar el cargador
 
 const FormReclamoView: React.FC = () => {
     const {
@@ -35,6 +35,7 @@ const FormReclamoView: React.FC = () => {
         alert,
         setAlert,
         resetForm,
+        isLoading, // Agregar el estado de carga
     } = useFormBaggageController();
 
     const toast = useRef<Toast>(null);
@@ -96,10 +97,11 @@ const FormReclamoView: React.FC = () => {
     const handleCancelPnr = () => {
         resetForm();
         setPnr("");
+        setSelectedPassenger(null); // Limpiar la selección de pasajero
     };
 
     const passengerOptions = passengerData.map((passenger) => ({
-        value: passenger.Pax_Name,
+        value: `${passenger.Pax_Name}|${passenger.From_Airport}|${passenger.To_Airport}`,
         label: (
             <div>
                 <strong>{passenger.Pax_Name}</strong>
@@ -143,15 +145,15 @@ const FormReclamoView: React.FC = () => {
                                     type="button"
                                     className={`${styles.pnrButton} ${pnrAdded ? styles.success : ""}`}
                                     onClick={handleAddPnr}
-                                    disabled={pnrAdded}
+                                    disabled={pnrAdded || isLoading}
                                 >
-                                    {pnrAdded ? <CheckCircleIcon /> : <AddCircleOutlineIcon />}
+                                    {isLoading ? <CircularProgress size={24} /> : pnrAdded ? <CheckCircleIcon /> : <AddCircleOutlineIcon />}
                                 </button>
                                 <button
                                     type="button"
                                     className={`${styles.pnrButton} ${pnrAdded ? styles.error : ""}`}
                                     onClick={handleCancelPnr}
-                                    disabled={!pnrAdded}
+                                    disabled={!pnrAdded || isLoading}
                                 >
                                     {!pnrAdded ? <MdOutlineClear /> : <MdOutlineClear />}
                                 </button>
@@ -163,15 +165,16 @@ const FormReclamoView: React.FC = () => {
                             <Select
                                 id="passenger"
                                 className={styles.select}
-                                value={passengerOptions.find((option) => option.value === selectedPassenger)}
+                                value={passengerOptions.find((option) => option.value === `${selectedPassenger?.Pax_Name}|${selectedPassenger?.fromAirport}|${selectedPassenger?.toAirport}`)}
                                 onChange={(selectedOption) => {
-                                    setSelectedPassenger(selectedOption?.value || "");
+                                    const [Pax_Name, fromAirport, toAirport] = selectedOption?.value.split('|') || [];
+                                    setSelectedPassenger({ Pax_Name, fromAirport, toAirport });
                                     handlePassengerChange({
                                         target: { value: selectedOption?.value || "" },
                                     } as React.ChangeEvent<HTMLSelectElement>);
                                 }}
                                 options={passengerOptions}
-                                isDisabled={!pnrAdded}
+                                isDisabled={!pnrAdded || isLoading}
                             />
                         </div>
 
@@ -184,7 +187,7 @@ const FormReclamoView: React.FC = () => {
                                     className={styles.input}
                                     value={formData.phone}
                                     onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                                    disabled={!pnrAdded}
+                                    disabled={!pnrAdded || isLoading}
                                 />
                             </div>
                             <div className={styles.inlineField}>
@@ -195,7 +198,7 @@ const FormReclamoView: React.FC = () => {
                                     className={styles.input}
                                     value={formData.email}
                                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                                    disabled={!pnrAdded}
+                                    disabled={!pnrAdded || isLoading}
                                 />
                             </div>
                         </div>
@@ -212,7 +215,7 @@ const FormReclamoView: React.FC = () => {
                                     } as React.ChangeEvent<HTMLSelectElement>);
                                 }}
                                 options={luggageOptions}
-                                isDisabled={!selectedPassenger}
+                                isDisabled={!selectedPassenger || isLoading}
                             />
                         </div>
 
@@ -225,6 +228,7 @@ const FormReclamoView: React.FC = () => {
                                             type="button"
                                             className={styles.removeButton}
                                             onClick={() => handleRemoveLuggage(id)}
+                                            disabled={isLoading}
                                         >
                                             <DeleteOutlineIcon />
                                         </button>
@@ -243,6 +247,7 @@ const FormReclamoView: React.FC = () => {
                                                 className={styles.textarea}
                                                 value={description}
                                                 onChange={(e) => handleDescriptionChange(id, e.target.value)}
+                                                disabled={isLoading}
                                             />
                                         </div>
                                         <div className={styles.luggageField}>
@@ -252,6 +257,7 @@ const FormReclamoView: React.FC = () => {
                                                 className={styles.select}
                                                 value={issue}
                                                 onChange={(e) => handleIssueChange(id, e.target.value)}
+                                                disabled={isLoading}
                                             >
                                                 <option value="">Seleccionar tipo</option>
                                                 <option value="Daño">Daño</option>
@@ -269,6 +275,7 @@ const FormReclamoView: React.FC = () => {
                                                     className={styles.input}
                                                     onChange={handleFileChange}
                                                     multiple
+                                                    disabled={isLoading}
                                                 />
                                             </div>
                                         )}
@@ -283,6 +290,7 @@ const FormReclamoView: React.FC = () => {
                                                         placeholder="Ej. Cra Calle 45 #123 APT 202"
                                                         value={formData.address}
                                                         onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                                                        disabled={isLoading}
                                                     />
                                                     <small className={styles.infoText}>
                                                         Usa prefijos como: "Cra", "Calle", "Av.", "APT", etc. Ejemplo: "Cra 15 #45-67 APT 305"
@@ -300,14 +308,19 @@ const FormReclamoView: React.FC = () => {
                                 type="button"
                                 className={styles.createButton}
                                 onClick={handleCreateCase}
-                                disabled={loading || selectedLuggage.length === 0}
+                                disabled={loading || selectedLuggage.length === 0 || isLoading}
                             >
-                                Crear Casos
+                                {isLoading ? <CircularProgress size={24} /> : 'Crear Casos'}
                             </button>
                         </div>
                     </form>
                     <Toast ref={toast} />
                 </>
+            )}
+            {isLoading && (
+                <div className={styles.overlay}>
+                    <CircularProgress size={50} style={{ color: '#510C76' }} />
+                </div>
             )}
         </div>
     );

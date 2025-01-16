@@ -34,7 +34,11 @@ export const useFormBaggageController = () => {
     const [pnr, setPnr] = useState("");
     const [pnrAdded, setPnrAdded] = useState(false);
     const [passengerData, setPassengerData] = useState<PassengerData[]>([]);
-    const [selectedPassenger, setSelectedPassenger] = useState<string>("");
+    const [selectedPassenger, setSelectedPassenger] = useState<{
+        Pax_Name: string;
+        fromAirport: string;
+        toAirport: string;
+    } | null>(null);
     const [luggageList, setLuggageList] = useState<string[]>([]);
     const [selectedLuggage, setSelectedLuggage] = useState<{
         id: string;
@@ -52,6 +56,7 @@ export const useFormBaggageController = () => {
     const [formData, setFormData] = useState({ phone: "", email: "", address: "" });
     const [alert, setAlert] = useState<{ type: 'success' | 'warning' | 'error'; message: string } | null>(null);
     const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(false); // Estado de carga
 
     /**
      * Fetches the current user session and sets the user ID.
@@ -79,12 +84,14 @@ export const useFormBaggageController = () => {
     /**
      * Handles adding a PNR and logs the action.
      */
-    const handleAddPnr = () => {
+    const handleAddPnr = async () => {
         if (pnr.trim()) {
+            setIsLoading(true);
             setPnrAdded(true);
             if (currentUserId) {
-                logUserAction(currentUserId, 'ADD_PNR', `PNR ${pnr} added`);
+                await logUserAction(currentUserId, 'ADD_PNR', `PNR ${pnr} added`);
             }
+            setIsLoading(false);
         }
     };
 
@@ -111,8 +118,13 @@ export const useFormBaggageController = () => {
      */
     const handlePassengerChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const passenger = e.target.value;
-        setSelectedPassenger(passenger);
-        const passengerInfo = passengerData.find((p) => p.Pax_Name === passenger);
+        const [Pax_Name, fromAirport, toAirport] = passenger.split('|');
+        setSelectedPassenger({ Pax_Name, fromAirport, toAirport });
+        const passengerInfo = passengerData.find((p) =>
+            p.Pax_Name === Pax_Name &&
+            p.From_Airport === fromAirport &&
+            p.To_Airport === toAirport
+        );
         if (passengerInfo) {
             setLuggageList(passengerInfo.Bag_Tags || []);
             setFormData({
@@ -122,13 +134,15 @@ export const useFormBaggageController = () => {
             });
             setSelectedLuggage((prevLuggage) =>
                 prevLuggage.map((item) =>
-                    item.passengerName === passengerInfo.Pax_Name
+                    item.passengerName === passengerInfo.Pax_Name &&
+                        item.fromAirport === passengerInfo.From_Airport &&
+                        item.toAirport === passengerInfo.To_Airport
                         ? { ...item, ...passengerInfo, passengerName: passengerInfo.Pax_Name }
                         : item
                 )
             );
             if (currentUserId) {
-                logUserAction(currentUserId, 'PASSENGER_CHANGE', `Passenger changed to ${passenger}`);
+                logUserAction(currentUserId, 'PASSENGER_CHANGE', `Passenger changed to ${Pax_Name}`);
             }
         }
     };
@@ -139,7 +153,11 @@ export const useFormBaggageController = () => {
      */
     const handleLuggageSelect = (e: React.ChangeEvent<HTMLSelectElement>) => {
         const luggage = e.target.value;
-        const passengerInfo = passengerData.find((p) => p.Pax_Name === selectedPassenger);
+        const passengerInfo = passengerData.find((p) =>
+            p.Pax_Name === selectedPassenger?.Pax_Name &&
+            p.From_Airport === selectedPassenger?.fromAirport &&
+            p.To_Airport === selectedPassenger?.toAirport
+        );
         if (luggage && !selectedLuggage.some((item) => item.luggage === luggage) && passengerInfo) {
             setSelectedLuggage((prevLuggage) => [
                 ...prevLuggage,
@@ -210,6 +228,7 @@ export const useFormBaggageController = () => {
      * Handles creating cases and logs the action.
      */
     const handleCreateCases = async () => {
+        setIsLoading(true);
         const session = await getSession();
         const token = session?.user.access_token;
 
@@ -450,10 +469,13 @@ export const useFormBaggageController = () => {
                     console.error("Error desconocido:", error);
                     setAlert({ type: 'error', message: "Ocurrió un error desconocido." });
                 }
+            } finally {
+                setIsLoading(false);
             }
         } else {
             console.error('Token no disponible. No se puede realizar la operación.');
             setAlert({ type: 'error', message: 'Token no disponible. No se puede realizar la operación.' });
+            setIsLoading(false);
         }
     };
 
@@ -465,7 +487,7 @@ export const useFormBaggageController = () => {
         });
         setPnr("");
         setAlert(null);
-        setSelectedPassenger("");
+        setSelectedPassenger(null);
         setLuggageList([]);
         setSelectedLuggage([]);
         setPnrAdded(false);
@@ -493,5 +515,6 @@ export const useFormBaggageController = () => {
         alert,
         setAlert,
         resetForm,
+        isLoading, 
     };
 };
