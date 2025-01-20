@@ -10,6 +10,8 @@ import CustomDropdown from "./CustomDropdown";
 import { getSession } from "next-auth/react";
 import { fetchAllUsers } from "@/view/users/userController";
 import AgentDropdown from "./AgentDropdown";
+import Alert from "@/components/Alerts/Alert";
+import StationDropdown from "./StationDropdown";
 
 interface BaggageTableProps {
   rows: BaggageCase[];
@@ -82,6 +84,8 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       })
     );
   };
+
+  // Removed duplicate handleStationChange function
 
   const handleAgentChange = (id: string, agentId: string) => {
     setEditableRows((prevRows) =>
@@ -236,7 +240,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           }
           : row
       );
-
+      Alert({ type: "success", message: "Comentario agregado con exito" });
       setEditableRows(updatedRow);
       setSelectedCase(updatedRow.find((row) => row.id === selectedCase?.id) || null);
       setNewComment("");
@@ -271,7 +275,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 
     } catch (error) {
       console.error(error);
-      alert("Hubo un error al eliminar el comentario.");
+      Alert({ type: "error", message: "Error al eliminar el comentario" });
     }
   };
 
@@ -290,14 +294,17 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 
       if (!response.ok) {
         throw new Error("Error al eliminar el caso");
+
+      } else {
+        setEditableRows((prevRows) => prevRows.filter((row) => row.id !== id));
+        setSelectedCase(null);
+        Alert({ type: "success", message: "Se elimino con exito" });
       }
 
-      setEditableRows((prevRows) => prevRows.filter((row) => row.id !== id));
-      setSelectedCase(null);
 
     } catch (error) {
       console.error(error);
-      alert("Hubo un error al eliminar el caso.");
+      Alert({ type: "error", message: "Error al eliminar el caso" });
     }
   }
 
@@ -373,7 +380,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
     {
       name: "Fligth_Number",
-      selector: (row) => "DM-"+row.flight_number || "-",
+      selector: (row) => "DM-" + row.flight_number || "-",
       sortable: true,
       width: "130px"
     },
@@ -383,19 +390,9 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       sortable: true,
       width: "150px",
       cell: (row) => (
-        <Form.Control
-          as="select"
-          value={row.estacion || ""}
-          onChange={(e) => handleStationChange(row.id, e.target.value)}
-          size="sm"
-        >
-          <option value="">Seleccionar estación</option>
-          {stations.map((station) => (
-            <option key={station} value={station}>
-              {station}
-            </option>
-          ))}
-        </Form.Control>
+        <StationDropdown
+          onChange={(value) => handleStationChange(row.id, value)}
+        />
       ),
     },
     {
@@ -474,7 +471,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       sortable: true,
       width: "200px",
       cell: (row) => (
-        <CustomDropdown row={row} handleFieldChange={handleFieldChange}  />
+        <CustomDropdown row={row} handleFieldChange={handleFieldChange} />
       ),
     },
     {
