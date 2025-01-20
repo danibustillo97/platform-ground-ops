@@ -54,7 +54,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   useEffect(() => {
     const fetchData = async () => {
       const agentsData = await fetchAllUsers();
-      setAgents(agentsData.filter(user => user.rol));
+      setAgents(agentsData.filter(user => user.rol === "agente")); // Filtrar agentes por rol
     };
     fetchData();
   }, []);
@@ -84,8 +84,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       })
     );
   };
-
-  // Removed duplicate handleStationChange function
 
   const handleAgentChange = (id: string, agentId: string) => {
     setEditableRows((prevRows) =>
@@ -122,7 +120,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
         attachedFiles: [...filesToUpload],
       };
 
-      // Guardar los cambios en la base de datos
       const session = await getSession();
       const token = session?.user.access_token as string;
       try {
@@ -240,7 +237,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           }
           : row
       );
-      Alert({ type: "success", message: "Comentario agregado con exito" });
+      Alert({ type: "success", message: "Comentario agregado con éxito" });
       setEditableRows(updatedRow);
       setSelectedCase(updatedRow.find((row) => row.id === selectedCase?.id) || null);
       setNewComment("");
@@ -298,9 +295,8 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       } else {
         setEditableRows((prevRows) => prevRows.filter((row) => row.id !== id));
         setSelectedCase(null);
-        Alert({ type: "success", message: "Se elimino con exito" });
+        Alert({ type: "success", message: "Se eliminó con éxito" });
       }
-
 
     } catch (error) {
       console.error(error);
@@ -352,16 +348,12 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
       sortable: true,
       cell: (row) => (
         <Form.Group>
-          <div>
-            {editingRowId === row.id ? (
-              <AgentDropdown
-                value={row.agentId || ""}
-                onChange={(value) => handleAgentChange(row.id, value)}
-                agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
-              />
-            ) : (
-              row.agentId || "-"
-            )}
+          <div style={{ width: "100%", maxWidth: "180px" }}>
+            <AgentDropdown
+              value={row.agentId || ""}
+              onChange={(value) => handleAgentChange(row.id, value)}
+              agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
+            />
           </div>
         </Form.Group>
       ),
@@ -933,7 +925,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                   {uploading ? "Subiendo..." : "Guardar imagen"}
                 </Button>
 
-                {/* Modal para mostrar la imagen en tamaño completo */}
                 <Modal show={selectedImage !== null} onHide={closeModal} style={{ zIndex: 20000, marginTop: '50px', animation: 'ease', fontFamily: 'DIM, sans-serif' }}>
                   <Modal.Header closeButton>
                     <Modal.Title style={{ fontFamily: 'DIM, sans-serif' }}>Preview</Modal.Title>

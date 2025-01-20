@@ -33,7 +33,7 @@ const AgentDropdown: React.FC<AgentDropdownProps> = ({ value, onChange, agents }
         dropdownIndicator: (base: any) => ({
           ...base,
           padding: "4px",
-          backgroundColor: "#510C76"
+
         }),
         menu: (base: any) => ({
           ...base,
