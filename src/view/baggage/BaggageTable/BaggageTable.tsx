@@ -238,7 +238,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       const updatedRowWithFiles = {
         ...updatedRow,
         attachedFiles: [...filesToUpload],
-        Station_Asigned: updatedRow.Station_Asigned, 
+        Station_Asigned: updatedRow.Station_Asigned,
       };
 
       const session = await getSession();
@@ -246,7 +246,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       try {
         console.log("Datos a guardar:", updatedRowWithFiles);
 
-        const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${id}`, {
+        const response = await fetch(`http://localhost:8000/api/baggage-case/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",

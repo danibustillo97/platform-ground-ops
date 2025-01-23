@@ -2,7 +2,7 @@ import React from "react";
 import { Button, Form } from "react-bootstrap";
 import { FaTrashAlt } from "react-icons/fa";
 import styles from "../styles/BaggageTable.module.css";
-import { BaggageCase } from "../types/BaggageCase";
+import { BaggageCase } from "@/domain/types/BaggageCase";
 
 interface CommentSectionProps {
   selectedCase: BaggageCase | null;
