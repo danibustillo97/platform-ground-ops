@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import { Container, Row, Col, Card, Spinner, Button, Tabs, Tab } from "react-bootstrap";
 import { useBaggageCasesController } from "@/view/baggage/useBaggageCasesController";
 import Filters from "@/view/baggage/components/Filters";
-import BaggageTable from "@/view/baggage/components/BaggageTable";
+import BaggageTable from "@/view/baggage/BaggageTable/BaggageTable";
 import { BaggageCase } from "@/domain/types/BaggageCase";
 import styles from "@/view/baggage/baggage.module.css";
 import { PiMicrosoftExcelLogoBold } from "react-icons/pi";
@@ -149,6 +149,9 @@ const BaggageView: React.FC = () => {
                     status={""}
                     startDate={""}
                     endDate={""}
+                    onNotificationChange={(newNotifications: number) => {
+                      console.log("New notifications:", newNotifications);
+                    }}
                   />
                 </Tab>
                 <Tab

@@ -27,21 +27,17 @@ const AgentDropdown: React.FC<AgentDropdownProps> = ({ value, onChange, agents }
           ...base,
           minHeight: "30px",
           fontSize: "14px",
-          with: "100%"
-
+          width: "100%",
         }),
         dropdownIndicator: (base: any) => ({
           ...base,
           padding: "4px",
-
         }),
         menu: (base: any) => ({
           ...base,
           fontSize: "14px",
-          with: "100%",
-
+          width: "100%",
         }),
-
         menuList: (base: any) => ({
           ...base,
           padding: "0",

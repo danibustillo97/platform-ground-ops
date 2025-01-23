@@ -2,6 +2,7 @@ import React from "react";
 import Select from "react-select";
 
 
+
 const statusOptions = [
   { value: "Abierto", label: "Abierto" },
   { value: "Cerrado", label: "Cerrado" },

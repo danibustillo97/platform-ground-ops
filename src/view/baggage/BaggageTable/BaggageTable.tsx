@@ -6,37 +6,21 @@ import { Button, Form, Modal, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { format } from "date-fns";
 import styles from "@/view/baggage/baggage.module.css";
 import { FaPaperclip, FaSave, FaTimesCircle, FaHistory, FaTrashAlt, FaEdit } from "react-icons/fa";
-import CustomDropdown from "./CustomDropdown";
+import CustomDropdown from "./components/DropDown/CustomDropdown/CustomDropdown";
 import { getSession } from "next-auth/react";
 import { fetchAllUsers } from "@/view/users/userController";
-import AgentDropdown from "./AgentDropdown";
+import AgentDropdown from "./components/DropDown/AgentDropdown/AgentDropdown";
 import Alert from "@/components/Alerts/Alert";
-import StationDropdown from "./StationDropdown";
+import StationDropdown from "./components/DropDown/StationDropdown/StationDropdown";
+import { BaggageTableProps } from "@/view/baggage/BaggageTable/types/BaggageTableProps";
+import { FileObject } from "@/view/baggage/BaggageTable/types/FileObject";
+import NotificationComponent from "@/components/NotificationComponent";
 
-interface BaggageTableProps {
-  rows: BaggageCase[];
-  onSaveChanges: (updatedRows: BaggageCase[]) => void;
-  onEdit: (id: string) => void;
-  onCancel: (id: string) => void;
-  searchTerm: string;
-  status: string;
-  startDate: string;
-  endDate: string;
+interface BaggageTableWithNotificationsProps extends BaggageTableProps {
+  onNotificationChange: (newNotifications: number) => void;
 }
 
-interface FileObject {
-  id_case: string;
-  fileUrl: string;
-  file: File;
-  mediaSave?: boolean;
-  image_id?: string;
-}
-
-interface SelectedCase {
-  attachedFiles?: FileObject[];
-}
-
-const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit, onCancel }) => {
+const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSaveChanges, onEdit, onCancel, onNotificationChange }) => {
   const [editableRows, setEditableRows] = useState<BaggageCase[]>([]);
   const [selectedCase, setSelectedCase] = useState<BaggageCase | null>(null);
   const [newComment, setNewComment] = useState<string>("");
@@ -45,16 +29,17 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [filesToUpload, setFilesToUpload] = useState<FileObject[]>([]);
-  const [savedFiles, setSavedFiles] = useState<FileObject[]>(selectedCase?.attachedFiles || []);
+  const [savedFiles, setSavedFiles] = useState<FileObject[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
-
-  const stations = ["PUJ", "SDQ", "NLU", "GRU", "LIM", "KIN", "MDE", "SJO", "EZE", "CUR", "AUA", "CTG"];
+  const [modifiedRows, setModifiedRows] = useState<Set<string>>(new Set());
+  const [notifications, setNotifications] = useState<{ [key: string]: boolean }>({});
 
   useEffect(() => {
     const fetchData = async () => {
       const agentsData = await fetchAllUsers();
-      setAgents(agentsData.filter(user => user.rol === "agente")); // Filtrar agentes por rol
+      const filteredAgents = agentsData.filter(user => user.rol === "Agente");
+      setAgents(filteredAgents);
     };
     fetchData();
   }, []);
@@ -70,14 +55,16 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     }
   }, [selectedCase]);
 
-  const handleFieldChange = (
-    id: string,
-    field: keyof BaggageCase,
-    value: string
-  ) => {
+  useEffect(() => {
+    const pendingNotifications = Object.values(notifications).filter(status => status === undefined).length;
+    onNotificationChange(pendingNotifications);
+  }, [notifications, onNotificationChange]);
+
+  const handleFieldChange = (id: string, field: keyof BaggageCase, value: string) => {
     setEditableRows((prevRows) =>
       prevRows.map((row) => {
         if (row.id === id) {
+          setModifiedRows((prevModifiedRows) => new Set(prevModifiedRows.add(id)));
           return { ...row, [field]: value };
         }
         return row;
@@ -93,16 +80,19 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           : row
       )
     );
+    setModifiedRows((prevModifiedRows) => new Set(prevModifiedRows.add(id)));
   };
 
   const handleStationChange = (id: string, station: string) => {
     setEditableRows((prevRows) =>
       prevRows.map((row) =>
         row.id === id
-          ? { ...row, estacion: station }
+          ? { ...row, Station_Asigned: station }
           : row
       )
     );
+    setModifiedRows((prevModifiedRows) => new Set(prevModifiedRows.add(id)));
+    sendNotifications(id, station);
   };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -110,76 +100,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     if (file) {
       setSelectedFile(file);
     }
-  };
-
-  const handleSave = async (id: string) => {
-    const updatedRow = editableRows.find((row) => row.id === id);
-    if (updatedRow) {
-      const updatedRowWithFiles = {
-        ...updatedRow,
-        attachedFiles: [...filesToUpload],
-      };
-
-      const session = await getSession();
-      const token = session?.user.access_token as string;
-      try {
-        const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${id}`, {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify(updatedRowWithFiles),
-        });
-
-        if (!response.ok) {
-          throw new Error("Error al guardar los cambios");
-        }
-
-        console.log("Guardando fila:", updatedRowWithFiles);
-        onSaveChanges([updatedRowWithFiles]);
-        setEditingRowId(null);
-      } catch (error) {
-        console.error("Error al guardar los cambios:", error);
-        alert("Hubo un error al guardar los cambios.");
-      }
-    }
-  };
-
-  const handleSendEmail = async () => {
-    console.log("Click");
-    const emailData = {
-      to: 'danibustillo97@gmail.com',
-      text: 'Aqui realizo pruebas',
-    };
-
-    const response = await fetch('/api/sendEmail', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(emailData),
-    });
-
-    const data = await response.json();
-    console.log(data.message);
-  }
-
-  const formatName = (name: string): string => {
-    const parts = name.split("/");
-    if (parts.length > 1) {
-      const firstName = parts[0].trim();
-      const lastName = parts[1].trim();
-      return `${firstName} ${lastName}`;
-    }
-    return name;
-  };
-
-  const handleCancel = () => {
-    setEditableRows(rows);
-    setSelectedCase(null);
-    setViewMode("comments");
-    setEditingRowId(null);
   };
 
   const uploadImage = async (file: File) => {
@@ -218,6 +138,29 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 
   const closeModal = () => {
     setSelectedImage(null);
+  };
+
+  const handleDeleteImage = async (fileUrl: string, imageId?: string) => {
+    if (!imageId) {
+      alert("No se puede eliminar la imagen: ID no proporcionado.");
+      return;
+    }
+
+    try {
+      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/attachments/${imageId}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al eliminar la imagen");
+      }
+
+      setSavedFiles((prevFiles) => prevFiles.filter((file) => file.fileUrl !== fileUrl));
+      alert("Imagen eliminada correctamente.");
+    } catch (error) {
+      console.error("Error al eliminar la imagen:", error);
+      alert("Hubo un error al eliminar la imagen.");
+    }
   };
 
   const handleAddComment = () => {
@@ -276,6 +219,63 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     }
   };
 
+  const sendNotifications = (id: string, station: string) => {
+    const agentsToNotify = agents.filter(agent => agent.estacion === station);
+    const newNotifications = agentsToNotify.reduce((acc, agent) => {
+      acc[agent.id.toString()] = false;
+      return acc;
+    }, {} as { [key: string]: boolean });
+
+    setNotifications((prevNotifications) => ({
+      ...prevNotifications,
+      ...newNotifications,
+    }));
+  };
+
+  const handleSave = async (id: string) => {
+    const updatedRow = editableRows.find((row) => row.id === id);
+    if (updatedRow) {
+      const updatedRowWithFiles = {
+        ...updatedRow,
+        attachedFiles: [...filesToUpload],
+        Station_Asigned: updatedRow.Station_Asigned, 
+      };
+
+      const session = await getSession();
+      const token = session?.user.access_token as string;
+      try {
+        console.log("Datos a guardar:", updatedRowWithFiles);
+
+        const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${id}`, {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify(updatedRowWithFiles),
+        });
+
+        if (!response.ok) {
+          throw new Error("Error al guardar los cambios");
+        }
+
+        const savedData = await response.json();
+        console.log("Datos guardados:", savedData);
+
+        onSaveChanges([updatedRowWithFiles]);
+        setEditingRowId(null);
+        setModifiedRows((prevModifiedRows) => {
+          const newModifiedRows = new Set(prevModifiedRows);
+          newModifiedRows.delete(id);
+          return newModifiedRows;
+        });
+      } catch (error) {
+        console.error("Error al guardar los cambios:", error);
+        alert("Hubo un error al guardar los cambios.");
+      }
+    }
+  };
+
   const handleDeleteCases = async (id: string) => {
     const session = await getSession();
     const token = session?.user.access_token as string;
@@ -291,18 +291,54 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
 
       if (!response.ok) {
         throw new Error("Error al eliminar el caso");
-
-      } else {
-        setEditableRows((prevRows) => prevRows.filter((row) => row.id !== id));
-        setSelectedCase(null);
-        Alert({ type: "success", message: "Se eliminó con éxito" });
       }
+
+      setEditableRows((prevRows) => prevRows.filter((row) => row.id !== id));
+      setSelectedCase(null);
+      Alert({ type: "success", message: "Se eliminó con éxito" });
 
     } catch (error) {
       console.error(error);
       Alert({ type: "error", message: "Error al eliminar el caso" });
     }
   }
+
+  const handleCancel = () => {
+    setEditableRows(rows);
+    setSelectedCase(null);
+    setViewMode("comments");
+    setEditingRowId(null);
+    setModifiedRows(new Set());
+  };
+
+  const handleSendEmail = async () => {
+    console.log("Click");
+    const emailData = {
+      to: 'danibustillo97@gmail.com',
+      text: 'Aqui realizo pruebas',
+    };
+
+    const response = await fetch('/api/sendEmail', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(emailData),
+    });
+
+    const data = await response.json();
+    console.log(data.message);
+  }
+
+  const formatName = (name: string): string => {
+    const parts = name.split("/");
+    if (parts.length > 1) {
+      const firstName = parts[0].trim();
+      const lastName = parts[1].trim();
+      return `${firstName} ${lastName}`;
+    }
+    return name;
+  };
 
   const getStatusColor = (status: string | undefined) => {
     switch (status) {
@@ -316,11 +352,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
         return "gray";
     }
   };
-
-  const [showModal, setShowModal] = useState(false);
-
-  const handleModalClose = () => setShowModal(false);
-  const handleModalShow = () => setShowModal(true);
 
   const columns: TableColumn<BaggageCase>[] = [
     {
@@ -350,7 +381,7 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
         <Form.Group>
           <div style={{ width: "100%", maxWidth: "180px" }}>
             <AgentDropdown
-              value={row.agentId || ""}
+              value={row.agentId || "NoData"}
               onChange={(value) => handleAgentChange(row.id, value)}
               agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
             />
@@ -378,12 +409,13 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
     {
       name: "Estación",
-      selector: (row) => row.estacion || "-",
+      selector: (row) => row.Station_Asigned || "-",
       sortable: true,
       width: "150px",
       cell: (row) => (
         <StationDropdown
           onChange={(value) => handleStationChange(row.id, value)}
+          value={row.Station_Asigned || ""}
         />
       ),
     },
@@ -564,29 +596,6 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
     },
   ];
 
-  const handleDeleteImage = async (fileUrl: string, imageId?: string) => {
-    if (!imageId) {
-      alert("No se puede eliminar la imagen: ID no proporcionado.");
-      return;
-    }
-
-    try {
-      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/attachments/${imageId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al eliminar la imagen");
-      }
-
-      setSavedFiles((prevFiles) => prevFiles.filter((file) => file.fileUrl !== fileUrl));
-      alert("Imagen eliminada correctamente.");
-    } catch (error) {
-      console.error("Error al eliminar la imagen:", error);
-      alert("Hubo un error al eliminar la imagen.");
-    }
-  };
-
   return (
     <div className={styles.pageContainer}>
       <div className={styles.tableContainer} style={{ minHeight: '100vh' }}>
@@ -617,7 +626,20 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
                 fontFamily: 'DIM, sans-serif',
               },
             },
+            rows: {
+              style: {
+                fontFamily: 'DIM, sans-serif',
+              },
+            },
           }}
+          conditionalRowStyles={[
+            {
+              when: row => modifiedRows.has(row.id),
+              style: {
+                backgroundColor: '#ffeb3b',
+              },
+            },
+          ]}
         />
       </div>
 
@@ -970,6 +992,8 @@ const BaggageTable: React.FC<BaggageTableProps> = ({ rows, onSaveChanges, onEdit
           </Modal.Body>
         </Modal>
       )}
+
+      <NotificationComponent notifications={notifications} setNotifications={setNotifications} />
     </div>
   );
 };

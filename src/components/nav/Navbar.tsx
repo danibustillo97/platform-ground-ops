@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
@@ -13,20 +13,28 @@ import {
   MenuItem,
   Button,
   Box,
+  Badge,
+  Popover,
+  List,
+  ListItem,
+  ListItemText,
 } from "@mui/material";
 import { CiLogout } from "react-icons/ci";
+import NotificationsIcon from "@mui/icons-material/Notifications";
 import { RxHamburgerMenu } from "react-icons/rx";
 import Image from "next/image";
 import Link from "next/link";
 
 interface NavbarProps {
   toggleSidebar: () => void;
+  notifications: { message: string; time: string }[]; // Array de notificaciones
 }
 
-const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
+const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, notifications }) => {
   const { data: session } = useSession();
   const router = useRouter();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -41,6 +49,17 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
     router.push("/login");
     handleMenuClose();
   };
+
+  const handleNotificationClick = (event: React.MouseEvent<HTMLElement>) => {
+    setNotificationAnchorEl(event.currentTarget);
+  };
+
+  const handleNotificationClose = () => {
+    setNotificationAnchorEl(null);
+  };
+
+  const open = Boolean(notificationAnchorEl);
+  const id = open ? 'simple-popover' : undefined;
 
   return (
     <AppBar
@@ -80,6 +99,39 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar }) => {
 
         {/* Menu Buttons */}
         <Box display="flex" alignItems="center" gap={2}>
+          {/* Notification Badge */}
+          <Badge badgeContent={notifications.length} color="secondary">
+            <IconButton aria-describedby={id} onClick={handleNotificationClick}>
+              <NotificationsIcon
+                sx={{
+                  color: "#510C76",
+                }}
+              />
+            </IconButton>
+          </Badge>
+          <Popover
+            id={id}
+            open={open}
+            anchorEl={notificationAnchorEl}
+            onClose={handleNotificationClose}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'center',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'center',
+            }}
+          >
+            <List>
+              {notifications.map((notification, index) => (
+                <ListItem key={index} component="div">
+                  <ListItemText primary={notification.message} secondary={notification.time} />
+                </ListItem>
+              ))}
+            </List>
+          </Popover>
+
           {/* Profile Menu */}
           {session && session.user ? (
             <>

@@ -22,7 +22,7 @@ export interface BaggageCase {
   date_create: string;
   number_ticket_zendesk: string;
   agentId?: string;
-  estacion?: string;
+  Station_Asigned?: string;
   comments?: {
     id: string;
     text: string;

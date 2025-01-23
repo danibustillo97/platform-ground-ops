@@ -35,7 +35,7 @@ const FormReclamoView: React.FC = () => {
         alert,
         setAlert,
         resetForm,
-        isLoading, // Agregar el estado de carga
+        isLoading, 
     } = useFormBaggageController();
 
     const toast = useRef<Toast>(null);
@@ -204,7 +204,7 @@ const FormReclamoView: React.FC = () => {
                         </div>
 
                         <div className={styles.formGroup}>
-                            <label htmlFor="luggage" className={styles.label}>Maleta (Código)</label>
+                            <label htmlFor="luggage" className={styles.label}>Maleta (Bagtag code)</label>
                             <Select
                                 id="luggage"
                                 className={styles.select}

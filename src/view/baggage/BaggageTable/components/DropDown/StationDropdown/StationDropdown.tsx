@@ -5,12 +5,11 @@ import Select from "react-select";
 
 interface StationDropdownProps {
   onChange: (value: string) => void;
+  value: string;
 }
 
-const StationDropdown: React.FC<StationDropdownProps> = ({ onChange }) => {
-  const [stations, setStations] = useState<{ label: string; value: string }[]>(
-    []
-  );
+const StationDropdown: React.FC<StationDropdownProps> = ({ onChange, value }) => {
+  const [stations, setStations] = useState<{ label: string; value: string }[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +26,6 @@ const StationDropdown: React.FC<StationDropdownProps> = ({ onChange }) => {
         if (!Array.isArray(data)) {
           throw new Error("La API no devolvió un array válido.");
         }
-
 
         const formattedStations = data.map((item) => ({
           label: item.station,
@@ -67,27 +65,24 @@ const StationDropdown: React.FC<StationDropdownProps> = ({ onChange }) => {
         id="react-select-station"
         options={stations}
         onChange={(option) => onChange(option?.value || "")}
+        value={stations.find(station => station.value === value)}
         placeholder="Estación"
         styles={{
           control: (base: any) => ({
             ...base,
             minHeight: "30px",
             fontSize: "14px",
-            with: "100%"
-            
+            width: "100%"
           }),
           dropdownIndicator: (base: any) => ({
             ...base,
             padding: "4px",
-        
           }),
           menu: (base: any) => ({
             ...base,
             fontSize: "14px",
-            with: "100%",
-           
+            width: "100%",
           }),
-
           menuList: (base: any) => ({
             ...base,
             padding: "0",
