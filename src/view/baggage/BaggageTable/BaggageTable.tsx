@@ -15,6 +15,7 @@ import StationDropdown from "./components/DropDown/StationDropdown/StationDropdo
 import { BaggageTableProps } from "@/view/baggage/BaggageTable/types/BaggageTableProps";
 import { FileObject } from "@/view/baggage/BaggageTable/types/FileObject";
 import NotificationComponent from "@/components/NotificationComponent";
+import ImageUpload from "@/view/baggage/BaggageTable/components/FileUpload"; // Importa el componente ImageUpload
 
 interface BaggageTableWithNotificationsProps extends BaggageTableProps {
   onNotificationChange: (newNotifications: number) => void;
@@ -26,14 +27,14 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
   const [newComment, setNewComment] = useState<string>("");
   const [viewMode, setViewMode] = useState<"comments" | "attachments" | "history">("comments");
   const [agents, setAgents] = useState<User[]>([]);
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [uploading, setUploading] = useState(false);
-  const [filesToUpload, setFilesToUpload] = useState<FileObject[]>([]);
   const [savedFiles, setSavedFiles] = useState<FileObject[]>([]);
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [modifiedRows, setModifiedRows] = useState<Set<string>>(new Set());
   const [notifications, setNotifications] = useState<{ [key: string]: boolean }>({});
+
+  const Url = 'http://localhost:8000';
+  // const Url ='https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -95,74 +96,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
     sendNotifications(id, station);
   };
 
-  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files ? event.target.files[0] : null;
-    if (file) {
-      setSelectedFile(file);
-    }
-  };
-
-  const uploadImage = async (file: File) => {
-    setUploading(true);
-
-    try {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", "AraDataLoad");
-
-      const response = await fetch(`https://api.cloudinary.com/v1_1/dbxlcscfu/image/upload`, {
-        method: "POST",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error("Error subiendo la imagen a Cloudinary");
-      }
-
-      const data = await response.json();
-
-      const newFile: FileObject = { fileUrl: data.secure_url, id_case: selectedCase!.id, file, mediaSave: false };
-      setFilesToUpload((prevFiles) => [...prevFiles, newFile]);
-
-      setSelectedFile(null);
-    } catch (error) {
-      console.error("Error subiendo la imagen:", error);
-    } finally {
-      setUploading(false);
-    }
-  }
-
-  const showImageInLarge = (imageUrl: string) => {
-    setSelectedImage(imageUrl);
-  };
-
-  const closeModal = () => {
-    setSelectedImage(null);
-  };
-
-  const handleDeleteImage = async (fileUrl: string, imageId?: string) => {
-    if (!imageId) {
-      alert("No se puede eliminar la imagen: ID no proporcionado.");
-      return;
-    }
-
-    try {
-      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/attachments/${imageId}`, {
-        method: "DELETE",
-      });
-
-      if (!response.ok) {
-        throw new Error("Error al eliminar la imagen");
-      }
-
-      setSavedFiles((prevFiles) => prevFiles.filter((file) => file.fileUrl !== fileUrl));
-      alert("Imagen eliminada correctamente.");
-    } catch (error) {
-      console.error("Error al eliminar la imagen:", error);
-      alert("Hubo un error al eliminar la imagen.");
-    }
-  };
-
   const handleAddComment = () => {
     if (newComment) {
       const updatedRow = editableRows.map((row) =>
@@ -213,6 +146,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
         return { ...prevState, comments: updatedComments };
       });
 
+      Alert({ type: "success", message: "Comentario eliminado con éxito" });
     } catch (error) {
       console.error(error);
       Alert({ type: "error", message: "Error al eliminar el comentario" });
@@ -235,9 +169,9 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
   const handleSave = async (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
     if (updatedRow) {
-      const updatedRowWithFiles = {
+      const updatedRowWithFiles: BaggageCase = {
         ...updatedRow,
-        attachedFiles: [...filesToUpload],
+        attachedFiles: [...savedFiles],
         Station_Asigned: updatedRow.Station_Asigned,
       };
 
@@ -246,7 +180,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       try {
         console.log("Datos a guardar:", updatedRowWithFiles);
 
-        const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${id}`, {
+        const response = await fetch(`${Url}/api/baggage-case/${id}`, {
           method: "PUT",
           headers: {
             "Content-Type": "application/json",
@@ -269,9 +203,19 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
           newModifiedRows.delete(id);
           return newModifiedRows;
         });
+
+        // Actualiza el estado `savedFiles` y `editableRows`
+        setSavedFiles(updatedRowWithFiles.attachedFiles || []);
+        setEditableRows((prevRows) =>
+          prevRows.map((row) =>
+            row.id === id ? { ...row, attachedFiles: updatedRowWithFiles.attachedFiles } : row
+          )
+        );
+
+        Alert({ type: "success", message: "Cambios guardados con éxito" });
       } catch (error) {
         console.error("Error al guardar los cambios:", error);
-        alert("Hubo un error al guardar los cambios.");
+        Alert({ type: "error", message: "Hubo un error al guardar los cambios." });
       }
     }
   };
@@ -295,7 +239,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
 
       setEditableRows((prevRows) => prevRows.filter((row) => row.id !== id));
       setSelectedCase(null);
-      Alert({ type: "success", message: "Se eliminó con éxito" });
+      Alert({ type: "success", message: "Caso eliminado con éxito" });
 
     } catch (error) {
       console.error(error);
@@ -309,6 +253,12 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
     setViewMode("comments");
     setEditingRowId(null);
     setModifiedRows(new Set());
+
+    // Actualiza el estado `savedFiles` y `editableRows`
+    setSavedFiles([]);
+    setEditableRows((prevRows) =>
+      prevRows.map((row) => ({ ...row, attachedFiles: [] }))
+    );
   };
 
   const handleSendEmail = async () => {
@@ -646,7 +596,10 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       {selectedCase && (
         <Modal
           show={true}
-          onHide={() => setSelectedCase(null)}
+          onHide={() => {
+            setSelectedCase(null);
+            setSavedFiles([]); // Reset savedFiles when closing the modal
+          }}
           size="lg"
           className={styles.modalComment}
         >
@@ -828,141 +781,20 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                 </Button>
               </>
             ) : viewMode === "attachments" ? (
-              <>
-                <h6 style={{ fontFamily: 'DIM, sans-serif' }}>Imágenes ya guardadas</h6>
-                <ul style={{ display: 'flex', flexWrap: 'wrap', padding: 0 }}>
-                  {savedFiles.map((file: FileObject, index: React.Key) => (
-                    <li
-                      key={index}
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        margin: "5px",
-                        padding: "8px",
-                        borderRadius: "4px",
-                        listStyleType: 'none',
-                        display: 'inline-block',
-                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                        width: '150px',
-                        cursor: 'pointer',
-                        position: 'relative',
-                        zIndex: 10000,
-                        fontFamily: 'DIM, sans-serif',
-                      }}
-                    >
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        style={{
-                          position: 'absolute',
-                          top: '0px',
-                          right: '0px',
-                          zIndex: 1,
-                          backgroundColor: 'rgba(158, 0, 0, 0.84)',
-                          color: 'white',
-                          fontFamily: 'DIM, sans-serif',
-                        }}
-                        onClick={() => { handleDeleteImage(file.fileUrl, file.image_id); console.log(file.image_id); console.log(file.id_case); }}
-                      >
-                        <FaTimesCircle />
-                      </Button>
-                      <img
-                        src={file.fileUrl}
-                        alt={`Uploaded Image ${index} ${file.image_id}`}
-                        title={`Image ID: ${file.image_id}`}
-                        style={{ maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '4px', zIndex: '20000' }}
-                        onClick={() => showImageInLarge(file.fileUrl)}
-                      />
-                      {file.mediaSave && (
-                        <div style={{ textAlign: 'center', marginTop: '15px', fontFamily: 'DIM, sans-serif' }}>
-                          <small>Media Save</small>
-                        </div>
-                      )}
-                    </li>
-                  ))}
-                </ul>
-
-                <h6 style={{ fontFamily: 'DIM, sans-serif' }}>Imágenes por subir</h6>
-                <ul style={{ display: 'flex', flexWrap: 'wrap', padding: 0 }}>
-                  {filesToUpload.map((file: FileObject, index: React.Key) => (
-                    <li
-                      key={index}
-                      style={{
-                        backgroundColor: "#f8f9fa",
-                        margin: "5px",
-                        padding: "8px",
-                        borderRadius: "4px",
-                        listStyleType: 'none',
-                        display: 'inline-block',
-                        boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)",
-                        width: '120px',
-                        cursor: 'pointer',
-                        position: 'relative',
-                        fontFamily: 'DIM, sans-serif',
-                      }}
-                    >
-                      <Button
-                        variant="outline-danger"
-                        size="sm"
-                        style={{
-                          position: 'absolute',
-                          top: '5px',
-                          right: '5px',
-                          zIndex: 1,
-                          fontFamily: 'DIM, sans-serif',
-                        }}
-                        onClick={() => {
-                          handleDeleteImage(file.image_id ? file.fileUrl : file.fileUrl);
-                        }}
-                      >
-                        <FaTimesCircle />
-                      </Button>
-                      <img
-                        src={file.fileUrl}
-                        alt={`Uploaded Image ${index}`}
-                        style={{ maxWidth: '100%', height: 'auto', display: 'block', borderRadius: '4px' }}
-                        onClick={() => showImageInLarge(file.fileUrl)}
-                      />
-                    </li>
-                  ))}
-                </ul>
-
-                <Form.Control
-                  type="file"
-                  onChange={handleFileChange}
-                  style={{ marginTop: "10px", fontFamily: 'DIM, sans-serif' }}
-                />
-
-                <Button
-                  variant="primary"
-                  onClick={() => {
-                    if (selectedFile) {
-                      uploadImage(selectedFile);
-                    } else {
-                      console.error("No se ha seleccionado un archivo.");
-                    }
-                  }}
-                  style={{ marginTop: "10px", fontFamily: 'DIM, sans-serif' }}
-                  disabled={uploading}
-                >
-                  {uploading ? "Subiendo..." : "Guardar imagen"}
-                </Button>
-
-                <Modal show={selectedImage !== null} onHide={closeModal} style={{ zIndex: 20000, marginTop: '50px', animation: 'ease', fontFamily: 'DIM, sans-serif' }}>
-                  <Modal.Header closeButton>
-                    <Modal.Title style={{ fontFamily: 'DIM, sans-serif' }}>Preview</Modal.Title>
-                  </Modal.Header>
-                  <Modal.Body>
-                    {selectedImage && (
-                      <img
-                        src={selectedImage}
-                        alt="Vista previa grande"
-                        style={{ width: '100%', height: 'auto', zIndex: 20000, display: 'block', margin: '0 auto', borderRadius: '4px' }}
-                      />
-                    )}
-                  </Modal.Body>
-                </Modal>
-
-              </>
+              <ImageUpload
+                selectedCaseId={selectedCase.id}
+                savedFiles={savedFiles}
+                setSavedFiles={(newFiles) => {
+                  setSavedFiles(newFiles);
+                  setEditableRows((prevRows) =>
+                    prevRows.map((row) =>
+                      row.id === selectedCase.id ? { ...row, attachedFiles: newFiles as FileObject[] } : row
+                    )
+                  );
+                }}
+                selectedImage={selectedImage}
+                setSelectedImage={setSelectedImage}
+              />
             ) : (
               <>
                 <ul>
