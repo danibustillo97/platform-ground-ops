@@ -33,8 +33,8 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
   const [modifiedRows, setModifiedRows] = useState<Set<string>>(new Set());
   const [notifications, setNotifications] = useState<{ [key: string]: boolean }>({});
 
-  const Url = 'http://localhost:8000';
-  // const Url ='https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net';
+  // const Url = 'http://localhost:8000';
+  const Url ='https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net';
 
   useEffect(() => {
     const fetchData = async () => {
