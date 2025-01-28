@@ -15,7 +15,7 @@ import StationDropdown from "./components/DropDown/StationDropdown/StationDropdo
 import { BaggageTableProps } from "@/view/baggage/BaggageTable/types/BaggageTableProps";
 import { FileObject } from "@/view/baggage/BaggageTable/types/FileObject";
 import NotificationComponent from "@/components/NotificationComponent";
-import ImageUpload from "@/view/baggage/BaggageTable/components/FileUpload"; // Importa el componente ImageUpload
+import ImageUpload from "@/view/baggage/BaggageTable/components/FileUpload"; 
 
 interface BaggageTableWithNotificationsProps extends BaggageTableProps {
   onNotificationChange: (newNotifications: number) => void;
@@ -33,8 +33,8 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
   const [modifiedRows, setModifiedRows] = useState<Set<string>>(new Set());
   const [notifications, setNotifications] = useState<{ [key: string]: boolean }>({});
 
-  // const Url = 'http://localhost:8000';
-  const Url ='https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net';
+  const Url = 'http://localhost:8000';
+  // const Url ='https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -598,7 +598,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
           show={true}
           onHide={() => {
             setSelectedCase(null);
-            setSavedFiles([]); // Reset savedFiles when closing the modal
+            setSavedFiles([]); 
           }}
           size="lg"
           className={styles.modalComment}

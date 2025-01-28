@@ -250,7 +250,7 @@ export const useFormBaggageController = () => {
                 passenger_name: luggageItem.passengerName || "",
                 description: luggageItem.description || "",
                 issue_type: luggageItem.issue || "",
-                number_ticket_zendesk: "12345",
+                number_ticket_zendesk: "Null",
                 pruebas_url: pruebasUrl || "Null",
                 direccion_envio: direccionEnvio || "Null",
                 comments: [],

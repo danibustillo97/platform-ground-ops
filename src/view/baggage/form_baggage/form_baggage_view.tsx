@@ -12,6 +12,12 @@ import { confirmPopup, ConfirmPopup } from "primereact/confirmpopup";
 import { Toast } from "primereact/toast";
 import Select from 'react-select';
 import { CircularProgress } from "@mui/material"; 
+import { BaggageCase } from "@/domain/types/BaggageCase";
+import { FileObjectLoad } from "../BaggageTable/types/FileObject";
+import { getSession } from "next-auth/react";
+
+
+
 const FormReclamoView: React.FC = () => {
     const {
         loading,
@@ -90,10 +96,84 @@ const FormReclamoView: React.FC = () => {
     };
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      
         const file = e.target.files ? e.target.files[0] : null;
+        uploadImage(file!);
         console.log("Archivo seleccionado:", file);
     };
 
+
+    const uploadImage = async (file: File) => {
+        // setUploading(true);
+        // setUploadSuccess(null);
+    
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          formData.append("upload_preset", "AraDataLoad");
+    
+          const response = await fetch(`https://api.cloudinary.com/v1_1/dbxlcscfu/image/upload`, {
+            method: "POST",
+            body: formData,
+          });
+    
+          if (!response.ok) {
+            throw new Error("Error subiendo la imagen a Cloudinary");
+          }
+    
+          const data = await response.json();
+    
+          const newFile: FileObjectLoad = {
+              fileUrl: data.secure_url,
+              file,
+              mediaSave: false,
+              image_id: "",
+              id_case: ""
+          };
+    
+          
+    
+       
+   
+        } catch (error) {
+          console.error("Error subiendo la imagen:", error);
+   
+        } finally {
+
+        }
+      };
+
+
+      const sendFileToEndpoint = async (fileObject: FileObjectLoad) => {
+          const session = await getSession();
+          const token = session?.user.access_token as string;
+      
+          try {
+            const response = await fetch(
+              `https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/station/upload-file/${fileObject.id_case}`,
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Authorization: `Bearer ${token}`,
+                },
+                body: JSON.stringify(fileObject),
+              }
+            );
+      
+            if (!response.ok) {
+              throw new Error("Error al enviar la imagen al endpoint");
+            }
+      
+            const savedData = await response.json();
+            console.log("Datos guardados:", savedData);
+          } catch (error) {
+            console.error("Error al enviar la imagen al endpoint:", error);
+            setAlert({ type: "error", message: "Hubo un error al enviar la imagen al endpoint." });
+          }
+        };
+
+      
     const handleCancelPnr = () => {
         resetForm();
         setPnr("");

@@ -1,8 +1,8 @@
-// src/controllers/userController.ts
+
 import { getUsers, createUser, updateUser, deleteUser } from "@/data/api/userApi";
 import { User } from "@/entities/User";
 
-// Obtener todos los usuarios
+
 export const fetchAllUsers = async (): Promise<User[]> => {
     try {
         const users = await getUsers();
@@ -13,7 +13,7 @@ export const fetchAllUsers = async (): Promise<User[]> => {
     }
 };
 
-// Crear un nuevo usuario
+
 export const createNewUser = async (user: User): Promise<User> => {
     try {
   
@@ -25,10 +25,10 @@ export const createNewUser = async (user: User): Promise<User> => {
     }
 };
 
-// Actualizar un usuario existente
+
 export const updateExistingUser = async (id: number, user: Partial<User>): Promise<User> => {
     try {
-        // Actualizar el usuario con el id especificado
+  
         const updatedUser = await updateUser(id, user);
         return updatedUser;
     } catch (error) {

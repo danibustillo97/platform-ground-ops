@@ -17,9 +17,9 @@ import {
   Spinner,
   Card,
   Dropdown,
-  DropdownButton,
-  DropdownItem,
   Badge,
+  DropdownButton,
+  ListGroup,
 } from "react-bootstrap";
 import { FaEdit, FaEnvelope, FaComments, FaEllipsisV } from "react-icons/fa";
 
@@ -28,17 +28,15 @@ const UsersView: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingUser, setEditingUser] = useState<User | null>(null);
-  const [userForm, setUserForm] = useState<UserCreate>({
+  const [userForm, setUserForm] = useState({
     name: "",
     email: "",
     phone: "",
     rol: "",
-    estacion: [],
-    password: "",
+    estaciones: [] as string[],
   });
 
   const roles = ["Admin", "User", "Agente"];
-
   const airportStations = [
     "SDQ", "CTG", "BOG", "MDE", "AUA", "CUR", "PUJ", "EZE", "YUL", "STI", "LIM", "YYZ", "KIN",
   ];
@@ -48,6 +46,7 @@ const UsersView: React.FC = () => {
   }, []);
 
   const fetchUsers = async () => {
+    setLoading(true);
     try {
       const usersResponse = await fetchAllUsers();
       setUsersData(usersResponse);
@@ -68,14 +67,12 @@ const UsersView: React.FC = () => {
   };
 
   const handleSaveUser = async () => {
+    const estacionArray = userForm.estaciones;
     try {
-      const estacionString = userForm.estacion
-        .map(station => station.match(/.{1,3}/g)?.join('') || '') // Agrupar en grupos de tres
-        .join(','); // Convertir el array en una cadena separada por comas
       if (editingUser) {
-        await updateExistingUser(editingUser.id, { ...editingUser, ...userForm, estacion: estacionString });
+        await updateExistingUser(editingUser.id, { ...userForm, estacion: estacionArray });
       } else {
-        await createNewUser({ id: Math.random(), isOnline: false, ...userForm, estacion: estacionString });
+        await createNewUser({ id: Math.random(), isOnline: false, ...userForm, estacion: estacionArray });
       }
       setShowModal(false);
       fetchUsers();
@@ -91,8 +88,11 @@ const UsersView: React.FC = () => {
       email: user.email,
       phone: user.phone,
       rol: user.rol,
-      estacion: Array.isArray(user.estacion) ? user.estacion : [],
-      password: "",
+      estaciones: Array.isArray(user.estacion)
+        ? user.estacion.map(String)
+        : (typeof user.estacion === 'string' ? (user.estacion as string).split(',').filter(Boolean) : [])
+
+
     });
     setShowModal(true);
   };
@@ -104,21 +104,21 @@ const UsersView: React.FC = () => {
       email: "",
       phone: "",
       rol: "",
-      estacion: [],
-      password: "",
+      estaciones: []
     });
     setShowModal(true);
   };
 
-  const handleSelectStation = (station: string) => {
-    const updatedStations = userForm.estacion.includes(station)
-      ? userForm.estacion.filter(st => st !== station) // Remove if already selected
-      : [...userForm.estacion, station]; // Add if not selected
-    setUserForm({ ...userForm, estacion: updatedStations });
+  const handleSelectStation = (eventKey: string | null) => {
+    if (eventKey) {
+      setUserForm({ ...userForm, estaciones: [...userForm.estaciones, eventKey] });
+    }
   };
 
-  // Asegurarse de que 'estacion' es un arreglo antes de intentar usarlo
-  const userStations = Array.isArray(userForm.estacion) ? userForm.estacion : [];
+  const handleRemoveStation = (station: string) => {
+    const updatedStations = userForm.estaciones.filter(st => st !== station);
+    setUserForm({ ...userForm, estaciones: updatedStations });
+  };
 
   const [filter, setFilter] = useState<{ name: string; rol: string; estacion: string }>({
     name: "",
@@ -128,11 +128,10 @@ const UsersView: React.FC = () => {
 
   useEffect(() => {
     // Apply filter logic here if needed
-    // For example, you can filter usersData based on the filter state
   }, [filter]);
 
   return (
-    <Container fluid className="py-5">
+    <Container fluid className="py-5" style={{ backgroundColor: '#F5F5F5', minHeight: '100vh' }}>
       <h2 className="text-center mb-5 fw-bold" style={{ color: '#510C76' }}>Gestión de Usuarios</h2>
 
       {/* Filtros */}
@@ -180,85 +179,87 @@ const UsersView: React.FC = () => {
         </Col>
       </Row>
 
-      {/* Botón "Añadir Usuario" */}
       <Button className="mb-4 rounded-pill px-4 py-2 fw-bold" onClick={handleAddUser} style={{ backgroundColor: '#510C76', color: '#fff' }}>
         Añadir Usuario
       </Button>
 
       {loading ? (
-        <div className="d-flex justify-content-center align-items-center" style={{ height: "50vh" }}>
+        <div className="d-flex justify-content-center align-items-center" style={{ height: '50vh' }}>
           <Spinner animation="border" variant="primary" />
         </div>
       ) : (
         <Row>
           {usersData.map((user) => (
-            <Col key={user.id} sm={12} md={6} lg={3} xl={3} className="mb-4">
-              <Card className="shadow-sm border-0">
-                <div className="position-relative">
-                  <div className="container justify-content-center d-flex align-items-center position-relative">
-                    <div className={`position-absolute top-0 start-0 mt-1 ms-1 ${user.isOnline ? 'bg-success' : 'bg-danger'} rounded-circle`} style={{ width: '12px', height: '12px' }} />
-                    <span className="position-absolute top-0 start-0 mt-1 ms-4 " style={{ color: "#510C76", fontSize: "0.6rem" }}>{user.isOnline ? 'Online' : 'Disconnected'}</span>
-                  </div>
+            <Col key={user.id} sm={12} md={6} lg={4} xl={3} className="mb-4">
+              <Card className="shadow-sm border-0 rounded-4">
+                <div className="d-flex justify-content-center mt-4">
                   <Card.Img
                     variant="top"
                     src={`https://i.pravatar.cc/150?img=12`}
-                    className="img-fluid rounded-circle mx-auto d-block"
-                    style={{ width: '80px', height: '80px' }}
+                    className="img-fluid rounded-circle"
+                    style={{ width: '90px', height: '90px', objectFit: 'cover' }}
                   />
-                  <Dropdown align="end" className="position-absolute top-0 end-0 m-2">
-                    <Dropdown.Toggle variant="link" id="dropdown-custom-components">
-                      <FaEllipsisV />
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu>
-                      <Dropdown.Item onClick={() => handleDelete(user.id)}>Eliminar</Dropdown.Item>
-                    </Dropdown.Menu>
-                  </Dropdown>
                 </div>
-                <Card.Body>
-                  <Card.Title className="text-center fw-bold" style={{ color: '#510C76' }}>{user.name}</Card.Title>
-                  <Card.Text className="text-center text-muted mb-3" style={{ color: '#dee2e6' }}>{user.email}</Card.Text>
-                  <Card.Text className="text-center text-muted mb-3" style={{ color: '#dee2e6' }}>Rol: {user.rol}</Card.Text>
-                  <hr />
-                  <div className="d-flex justify-content-center mb-3">
-                    <div className="d-flex flex-wrap">
-                      {Array.isArray(user.estacion) ? (
-                        user.estacion.map((station) => (
-                          <Badge key={station} style={{ backgroundColor: '#510C76' }} className="me-2 mb-2">
+                <Card.Body className="pt-4">
+                  <Card.Title className="text-center fw-bold" style={{ color: '#510C76', fontSize: '1.25rem' }}>
+                    {user.name}
+                  </Card.Title>
+                  <Card.Text className="text-center text-muted mb-2" style={{ fontSize: '0.9rem' }}>
+                    {user.email}
+                  </Card.Text>
+                  <Card.Text className="text-center text-muted mb-4" style={{ fontSize: '0.9rem' }}>
+                    <strong>Rol:</strong> {user.rol}
+                  </Card.Text>
+
+                  <div className="d-flex flex-wrap justify-content-center mb-3">
+                    {user.estacion && user.estacion.length > 0 ? (
+                      (typeof user.estacion === 'string' ? (user.estacion as string).split(',') : user.estacion)
+                        .map((station: string) => (
+                          <span
+                            key={station}
+                            className="badge  text-white m-1 p-1"
+                            style={{
+                              borderRadius: '20px',
+                              fontSize: '0.6rem',
+                              minWidth: '100px',
+                              textAlign: 'center',
+                              cursor: 'pointer',
+                              backgroundColor: '#510C76',
+                            }}
+                          >
                             {station}
-                          </Badge>
+                          </span>
                         ))
-                      ) : (
-                        <Badge style={{ backgroundColor: '#510C76' }} className="me-2 mb-2">
-                          No Stations
-                        </Badge>
-                      )}
-                    </div>
+                    ) : (
+                      <p className="text-center text-muted" style={{ fontSize: '0.875rem' }}>No hay estaciones disponibles</p>
+                    )}
                   </div>
-                  <div className="d-flex justify-content-between">
+
+                  <div className="d-flex justify-content-between mt-3">
                     <Button
                       variant="outline-primary"
                       onClick={() => handleEditUser(user)}
                       title="Editar"
-                      className="flex-grow-1 mx-1"
-                      style={{ backgroundColor: '#510C76', color: '#fff' }}
+                      className="flex-grow-1 "
+                      style={{
+                        backgroundColor: '#510C76',
+                        color: '#fff',
+                        borderRadius: '10px',
+                        padding: '5px',
+                      }}
                     >
-                      <FaEdit />
+                      <FaEdit style={{ fontSize: '10px' }} />
                     </Button>
                     <Button
-                      variant="outline-info"
-                      onClick={() => console.log("Enviar mensaje a", user.name)}
-                      title="Mensaje"
+                      variant="outline-secondary"
                       className="flex-grow-1 mx-1"
+                      onClick={() => handleEditUser(user)}
+                      style={{
+                        borderRadius: '10px',
+                        padding: '5px',
+                      }}
                     >
-                      <FaComments />
-                    </Button>
-                    <Button
-                      variant="outline-success"
-                      onClick={() => console.log("Enviar email a", user.email)}
-                      title="Email"
-                      className="flex-grow-1 mx-1"
-                    >
-                      <FaEnvelope />
+                      <FaEnvelope style={{ fontSize: '10px' }} />
                     </Button>
                   </div>
                 </Card.Body>
@@ -268,87 +269,50 @@ const UsersView: React.FC = () => {
         </Row>
       )}
 
-      <Modal show={showModal} onHide={() => setShowModal(false)} centered style={{ zIndex: 1050 }}>
-        <Modal.Header closeButton className="border-0 bg-primary text-white">
-          <Modal.Title>{editingUser ? "Editar Usuario" : "Añadir Usuario"}</Modal.Title>
+
+      {/* Modal User Form */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{editingUser ? "Editar Usuario" : "Nuevo Usuario"}</Modal.Title>
         </Modal.Header>
-        <Modal.Body className="px-4 py-4">
-          <Form>
-            <Form.Group controlId="formName" className="mb-3">
-              <Form.Label className="fw-bold">Nombre</Form.Label>
+        <Modal.Body>
+          <Form onSubmit={(e) => e.preventDefault()}>
+            <Form.Group controlId="formUserName" className="mb-3">
+              <Form.Label>Nombre</Form.Label>
               <Form.Control
                 type="text"
+                placeholder="Ingrese nombre"
                 value={userForm.name}
                 onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
-                required
-                className="form-control-lg"
-                placeholder="Ingrese el nombre completo"
               />
             </Form.Group>
 
-            <Form.Group controlId="formEmail" className="mb-3">
-              <Form.Label className="fw-bold">Email</Form.Label>
+            <Form.Group controlId="formUserEmail" className="mb-3">
+              <Form.Label>Correo</Form.Label>
               <Form.Control
                 type="email"
+                placeholder="Ingrese correo"
                 value={userForm.email}
                 onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
-                required
-                className="form-control-lg"
-                placeholder="Ingrese el correo electrónico"
               />
             </Form.Group>
 
-            <Form.Group controlId="formPhone" className="mb-3">
-              <Form.Label className="fw-bold">Teléfono</Form.Label>
+            <Form.Group controlId="formUserPhone" className="mb-3">
+              <Form.Label>Teléfono</Form.Label>
               <Form.Control
-                type="text"
+                type="tel"
+                placeholder="Ingrese teléfono"
                 value={userForm.phone}
                 onChange={(e) => setUserForm({ ...userForm, phone: e.target.value })}
-                required
-                className="form-control-lg"
-                placeholder="Ingrese el número de teléfono"
               />
             </Form.Group>
 
-            {!editingUser && (
-              <Form.Group controlId="formPassword" className="mb-3">
-                <Form.Label className="fw-bold">Contraseña</Form.Label>
-                <Form.Control
-                  type="password"
-                  value={userForm.password}
-                  onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
-                  required
-                  className="form-control-lg"
-                  placeholder="Ingrese la contraseña"
-                />
-              </Form.Group>
-            )}
-
-            <Form.Group controlId="formEstaciones" className="mb-3">
-              <Form.Label className="fw-bold">Estaciones</Form.Label>
-              <div className="d-flex flex-wrap">
-                {airportStations.map((station) => (
-                  <Form.Check
-                    key={station}
-                    type="checkbox"
-                    label={station}
-                    checked={userForm.estacion.includes(station)}
-                    onChange={() => handleSelectStation(station)}
-                    className="me-3 mb-2"
-                    style={{ fontWeight: "500" }}
-                  />
-                ))}
-              </div>
-            </Form.Group>
-
-            <Form.Group controlId="formRole" className="mb-3">
-              <Form.Label className="fw-bold">Rol</Form.Label>
+            <Form.Group controlId="formUserRole" className="mb-3">
+              <Form.Label>Rol</Form.Label>
               <Form.Control
                 as="select"
                 value={userForm.rol}
                 onChange={(e) => setUserForm({ ...userForm, rol: e.target.value })}
-                required
-                className="form-control-lg"
               >
                 <option value="">Seleccione un rol</option>
                 {roles.map((rol) => (
@@ -358,28 +322,58 @@ const UsersView: React.FC = () => {
                 ))}
               </Form.Control>
             </Form.Group>
+
+            {/* Estaciones seleccionadas */}
+            <Form.Group controlId="formUserStations" className="mb-3">
+              <Form.Label>Estaciones</Form.Label>
+              <DropdownButton
+                id="dropdown-stations"
+                title="Agregar Estación"
+                variant="outline-primary"
+                className="w-100"
+                onSelect={(eventKey: string | null) => {
+                  if (eventKey && !userForm.estaciones.includes(eventKey)) {
+                    setUserForm({
+                      ...userForm,
+                      estaciones: [...userForm.estaciones, eventKey],
+                    });
+                  }
+                }}
+              >
+                {airportStations.map((station) => (
+                  <Dropdown.Item key={station} eventKey={station}>
+                    {station}
+                  </Dropdown.Item>
+                ))}
+              </DropdownButton>
+
+              {/* Lista de estacio nes con checkboxes */}
+              <div className="mt-3 d-flex flex-wrap justify-content-start align-items-center gap-2 ">
+                {userForm.estaciones.map((station) => (
+                  <Form.Check
+                    key={station}
+                    type="checkbox"
+                    label={station}
+                    checked={userForm.estaciones.includes(station)}
+                    onChange={() => {
+                      const newStations = userForm.estaciones.includes(station)
+                        ? userForm.estaciones.filter((s) => s !== station)
+                        : [...userForm.estaciones, station];
+                      setUserForm({ ...userForm, estaciones: newStations });
+                    }}
+                  />
+                ))}
+              </div>
+            </Form.Group>
+
+            <div className="text-center mt-3">
+              <Button variant="" className="mt-3" onClick={handleSaveUser} style={{ backgroundColor: '#510C76', color: '#fff', borderRadius: '10px', padding: '5px', width: '100%' }}>
+                Guardar
+              </Button>
+            </div>
           </Form>
         </Modal.Body>
-
-        <Modal.Footer className="border-0">
-          <Button
-            variant="secondary"
-            onClick={() => setShowModal(false)}
-            className="rounded-pill px-4 py-2"
-            style={{ backgroundColor: "#d9534f", color: "#fff" }}
-          >
-            Cerrar
-          </Button>
-          <Button
-            style={{ backgroundColor: "#510C76" }}
-            onClick={handleSaveUser}
-            className="rounded-pill px-4 py-2"
-          >
-            Guardar Cambios
-          </Button>
-        </Modal.Footer>
       </Modal>
-
     </Container>
   );
 };

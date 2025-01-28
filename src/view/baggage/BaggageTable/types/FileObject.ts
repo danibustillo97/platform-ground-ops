@@ -5,3 +5,6 @@ export interface FileObject {
   mediaSave?: boolean;
   image_id?: string;
 }
+
+
+export interface FileObjectLoad extends Omit<FileObject, "id_case"> { id_case: string; }
