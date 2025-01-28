@@ -33,8 +33,8 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
   const [modifiedRows, setModifiedRows] = useState<Set<string>>(new Set());
   const [notifications, setNotifications] = useState<{ [key: string]: boolean }>({});
 
-  const Url = 'http://localhost:8000';
-  // const Url ='https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net';
+  // const Url = 'http://localhost:8000';
+  const Url ='https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -124,7 +124,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
 
   const handleDeleteComment = async (commentId: string) => {
     try {
-      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/delete_comment/${commentId}`, {
+      const response = await fetch(`${Url}/api/baggage-case/delete_comment/${commentId}`, {
         method: "DELETE",
       });
 
@@ -226,7 +226,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
     const session = await getSession();
     const token = session?.user.access_token as string;
     try {
-      const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${id}`, {
+      const response = await fetch(`${Url}/api/baggage-case/${id}`, {
         method: "DELETE",
         headers: {
           "ngrok-skip-browser-warning": "true",
