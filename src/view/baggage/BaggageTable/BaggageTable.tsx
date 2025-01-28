@@ -154,7 +154,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
   };
 
   const sendNotifications = (id: string, station: string) => {
-    const agentsToNotify = agents.filter(agent => agent.estacion === station);
+    const agentsToNotify = agents.filter(agent => agent.estacion.includes(station));
     const newNotifications = agentsToNotify.reduce((acc, agent) => {
       acc[agent.id.toString()] = false;
       return acc;

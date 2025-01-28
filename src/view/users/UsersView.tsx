@@ -131,7 +131,7 @@ const UsersView: React.FC = () => {
   }, [filter]);
 
   return (
-    <Container fluid className="py-5" style={{ backgroundColor: '#F5F5F5', minHeight: '100vh' }}>
+    <Container fluid className="py-5" style={{ backgroundColor: '#F5F5F5', minHeight: '100vh', overflowX: 'hidden' }}>
       <h2 className="text-center mb-5 fw-bold" style={{ color: '#510C76' }}>Gestión de Usuarios</h2>
 
       {/* Filtros */}
