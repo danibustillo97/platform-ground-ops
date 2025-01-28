@@ -39,7 +39,9 @@ const UsersView: React.FC = () => {
   const roles = ["Admin", "User", "Agente"];
   const airportStations = [
     "SDQ", "CTG", "BOG", "MDE", "AUA", "CUR", "PUJ", "EZE", "YUL", "STI", "LIM", "YYZ", "KIN",
+    "CUN", "NLU", "GUA", "SAL", "SJO", "SCL", "GRU", "SXM", "UIO", "GYE"
   ];
+  
 
   useEffect(() => {
     fetchUsers();
