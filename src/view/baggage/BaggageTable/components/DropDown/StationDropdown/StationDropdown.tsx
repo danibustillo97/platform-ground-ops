@@ -5,7 +5,7 @@ import Select from "react-select";
 
 interface StationDropdownProps {
   onChange: (value: string) => void;
-  value: string;
+  value: string | null; // Permite que el valor sea null
 }
 
 const StationDropdown: React.FC<StationDropdownProps> = ({ onChange, value }) => {
@@ -59,14 +59,17 @@ const StationDropdown: React.FC<StationDropdownProps> = ({ onChange, value }) =>
     );
   }
 
+  // Encuentra la opción seleccionada o null si no existe
+  const selectedOption = value ? stations.find(station => station.value === value) : null;
+
   return (
     <div className="mb-3 mt-3">
       <Select
         id="react-select-station"
         options={stations}
         onChange={(option) => onChange(option?.value || "")}
-        value={stations.find(station => station.value === value)}
-        placeholder="Estación"
+        value={selectedOption}
+        placeholder="Seleccionar una opción"
         styles={{
           control: (base: any) => ({
             ...base,

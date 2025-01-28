@@ -15,7 +15,7 @@ import StationDropdown from "./components/DropDown/StationDropdown/StationDropdo
 import { BaggageTableProps } from "@/view/baggage/BaggageTable/types/BaggageTableProps";
 import { FileObject } from "@/view/baggage/BaggageTable/types/FileObject";
 import NotificationComponent from "@/components/NotificationComponent";
-import ImageUpload from "@/view/baggage/BaggageTable/components/FileUpload"; 
+import ImageUpload from "@/view/baggage/BaggageTable/components/FileUpload";
 
 interface BaggageTableWithNotificationsProps extends BaggageTableProps {
   onNotificationChange: (newNotifications: number) => void;
@@ -57,9 +57,10 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
   }, [selectedCase]);
 
   useEffect(() => {
-    const pendingNotifications = Object.values(notifications).filter(status => status === undefined).length;
-    onNotificationChange(pendingNotifications);
-  }, [notifications, onNotificationChange]);
+    const sortedRows = [...rows].sort((a, b) => new Date(b.date_create).getTime() - new Date(a.date_create).getTime());
+    console.log("Initial editableRows:", sortedRows);
+    setEditableRows(sortedRows);
+  }, [rows]);
 
   const handleFieldChange = (id: string, field: keyof BaggageCase, value: string) => {
     setEditableRows((prevRows) =>
@@ -82,6 +83,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       )
     );
     setModifiedRows((prevModifiedRows) => new Set(prevModifiedRows.add(id)));
+    console.log("Agent changed for row:", id, "New agentId:", agentId);
   };
 
   const handleStationChange = (id: string, station: string) => {
@@ -93,7 +95,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       )
     );
     setModifiedRows((prevModifiedRows) => new Set(prevModifiedRows.add(id)));
-    sendNotifications(id, station);
+    console.log("Station changed for row:", id, "New station:", station);
   };
 
   const handleAddComment = () => {
@@ -153,18 +155,18 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
     }
   };
 
-  const sendNotifications = (id: string, station: string) => {
-    const agentsToNotify = agents.filter(agent => agent.estacion.includes(station));
-    const newNotifications = agentsToNotify.reduce((acc, agent) => {
-      acc[agent.id.toString()] = false;
-      return acc;
-    }, {} as { [key: string]: boolean });
+  // const sendNotifications = (id: string, station: string) => {
+  //   const agentsToNotify = agents.filter(agent => agent.estacion.includes(station));
+  //   const newNotifications = agentsToNotify.reduce((acc, agent) => {
+  //     acc[agent.id.toString()] = false;
+  //     return acc;
+  //   }, {} as { [key: string]: boolean });
 
-    setNotifications((prevNotifications) => ({
-      ...prevNotifications,
-      ...newNotifications,
-    }));
-  };
+  //   setNotifications((prevNotifications) => ({
+  //     ...prevNotifications,
+  //     ...newNotifications,
+  //   }));
+  // };
 
   const handleSave = async (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
@@ -325,13 +327,13 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
     {
       name: "Agente",
       width: "180px",
-      selector: (row) => row.agentId || "-",
+      selector: (row) => row.assigned_Agent || "-",
       sortable: true,
       cell: (row) => (
         <Form.Group>
           <div style={{ width: "100%", maxWidth: "180px" }}>
             <AgentDropdown
-              value={row.agentId || "NoData"}
+              value={row.assigned_Agent || "NoData"}
               onChange={(value) => handleAgentChange(row.id, value)}
               agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
             />
@@ -365,7 +367,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       cell: (row) => (
         <StationDropdown
           onChange={(value) => handleStationChange(row.id, value)}
-          value={row.Station_Asigned || ""}
+          value={row.Station_Asigned || "No Hay data"}
         />
       ),
     },
@@ -598,7 +600,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
           show={true}
           onHide={() => {
             setSelectedCase(null);
-            setSavedFiles([]); 
+            setSavedFiles([]);
           }}
           size="lg"
           className={styles.modalComment}

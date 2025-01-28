@@ -30,7 +30,7 @@ export interface BaggageCase {
   }[];
   attachedFiles?: { fileUrl: string; id_case: string; file: File; }[];
   history?: { action: string; date: string; description?: string }[];
-  agent_Asigned?: string;
+  assigned_Agent?: string;
 }
 
 
