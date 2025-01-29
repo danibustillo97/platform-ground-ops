@@ -333,9 +333,11 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
         <Form.Group>
           <div style={{ width: "100%", maxWidth: "180px" }}>
             <AgentDropdown
-              value={row.assigned_Agent || "NoData"}
+              value={row.agentId || "NoData"}
               onChange={(value) => handleAgentChange(row.id, value)}
-              agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
+              agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name
+
+               }))}
             />
           </div>
         </Form.Group>
