@@ -32,9 +32,10 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
   const [editingRowId, setEditingRowId] = useState<string | null>(null);
   const [modifiedRows, setModifiedRows] = useState<Set<string>>(new Set());
   const [notifications, setNotifications] = useState<{ [key: string]: boolean }>({});
+  const [showDescriptionModal, setShowDescriptionModal] = useState<boolean>(false);
+  const [selectedDescription, setSelectedDescription] = useState<string>("");
 
-  // const Url = 'http://localhost:8000';
-  const Url ='https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net';
+  const Url = 'https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net';
 
   useEffect(() => {
     const fetchData = async () => {
@@ -55,12 +56,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       setSavedFiles(selectedCase.attachedFiles || []);
     }
   }, [selectedCase]);
-
-  useEffect(() => {
-    const sortedRows = [...rows].sort((a, b) => new Date(b.date_create).getTime() - new Date(a.date_create).getTime());
-    console.log("Initial editableRows:", sortedRows);
-    setEditableRows(sortedRows);
-  }, [rows]);
 
   const handleFieldChange = (id: string, field: keyof BaggageCase, value: string) => {
     setEditableRows((prevRows) =>
@@ -154,19 +149,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       Alert({ type: "error", message: "Error al eliminar el comentario" });
     }
   };
-
-  // const sendNotifications = (id: string, station: string) => {
-  //   const agentsToNotify = agents.filter(agent => agent.estacion.includes(station));
-  //   const newNotifications = agentsToNotify.reduce((acc, agent) => {
-  //     acc[agent.id.toString()] = false;
-  //     return acc;
-  //   }, {} as { [key: string]: boolean });
-
-  //   setNotifications((prevNotifications) => ({
-  //     ...prevNotifications,
-  //     ...newNotifications,
-  //   }));
-  // };
 
   const handleSave = async (id: string) => {
     const updatedRow = editableRows.find((row) => row.id === id);
@@ -310,22 +292,22 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       name: "PNR",
       selector: (row) => row.PNR || "-",
       sortable: true,
-      width: "120px"
+      width: "120px",
     },
     {
       name: "BAGTAG",
       selector: (row) => row.baggage_code || "-",
       sortable: true,
-      width: "110px"
+      width: "110px",
     },
     {
-      name: "Ticket Zendesk",
+      name: "TICKET ZENDESK",
       selector: (row) => row.number_ticket_zendesk || "-",
       sortable: true,
-      width: "120px"
+      width: "120px",
     },
     {
-      name: "Agente",
+      name: "AGENTE",
       width: "180px",
       selector: (row) => row.assigned_Agent || "-",
       sortable: true,
@@ -335,34 +317,32 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
             <AgentDropdown
               value={row.agentId || "NoData"}
               onChange={(value) => handleAgentChange(row.id, value)}
-              agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name
-
-               }))}
+              agents={agents.map(agent => ({ id: agent.id.toString(), name: agent.name }))}
             />
           </div>
         </Form.Group>
       ),
     },
     {
-      name: "From_Airport",
+      name: "FROM AIRPORT",
       selector: (row) => row.from_airport || "-",
       sortable: true,
-      width: "130px"
+      width: "130px",
     },
     {
-      name: "To_Airport",
+      name: "TO AIRPORT",
       selector: (row) => row.to_airport || "-",
       sortable: true,
-      width: "130px"
+      width: "130px",
     },
     {
-      name: "Fligth_Number",
+      name: "FLIGHT NUMBER",
       selector: (row) => "DM-" + row.flight_number || "-",
       sortable: true,
-      width: "130px"
+      width: "130px",
     },
     {
-      name: "Estación",
+      name: "ESTACIÓN",
       selector: (row) => row.Station_Asigned || "-",
       sortable: true,
       width: "150px",
@@ -374,7 +354,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       ),
     },
     {
-      name: "Nombre",
+      name: "NOMBRE",
       selector: (row) => row.passenger_name || "-",
       sortable: true,
       width: "250px",
@@ -388,7 +368,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       ),
     },
     {
-      name: "Correo",
+      name: "CORREO",
       selector: (row) => row.contact_email || "-",
       sortable: true,
       width: "250px",
@@ -402,7 +382,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       ),
     },
     {
-      name: "Teléfono",
+      name: "TELÉFONO",
       selector: (row) => row.contact_phone || "-",
       sortable: true,
       width: "150px",
@@ -416,35 +396,36 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       ),
     },
     {
-      name: "Descripción",
+      name: "DESCRIPCIÓN",
       selector: (row) => row.description || "-",
       sortable: true,
       width: "250px",
       cell: (row) => (
-        <Form.Control
-          value={row.description || ""}
-          onChange={(e) => handleFieldChange(row.id, "description", e.target.value)}
-          size="sm"
-          style={{ resize: "none", overflow: "hidden" }}
-          disabled={editingRowId !== row.id}
-        />
+        <div style={{ display: "flex", alignItems: "center" }}>
+          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
+            {row.description}
+          </div>
+          <Button
+            variant="link"
+            size="sm"
+            onClick={() => {
+              setSelectedDescription(row.description || "");
+              setShowDescriptionModal(true);
+            }}
+            style={{ padding: 0, fontSize: "0.8rem", marginLeft: "8px" }}
+          >
+            Ver más
+          </Button>
+        </div>
       ),
     },
     {
-      name: "Tipo de problema",
+      name: "TIPO DE PROBLEMA",
       selector: (row) => row.issue_type || "-",
       sortable: true,
-      cell: (row) => (
-        <Form.Control
-          value={row.issue_type || ""}
-          onChange={(e) => handleFieldChange(row.id, "issue_type", e.target.value)}
-          size="sm"
-          disabled={editingRowId !== row.id}
-        />
-      ),
     },
     {
-      name: "Estatus",
+      name: "ESTATUS",
       selector: (row) => row.status || "-",
       sortable: true,
       width: "200px",
@@ -453,7 +434,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       ),
     },
     {
-      name: "Fecha de creación",
+      name: "FECHA DE CREACIÓN",
       selector: (row) =>
         row.date_create ? format(new Date(row.date_create), "dd/MM/yyyy") : "-",
       sortable: true,
@@ -471,7 +452,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       ),
     },
     {
-      name: "Comentarios",
+      name: "COMENTARIOS",
       selector: (row) => row.comments?.length || 0,
       sortable: false,
       cell: (row) => (
@@ -484,7 +465,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       ),
     },
     {
-      name: "Archivos Adjuntos",
+      name: "ARCHIVOS ADJUNTOS",
       selector: (row) => row.attachedFiles?.length || 0,
       sortable: false,
       cell: (row) => (
@@ -497,7 +478,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       ),
     },
     {
-      name: "Historial",
+      name: "HISTORIAL",
       cell: (row) => (
         <div
           style={{ cursor: "pointer", textDecoration: "underline" }}
@@ -511,7 +492,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       button: true,
     },
     {
-      name: "Acciones",
+      name: "ACCIONES",
       width: "250px",
       cell: (row) => (
         <div className={styles.actionButtons}>
@@ -566,6 +547,8 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                 fontFamily: 'DIM, sans-serif',
                 fontWeight: 'bold',
                 backgroundColor: '#f8f9fa',
+                textTransform: 'uppercase',
+                textAlign: 'center',
               },
             },
             headCells: {
@@ -573,11 +556,17 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                 fontFamily: 'DIM, sans-serif',
                 fontWeight: 'bold',
                 backgroundColor: '#f8f9fa',
+                textTransform: 'uppercase',
+                textAlign: 'center',
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
               },
             },
             cells: {
               style: {
                 fontFamily: 'DIM, sans-serif',
+                padding: '8px',
               },
             },
             rows: {
@@ -591,6 +580,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
               when: row => modifiedRows.has(row.id),
               style: {
                 backgroundColor: '#ffeb3b',
+                animation: 'blink 1s infinite',
               },
             },
           ]}
@@ -643,7 +633,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                           textAlign: "left",
                           padding: "8px",
                           backgroundColor: "#f1f1f1",
-                          borderBottom: "1px solid #ddd",
                           fontFamily: 'DIM, sans-serif',
                         }}
                       >
@@ -654,7 +643,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                           textAlign: "left",
                           padding: "8px",
                           backgroundColor: "#f1f1f1",
-                          borderBottom: "1px solid #ddd",
                           fontFamily: 'DIM, sans-serif',
                         }}
                       >
@@ -665,7 +653,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                           textAlign: "left",
                           padding: "8px",
                           backgroundColor: "#f1f1f1",
-                          borderBottom: "1px solid #ddd",
                           fontFamily: 'DIM, sans-serif',
                         }}
                       >
@@ -676,7 +663,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                           textAlign: "center",
                           padding: "8px",
                           backgroundColor: "#f1f1f1",
-                          borderBottom: "1px solid #ddd",
                           fontFamily: 'DIM, sans-serif',
                         }}
                       >
@@ -710,7 +696,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                             <td
                               style={{
                                 padding: "8px",
-                                borderBottom: "1px solid #ddd",
                                 backgroundColor: "#fff",
                                 wordWrap: "break-word",
                                 maxWidth: "400px",
@@ -722,7 +707,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                             <td
                               style={{
                                 padding: "8px",
-                                borderBottom: "1px solid #ddd",
                                 backgroundColor: "#fff",
                                 fontFamily: 'DIM, sans-serif',
                               }}
@@ -732,7 +716,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                             <td
                               style={{
                                 padding: "8px",
-                                borderBottom: "1px solid #ddd",
                                 backgroundColor: "#fff",
                                 fontFamily: 'DIM, sans-serif',
                               }}
@@ -743,7 +726,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                               style={{
                                 textAlign: "center",
                                 padding: "8px",
-                                borderBottom: "1px solid #ddd",
                                 backgroundColor: "#fff",
                                 fontFamily: 'DIM, sans-serif',
                               }}
@@ -828,6 +810,61 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
           </Modal.Body>
         </Modal>
       )}
+
+      <Modal
+        show={showDescriptionModal}
+        onHide={() => setShowDescriptionModal(false)}
+        size="lg"
+        className={styles.modalComment}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title
+            style={{
+              fontSize: "1.2rem",
+              color: "#333",
+              fontWeight: "500",
+              textTransform: "capitalize",
+              letterSpacing: "0.5px",
+              lineHeight: "1.5",
+              fontFamily: 'DIM, sans-serif',
+            }}
+          >
+            Descripción
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Form.Control
+            as="textarea"
+            value={selectedDescription}
+            onChange={(e) => setSelectedDescription(e.target.value)}
+            rows={10}
+            style={{
+              width: "100%",
+              fontFamily: 'DIM, sans-serif',
+              whiteSpace: "pre-wrap",
+              fontSize: '1.2rem',
+              lineHeight: '1.6',
+              padding: '20px',
+              backgroundColor: '#f9f9f9',
+              borderRadius: '8px',
+              resize: 'vertical',
+            }}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button
+            variant="primary"
+            onClick={() => {
+              if (selectedCase) {
+                handleFieldChange(selectedCase.id, "description", selectedDescription);
+              }
+              setShowDescriptionModal(false);
+            }}
+          >
+            Guardar
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
       <NotificationComponent notifications={notifications} setNotifications={setNotifications} />
     </div>

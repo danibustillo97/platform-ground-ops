@@ -11,12 +11,12 @@ interface AuthUser {
 }
 
 interface ExtendedNextAuthUser extends NextAuthUser {
-    access_token: string; 
+    access_token: string;
     name: string;
 }
 
 interface ExtendedJWT {
-    access_token?: string; 
+    access_token?: string;
     name?: string;
 }
 
@@ -52,14 +52,15 @@ const authOptions: NextAuthOptions = {
                         throw new Error('Error en la autenticación');
                     }
 
-                    const data: AuthUser = await res.json();
-                    
+                    const data = await res.json();
+                    console.log('Respuesta JSON:', data);
+
                     if (!data.access_token) {
                         throw new Error('Access token no recibido o es inválido');
                     }
 
                     return {
-                        id: data.user.email, 
+                        id: data.user.email,
                         access_token: data.access_token,
                         email: data.user.email,
                         name: data.user.name,
@@ -77,13 +78,13 @@ const authOptions: NextAuthOptions = {
     callbacks: {
         async jwt({ token, user }) {
             if (user) {
-                token.access_token = (user as ExtendedNextAuthUser).access_token; 
-                token.name = (user as ExtendedNextAuthUser).name; 
+                token.access_token = (user as ExtendedNextAuthUser).access_token;
+                token.name = (user as ExtendedNextAuthUser).name;
             }
             return token;
         },
         async session({ session, token }) {
-            session.user.access_token = (token as ExtendedJWT).access_token || ""; 
+            session.user.access_token = (token as ExtendedJWT).access_token || "";
             session.user.name = (token as ExtendedJWT).name || "";
             return session;
         },
