@@ -1,11 +1,11 @@
 // Obtener todos los usuarios
-const apiUrl = "https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net"
-// const apiUrl = "http://localhost:8000"
+const Url = "https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net"
+// const Url = "http://localhost:8000"
 
 
 export const getUsers = async (limit = 100) => {
-    // const response = await fetch(`http://localhost:8000/api/users/?limit=${limit}`
-    const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/users/?limit=${limit}`, {
+    // const response = await fetch(`http://localhost:8000/api/users/?limit=${limit}`,{ 
+    const response = await fetch(`${Url}/api/users/?limit=${limit}`, {
         method: "GET",
         headers: {
             "ngrok-skip-browser-warning": "true",
@@ -27,7 +27,7 @@ export const getUsers = async (limit = 100) => {
 // Crear un nuevo usuario
 export const createUser = async (user: { name: string; email: string }) => {
     try {
-        const response = await fetch("https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/users/", {
+        const response = await fetch(`${Url}/api/users/`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -49,7 +49,7 @@ export const createUser = async (user: { name: string; email: string }) => {
 // Editar un usuario
 export const updateUser = async (id: number, updatedData: { name?: string; email?: string }) => {
     try {
-        const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/users/${id}`, {
+        const response = await fetch(`${Url}/api/users/${id}`, {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json",
@@ -72,7 +72,7 @@ export const updateUser = async (id: number, updatedData: { name?: string; email
 // Eliminar un usuario
 export const deleteUser = async (id: number) => {
     try {
-        const response = await fetch(`https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/users/${id}`, {
+        const response = await fetch(`${Url}/users/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
