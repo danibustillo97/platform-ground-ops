@@ -31,7 +31,7 @@ const useLoginController = () => {
 
         setLoading(true);
         try {
-            const res = await fetch('http://localhost:8000/api/login/login', {
+            const res = await fetch('https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/login/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',

@@ -1,5 +1,6 @@
 // data/repositories/baggageRepository.ts
-import { fetchPassengerDataAPI, createBaggageCasesAPI } from "../api/baggageAPI";
+import { get } from "http";
+import { fetchPassengerDataAPI, createBaggageCasesAPI, getBaggageCasesApi } from "../api/baggageAPI";
 
 export const getPassengerData = async (pnr: string) => {
     try {
@@ -17,6 +18,17 @@ export const createBaggageCases = async (baggageCases: any[]) => {
         return data;
     } catch (error) {
         console.error("Error in repository creating baggage cases", error);
+        throw error;
+    }
+};
+
+
+export const GetBaggageCases = async () => {
+    try {
+        const data = await getBaggageCasesApi();
+        return data;
+    } catch (error) {
+        console.error("Error in repository Obtainbaggage cases", error);
         throw error;
     }
 };

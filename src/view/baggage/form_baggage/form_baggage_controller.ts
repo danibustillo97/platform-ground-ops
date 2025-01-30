@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { getSession } from "next-auth/react";
-import { getPassengerData, createBaggageCases } from "../../../data/repositories/baggageRepository";
+import { getPassengerData, createBaggageCases, GetBaggageCases } from "../../../data/repositories/baggageRepository";
 import { PassengerData } from "../../../domain/types/PassengerData";
 import Alert from "@/components/Alerts/Alert";
 import axios from "axios";
+import { get } from "http";
 
 interface LogActionPayload {
     userId: string;
@@ -434,29 +435,30 @@ export const useFormBaggageController = () => {
                             .replace("${caseInfo.issue_type}", caseInfo.issue_type),
                     };
 
-                    const emailResponse = await fetch('https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/email/send-email/', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'Authorization': `Bearer ${token}`,
-                        },
-                        body: JSON.stringify(emailData),
-                    });
+                    // const emailResponse = await fetch('https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/email/send-email/', {
+                    //     method: 'POST',
+                    //     headers: {
+                    //         'Content-Type': 'application/json',
+                    //         'Authorization': `Bearer ${token}`,
+                    //     },
+                    //     body: JSON.stringify(emailData),
+                    // });
 
-                    if (!emailResponse.ok) {
-                        throw new Error(`Error: ${emailResponse.status}`);
-                    }
+                    // if (!emailResponse.ok) {
+                    //     throw new Error(`Error: ${emailResponse.status}`);
+                    // }
 
-                    return emailResponse.json();
+                    // return emailResponse.json();
                 });
 
                 await Promise.all(emailPromises);
 
                 setAlert({ type: 'success', message: 'Los casos de equipaje se han creado exitosamente y se ha enviado un correo electrónico de confirmación.' });
-                if (currentUserId) {
+                if (  currentUserId) {
                     logUserAction(currentUserId, 'CREATE_CASES', 'Cases created successfully');
                 }
                 resetForm();
+                GetBaggageCases();
             } catch (error) {
                 if (error instanceof Error) {
                     if (error.message.includes("400")) {

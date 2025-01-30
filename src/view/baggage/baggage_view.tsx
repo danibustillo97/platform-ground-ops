@@ -129,12 +129,22 @@ const BaggageView: React.FC = () => {
           </Card>
         </Col>
       </Row>
+
+
+
+      
       <Row>
         <Col>
+
+
           <Card className="shadow-lg border-0">
+
+
             <Card.Header className={`${styles.CardHeader}`} style={{ backgroundColor: "#510C76", color: "#fff" }}>
               <h5 className="mb-0" style={{ fontSize: "1.2rem" }}>Equipajes</h5>
             </Card.Header>
+
+
             <Card.Body style={{ backgroundColor: "#f7f7f7" }}>
               <Tabs defaultActiveKey="gestion" id="baggage-tabs" className="mb-3" style={{ borderColor: "#510C76" }}>
                 <Tab
@@ -167,7 +177,12 @@ const BaggageView: React.FC = () => {
                 </Tab>
               </Tabs>
             </Card.Body>
+
+
+
           </Card>
+
+
         </Col>
       </Row>
     </Container>

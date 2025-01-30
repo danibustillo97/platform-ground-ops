@@ -428,7 +428,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
 
             }}
           >
-           Ver <MdAdsClick />
+           <span style={{color:"black"}}>Ver</span> <MdAdsClick />
           </Button>
         </div>
 
