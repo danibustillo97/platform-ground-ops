@@ -33,7 +33,6 @@ export const createBaggageCasesAPI = async (baggageCases: any[]) => {
             {
                 method: "POST",
                 headers: {
-                    // "ngrok-skip-browser-warning": "true",
                     "Content-Type": "application/json",
                     // Authorization: `Bearer ${token}`,  
                 },
@@ -77,8 +76,8 @@ export const getBaggageCasesApi = async () => {
         );
         if (response.ok) {
             const data = await response.json();
-            console.log("Respuesta completa desde la API:", response); 
-            console.log("Datos procesados desde la API:", JSON.stringify(data, null, 2)); 
+            console.log("Respuesta completa desde la API:", response);
+            console.log("Datos procesados desde la API:", JSON.stringify(data, null, 2));
             return data;
         } else {
             console.error("Error fetching data:", response.statusText);
@@ -99,7 +98,7 @@ export const putBaggageCasesAPI = async (id_passenger: any, baggageCases: any, t
                 headers: {
                     "ngrok-skip-browser-warning": "true",
                     "Content-Type": "application/json",
-         
+
                 },
                 body: JSON.stringify(baggageCases),
             },
@@ -121,13 +120,13 @@ export const putBaggageCasesAPI = async (id_passenger: any, baggageCases: any, t
 export const deleteBaggageCasesAPI = async (ids: string[], token: string) => {
     try {
         const response = await fetch(
-            `${apiURL}/api/baggage-case/`, 
+            `${apiURL}/api/baggage-case/`,
             {
-            method: "DELETE",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify(ids), 
+                method: "DELETE",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(ids),
             }
         );
 

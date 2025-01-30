@@ -16,6 +16,7 @@ import { BaggageTableProps } from "@/view/baggage/BaggageTable/types/BaggageTabl
 import { FileObject } from "@/view/baggage/BaggageTable/types/FileObject";
 import NotificationComponent from "@/components/NotificationComponent";
 import ImageUpload from "@/view/baggage/BaggageTable/components/FileUpload";
+import { MdAdsClick } from "react-icons/md";
 
 interface BaggageTableWithNotificationsProps extends BaggageTableProps {
   onNotificationChange: (newNotifications: number) => void;
@@ -401,8 +402,8 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       sortable: true,
       width: "350px",
       cell: (row) => (
-        <div style={{ display: "flex", alignItems: "center",width:"100%", justifyContent: "space-between", maxWidth: "300px", padding: "5px", backgroundColor: "#dee2e6", borderRadius: "4px", boxShadow: "0 2px 2px rgba(0, 0, 0, 0.1)" }}>
-          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, fontFamily: 'DIM, sans-serif', fontSize: '0.8rem', color: '#333' }}>
+        <div style={{ display: "flex", alignItems: "center",width:"100%", justifyContent: "space-between", maxWidth: "300px", padding: "2px 8px", border:"1px solid rgba(208, 208, 208, 0.1)", backgroundColor: "#dee2e6", borderRadius: "4px" }}>
+          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, fontFamily: 'DIM, sans-serif', fontSize: '0.9rem', color: '#333' }}>
             <span>{row.description}</span>
           </div>
           <Button
@@ -414,20 +415,20 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
             }}
             style={{
               padding: "4px 8px",
-              fontSize: "0.6rem",
+              fontSize: "0.7rem",
               marginLeft: "12px",
               color: '#510C76',
               fontWeight: "600",
               textDecoration: "none",
               background: 'transparent',
               // border: '1px solid #510C76',
-              borderRadius: '10px',
+              borderRadius: '4px',
               transition: 'background-color 0.3s, color 0.3s',
               fontFamily: 'DIM, sans-serif'
 
             }}
           >
-            Ver más
+           Ver <MdAdsClick />
           </Button>
         </div>
 
