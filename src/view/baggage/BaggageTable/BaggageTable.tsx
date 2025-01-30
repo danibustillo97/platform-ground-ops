@@ -399,11 +399,11 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       name: "DESCRIPCIÓN",
       selector: (row) => row.description || "-",
       sortable: true,
-      width: "250px",
+      width: "350px",
       cell: (row) => (
-        <div style={{ display: "flex", alignItems: "center" }}>
-          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1 }}>
-            {row.description}
+        <div style={{ display: "flex", alignItems: "center",width:"100%", justifyContent: "space-between", maxWidth: "300px", padding: "5px", backgroundColor: "#dee2e6", borderRadius: "4px", boxShadow: "0 2px 2px rgba(0, 0, 0, 0.1)" }}>
+          <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, fontFamily: 'DIM, sans-serif', fontSize: '0.8rem', color: '#333' }}>
+            <span>{row.description}</span>
           </div>
           <Button
             variant="link"
@@ -412,11 +412,26 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
               setSelectedDescription(row.description || "");
               setShowDescriptionModal(true);
             }}
-            style={{ padding: 0, fontSize: "0.8rem", marginLeft: "8px" }}
+            style={{
+              padding: "4px 8px",
+              fontSize: "0.6rem",
+              marginLeft: "12px",
+              color: '#510C76',
+              fontWeight: "600",
+              textDecoration: "none",
+              background: 'transparent',
+              // border: '1px solid #510C76',
+              borderRadius: '10px',
+              transition: 'background-color 0.3s, color 0.3s',
+              fontFamily: 'DIM, sans-serif'
+
+            }}
           >
             Ver más
           </Button>
         </div>
+
+
       ),
     },
     {

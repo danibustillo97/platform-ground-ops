@@ -1,12 +1,15 @@
-import styles from "./Loader.module.css";
+"use client";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";  // Cambio aquí
 
 const HomePage = () => {
-  return (
-    <div className={styles.loaderContainer}>
-      <div className={styles.loader}></div>
-      <h1 className={styles.loaderText}>Comprobando Estado del Usuario</h1>
-    </div>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push("/dashboard");
+  }, [router]);
+
+  return null;
 };
 
 export default HomePage;

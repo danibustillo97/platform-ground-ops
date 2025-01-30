@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { signOut, useSession } from "next-auth/react";
+import { signOut } from "next-auth/react";
 import {
   AppBar,
   Toolbar,
@@ -27,11 +27,11 @@ import Link from "next/link";
 
 interface NavbarProps {
   toggleSidebar: () => void;
-  notifications: { message: string; time: string }[]; // Array de notificaciones
+  notifications: { message: string; time: string }[];
+  session: any; // Ajusta el tipo según tus necesidades
 }
 
-const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, notifications }) => {
-  const { data: session } = useSession();
+const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, notifications, session }) => {
   const router = useRouter();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [notificationAnchorEl, setNotificationAnchorEl] = useState<null | HTMLElement>(null);
@@ -137,7 +137,7 @@ const Navbar: React.FC<NavbarProps> = ({ toggleSidebar, notifications }) => {
             <>
               <IconButton onClick={handleMenuOpen}>
                 <Avatar
-                  src="https://img.freepik.com/premium-vector/avatar-icon0002_750950-43.jpg?semt=ais_hybrid"
+                  src="https://img.freepik.com/premium-vector/avatar-icon0002_750950-43.jpg?w=200"
                   alt="User Avatar"
                   sx={{
                     backgroundColor: "#F0E6F5",

@@ -62,16 +62,16 @@ export const createBaggageCasesAPI = async (baggageCases: any[], token: string) 
 };
 
 
-export const getBaggageCasesApi = async (token: string) => {
+export const getBaggageCasesApi = async () => {
     try {
         const response = await fetch(
             `${apiURL}/api/baggage-case/`,
             {
                 method: "GET",
                 headers: {
-                    "ngrok-skip-browser-warning": "true",
+                    // "ngrok-skip-browser-warning": "true",
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,  
+                    // Authorization: `Bearer ${token}`,  
                 },
             }
         );

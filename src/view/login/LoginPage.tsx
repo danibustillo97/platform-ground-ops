@@ -1,3 +1,4 @@
+// pages/login.tsx
 "use client";
 
 import React from "react";
@@ -36,8 +37,8 @@ export default function LoginPage() {
                             <label htmlFor="email" className={styles.label}>Email</label>
                             <input
                                 type="text"
-                                name="username" 
-                                id="username" 
+                                name="username"
+                                id="username"
                                 placeholder="Ingresa tu email"
                                 value={formData.username}
                                 onChange={handleChange}

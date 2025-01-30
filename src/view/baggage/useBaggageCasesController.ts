@@ -25,21 +25,21 @@ export const useBaggageCasesController = () => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const session = await getSession();
-        const sessionToken = session?.user.access_token as string; // Solo usamos el token de la sesión
+        // const session = await getSession();
+        // const sessionToken = session?.user.access_token as string; 
     
-        if (!sessionToken) {
-          throw new Error("Token de sesión no disponible.");
-        }
+        // if (!sessionToken) {
+        //   throw new Error("Token de sesión no disponible.");
+        // }
     
 
-        const sasToken = getPermanentToken(); 
+        // const sasToken = getPermanentToken(); 
     
-        if (sasToken) {
-          initializeBlobServiceClient(sasToken);
-        }
+        // if (sasToken) {
+        //   initializeBlobServiceClient(sasToken);
+        // }
 
-        const data = await getBaggageCasesApi(sessionToken);
+        const data = await getBaggageCasesApi();
         setBaggageCases(data);
       } catch (error) {
         console.error("Error al cargar los casos:", error);

@@ -1,6 +1,5 @@
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { signIn } from "next-auth/react";
 
 const useLoginController = () => {
     const router = useRouter();
@@ -15,7 +14,7 @@ const useLoginController = () => {
 
         setErrors(prevErrors => ({
             ...prevErrors,
-            general: null, 
+            general: null,
             ...formErrors,
         }));
         return formErrors;
@@ -32,21 +31,27 @@ const useLoginController = () => {
 
         setLoading(true);
         try {
-            const res = await signIn('credentials', {
-                email: formData.username, 
-                password: formData.password,
-                redirect: false,
+            const res = await fetch('http://localhost:8000/api/login/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: new URLSearchParams({
+                    username: formData.username,
+                    password: formData.password,
+                }),
             });
 
-            if (res?.error) {
+            if (!res.ok) {
+                const errorData = await res.json();
                 setErrors(prevErrors => ({
                     ...prevErrors,
-                    general: res?.error || null, 
+                    general: errorData.detail || 'Error en la autenticación',
                 }));
                 return;
             }
 
-            router.push('/dashboard'); 
+            router.push('/baggage_gestion');
 
         } catch (error) {
             console.error(error);
@@ -59,18 +64,12 @@ const useLoginController = () => {
         }
     };
 
-
-    const handleLoginEntraId = async (e: React.FormEvent<HTMLFormElement>) => {
-        
-    }
-
     return {
         formData,
         errors,
         loading,
         handleChange,
         handleSubmit,
-        handleLoginEntraId
     };
 };
 
