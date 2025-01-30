@@ -7,8 +7,7 @@ import BaggageTable from "@/view/baggage/BaggageTable/BaggageTable";
 import { BaggageCase } from "@/domain/types/BaggageCase";
 import styles from "@/view/baggage/baggage.module.css";
 import { PiMicrosoftExcelLogoBold } from "react-icons/pi";
-
-
+import * as XLSX from 'xlsx';
 import FormReclamoView from "@/view/baggage/form_baggage/form_baggage_view";
 
 const BaggageView: React.FC = () => {
@@ -38,7 +37,6 @@ const BaggageView: React.FC = () => {
         }
 
         const baggage_case_id = baggageCase.id;
-        // const url = `http://localhost:8000/api/baggage-case/${baggage_case_id}`;
         const url = `https://arajet-app-odsgrounds-backend-dev-fudkd8eqephzdubq.eastus-01.azurewebsites.net/api/baggage-case/${baggage_case_id}`;
         const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJEYW5pbG8uQnVzdGlsbG8uZXh0QGFyYWpldC5jb20iLCJleHAiOjE3MzQwOTgxNzh9.OAJhlGGjsW-K1QQMhOERQNujLxvvv7-rA_xtnOHXOxw";
         console.log(`Guardando caso de equipaje con ID: ${baggage_case_id}`);
@@ -70,6 +68,12 @@ const BaggageView: React.FC = () => {
 
   const handleExportExcel = () => {
     console.log("Exporting to Excel...");
+
+    const ws = XLSX.utils.json_to_sheet(filteredCases);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "BaggageCases");
+
+    XLSX.writeFile(wb, "BaggageCases.xlsx");
   };
 
   const handleAddCase = () => {
@@ -137,7 +141,6 @@ const BaggageView: React.FC = () => {
                   eventKey="gestion"
                   title="Gestión de Equipaje"
                   className="border-0"
-
                   style={{ color: "#510C76", fontWeight: "600" }}
                 >
                   <BaggageTable

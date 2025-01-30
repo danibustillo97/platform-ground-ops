@@ -101,12 +101,12 @@ export const useFormBaggageController = () => {
      */
     const fetchPassengerData = async (pnr: string) => {
         try {
-            const session = await getSession();
-            const token = session?.user.access_token;
-            if (token) {
-                const data = await getPassengerData(pnr, token);
-                setPassengerData(data);
-            }
+            // const session = await getSession();
+            // const token = session?.user.access_token;
+
+            const data = await getPassengerData(pnr);
+            setPassengerData(data);
+
         } catch (error) {
             console.error("Error fetching passenger data from repository", error);
         }
@@ -257,9 +257,9 @@ export const useFormBaggageController = () => {
             };
         });
 
-        if (token) {
+        if (!token) {
             try {
-                const response = await createBaggageCases(formattedData, token);
+                const response = await createBaggageCases(formattedData);
                 console.log("Respuesta del servidor:", response);
 
                 const emailPromises = formattedData.map(async (caseInfo) => {
@@ -484,7 +484,7 @@ export const useFormBaggageController = () => {
             phone: "",
             email: "",
             address: "",
-              
+
         });
         setPnr("");
         setAlert(null);
@@ -516,6 +516,6 @@ export const useFormBaggageController = () => {
         alert,
         setAlert,
         resetForm,
-        isLoading, 
+        isLoading,
     };
 };

@@ -1,9 +1,9 @@
 import { BaggageCase } from "@/types/BaggageCase";
 
-const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
-// const apiURL = "http://localhost:8000";
+// const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
+const apiURL = "http://localhost:8000";
 
-export const fetchPassengerDataAPI = async (pnr: string, token: string) => {
+export const fetchPassengerDataAPI = async (pnr: string) => {
     try {
         const response = await fetch(
             `${apiURL}/api/manifest/${pnr}`,
@@ -26,16 +26,16 @@ export const fetchPassengerDataAPI = async (pnr: string, token: string) => {
     }
 };
 
-export const createBaggageCasesAPI = async (baggageCases: any[], token: string) => {
+export const createBaggageCasesAPI = async (baggageCases: any[]) => {
     try {
         const response = await fetch(
             `${apiURL}/api/baggage-case/`,
             {
                 method: "POST",
                 headers: {
-                    "ngrok-skip-browser-warning": "true",
+                    // "ngrok-skip-browser-warning": "true",
                     "Content-Type": "application/json",
-                    Authorization: `Bearer ${token}`,  
+                    // Authorization: `Bearer ${token}`,  
                 },
                 body: JSON.stringify(baggageCases),
             }
