@@ -23,6 +23,7 @@ const AgentDropdown: React.FC<AgentDropdownProps> = ({ value, onChange, agents }
       value={agentOptions.find((option) => option.value === value)}
       onChange={handleChange}
       styles={{
+       
         control: (base: any) => ({
           ...base,
           minHeight: "30px",
@@ -32,6 +33,7 @@ const AgentDropdown: React.FC<AgentDropdownProps> = ({ value, onChange, agents }
         dropdownIndicator: (base: any) => ({
           ...base,
           padding: "4px",
+        
         }),
         menu: (base: any) => ({
           ...base,

@@ -308,12 +308,12 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
     },
     {
       name: "AGENTE",
-      width: "180px",
+      width: "200px",
       selector: (row) => row.assigned_Agent || "-",
       sortable: true,
       cell: (row) => (
         <Form.Group>
-          <div style={{ width: "100%", maxWidth: "180px" }}>
+          <div style={{ width: "140px", maxWidth: "180px" }}>
             <AgentDropdown
               value={row.agentId || "NoData"}
               onChange={(value) => handleAgentChange(row.id, value)}
@@ -649,6 +649,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
                           padding: "8px",
                           backgroundColor: "#f1f1f1",
                           fontFamily: 'DIM, sans-serif',
+                          textAlignLast: 'center',
                         }}
                       >
                         Comentario
