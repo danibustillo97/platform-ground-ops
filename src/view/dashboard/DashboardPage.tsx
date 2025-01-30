@@ -1,9 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
 import { Container, Row, Col, Card, Button, Navbar, ListGroup, Alert, Badge } from 'react-bootstrap';
 import { FaChartBar, FaUsers, FaBell, FaEnvelope, FaBars } from 'react-icons/fa';
-import Chart from 'react-apexcharts';
+const Chart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 const Dashboard = () => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
