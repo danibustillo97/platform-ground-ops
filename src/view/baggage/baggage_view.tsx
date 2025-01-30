@@ -97,18 +97,20 @@ const BaggageView: React.FC = () => {
           <Card className="shadow-lg border-0">
             <Card.Header className={`${styles.CardHeader}`} style={{ backgroundColor: "#510C76", color: "#fff" }}>
               <Row className="d-flex justify-content-between w-100">
-                <Col xs="auto">
-                  <h5 className="mb-0" style={{ fontSize: "1.2rem" }}>Filtros</h5>
+                <Col xs="auto" style={{ display: "flex", alignItems: "center",  marginLeft: "10px"}}>
+                  <h5 className="mb-1 " style={{ fontSize: "1.2rem" }}>Equipajes</h5>
                 </Col>
                 <Col xs="auto" className="d-flex justify-content-end">
                   <Button
                     variant="light"
                     onClick={handleExportExcel}
-                    className={`${styles.ButtonExcel} me-2`}
+                    className={`${styles.ButtonExcel} s`}
                     style={{
                       backgroundColor: "#fff",
                       borderColor: "#510C76",
                       color: "#510C76",
+                      fontSize: "0.9rem",
+
                     }}
                   >
                     <PiMicrosoftExcelLogoBold />
@@ -140,9 +142,7 @@ const BaggageView: React.FC = () => {
           <Card className="shadow-lg border-0">
 
 
-            <Card.Header className={`${styles.CardHeader}`} style={{ backgroundColor: "#510C76", color: "#fff" }}>
-              <h5 className="mb-0" style={{ fontSize: "1.2rem" }}>Equipajes</h5>
-            </Card.Header>
+           
 
 
             <Card.Body style={{ backgroundColor: "#f7f7f7" }}>

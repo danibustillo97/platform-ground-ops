@@ -8,11 +8,10 @@
   /* Fondo claro */
 }
 
-/* Contenedor de la tabla */
+
 .tableContainer {
   max-width: 100%;
   overflow-x: auto;
-  /* Scroll horizontal para la tabla */
   border: 1px solid #ddd;
   border-radius: 10px;
   background-color: #fff;
@@ -21,21 +20,17 @@
   padding: 15px;
 }
 
-/* Contenedor de los botones de acción */
+
 .actionButtons {
   display: flex;
   justify-content: center;
-  /* Centra los botones */
   gap: 12px;
-  /* Espacio entre botones */
   align-items: center;
-  /* Alineación vertical */
+
 }
 
-/* Estilo individual de los botones */
 .actionButton {
   font-size: 1.2rem;
-  /* Tamaño de íconos mayor */
   width: 40px;
   height: 40px;
   display: flex;
@@ -116,7 +111,7 @@
 }
 
 .editableField:focus {
-  border-color: #510C76; /* Color profesional */
+  border-color: #510C76; 
   box-shadow: 0 0 5px rgba(81, 12, 118, 0.5);
 }
 
@@ -128,6 +123,7 @@
 .CardHeader{
   background-color: #510C76;
   color: white;
+
 }
 
 .ButtonAdd{
