@@ -1,7 +1,7 @@
 import { BaggageCase } from "@/types/BaggageCase";
 
-// const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
-const apiURL = "http://localhost:8000";
+const apiURL = process.env.NEXT_PUBLIC_BACKEND_URL;
+// const apiURL = "http://localhost:8000";
 
 export const fetchPassengerDataAPI = async (pnr: string) => {
     try {
