@@ -10,17 +10,51 @@ import CustomDropdown from "./components/DropDown/CustomDropdown/CustomDropdown"
 import { getSession } from "next-auth/react";
 import { fetchAllUsers } from "@/view/users/userController";
 import AgentDropdown from "./components/DropDown/AgentDropdown/AgentDropdown";
-import Alert from "@/components/Alerts/Alert";
 import StationDropdown from "./components/DropDown/StationDropdown/StationDropdown";
 import { BaggageTableProps } from "@/view/baggage/BaggageTable/types/BaggageTableProps";
 import { FileObject } from "@/view/baggage/BaggageTable/types/FileObject";
 import NotificationComponent from "@/components/NotificationComponent";
 import ImageUpload from "@/view/baggage/BaggageTable/components/FileUpload";
 import { MdAdsClick } from "react-icons/md";
+import { toast } from 'react-toastify';
 
 interface BaggageTableWithNotificationsProps extends BaggageTableProps {
   onNotificationChange: (newNotifications: number) => void;
 }
+
+const Alert = ({ type, message }: { type: string; message: string }) => {
+  switch (type) {
+    case "success":
+      toast.success(message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      break;
+    case "error":
+      toast.error(message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      break;
+    default:
+      toast(message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+  }
+};
 
 const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSaveChanges, onEdit, onCancel, onNotificationChange }) => {
   const [editableRows, setEditableRows] = useState<BaggageCase[]>([]);
@@ -79,7 +113,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       )
     );
     setModifiedRows((prevModifiedRows) => new Set(prevModifiedRows.add(id)));
-    console.log("Agent changed for row:", id, "New agentId:", agentId);
   };
 
   const handleStationChange = (id: string, station: string) => {
@@ -91,7 +124,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       )
     );
     setModifiedRows((prevModifiedRows) => new Set(prevModifiedRows.add(id)));
-    console.log("Station changed for row:", id, "New station:", station);
   };
 
   const handleAddComment = () => {
@@ -163,8 +195,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       const session = await getSession();
       const token = session?.user.access_token as string;
       try {
-        console.log("Datos a guardar:", updatedRowWithFiles);
-
         const response = await fetch(`${Url}/api/baggage-case/${id}`, {
           method: "PUT",
           headers: {
@@ -179,8 +209,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
         }
 
         const savedData = await response.json();
-        console.log("Datos guardados:", savedData);
-
         onSaveChanges([updatedRowWithFiles]);
         setEditingRowId(null);
         setModifiedRows((prevModifiedRows) => {
@@ -189,7 +217,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
           return newModifiedRows;
         });
 
-        // Actualiza el estado `savedFiles` y `editableRows`
         setSavedFiles(updatedRowWithFiles.attachedFiles || []);
         setEditableRows((prevRows) =>
           prevRows.map((row) =>
@@ -225,12 +252,11 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       setEditableRows((prevRows) => prevRows.filter((row) => row.id !== id));
       setSelectedCase(null);
       Alert({ type: "success", message: "Caso eliminado con éxito" });
-
     } catch (error) {
       console.error(error);
       Alert({ type: "error", message: "Error al eliminar el caso" });
     }
-  }
+  };
 
   const handleCancel = () => {
     setEditableRows(rows);
@@ -238,8 +264,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
     setViewMode("comments");
     setEditingRowId(null);
     setModifiedRows(new Set());
-
-    // Actualiza el estado `savedFiles` y `editableRows`
     setSavedFiles([]);
     setEditableRows((prevRows) =>
       prevRows.map((row) => ({ ...row, attachedFiles: [] }))
@@ -247,7 +271,6 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
   };
 
   const handleSendEmail = async () => {
-    console.log("Click");
     const emailData = {
       to: 'danibustillo97@gmail.com',
       text: 'Aqui realizo pruebas',
@@ -263,7 +286,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
 
     const data = await response.json();
     console.log(data.message);
-  }
+  };
 
   const formatName = (name: string): string => {
     const parts = name.split("/");
@@ -402,7 +425,7 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
       sortable: true,
       width: "350px",
       cell: (row) => (
-        <div style={{ display: "flex", alignItems: "center",width:"100%", justifyContent: "space-between", maxWidth: "300px", padding: "2px 8px", border:"1px solid rgba(208, 208, 208, 0.1)", backgroundColor: "#dee2e6", borderRadius: "4px" }}>
+        <div style={{ display: "flex", alignItems: "center", width: "100%", justifyContent: "space-between", maxWidth: "300px", padding: "2px 8px", border: "1px solid rgba(208, 208, 208, 0.1)", backgroundColor: "#dee2e6", borderRadius: "4px" }}>
           <div style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", flex: 1, fontFamily: 'DIM, sans-serif', fontSize: '0.9rem', color: '#333' }}>
             <span>{row.description}</span>
           </div>
@@ -421,18 +444,14 @@ const BaggageTable: React.FC<BaggageTableWithNotificationsProps> = ({ rows, onSa
               fontWeight: "600",
               textDecoration: "none",
               background: 'transparent',
-              // border: '1px solid #510C76',
               borderRadius: '4px',
               transition: 'background-color 0.3s, color 0.3s',
               fontFamily: 'DIM, sans-serif'
-
             }}
           >
-           <span style={{color:"black"}}>Ver</span> <MdAdsClick />
+            <span style={{ color: "black" }}>Ver</span> <MdAdsClick />
           </Button>
         </div>
-
-
       ),
     },
     {

@@ -9,6 +9,7 @@ import styles from "@/view/baggage/baggage.module.css";
 import { PiMicrosoftExcelLogoBold } from "react-icons/pi";
 import * as XLSX from 'xlsx';
 import FormReclamoView from "@/view/baggage/form_baggage/form_baggage_view";
+import { ToastContainer } from "react-toastify";
 
 const BaggageView: React.FC = () => {
   const [mounted, setMounted] = useState(false);
@@ -166,6 +167,7 @@ const BaggageView: React.FC = () => {
                       console.log("New notifications:", newNotifications);
                     }}
                   />
+                  <ToastContainer />
                 </Tab>
                 <Tab
                   eventKey="agregar"
