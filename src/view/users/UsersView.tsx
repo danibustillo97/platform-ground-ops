@@ -17,11 +17,9 @@ import {
   Spinner,
   Card,
   Dropdown,
-  Badge,
   DropdownButton,
-  ListGroup,
 } from "react-bootstrap";
-import { FaEdit, FaEnvelope, FaComments, FaEllipsisV } from "react-icons/fa";
+import { FaEdit, FaEnvelope } from "react-icons/fa";
 
 const UsersView: React.FC = () => {
   const [usersData, setUsersData] = useState<User[]>([]);
@@ -34,6 +32,7 @@ const UsersView: React.FC = () => {
     phone: "",
     rol: "",
     estaciones: [] as string[],
+    password: "", // Añadir campo de contraseña
   });
 
   const roles = ["Admin", "User", "Agente"];
@@ -41,7 +40,6 @@ const UsersView: React.FC = () => {
     "SDQ", "CTG", "BOG", "MDE", "AUA", "CUR", "PUJ", "EZE", "YUL", "STI", "LIM", "YYZ", "KIN",
     "CUN", "NLU", "GUA", "SAL", "SJO", "SCL", "GRU", "SXM", "UIO", "GYE"
   ];
-  
 
   useEffect(() => {
     fetchUsers();
@@ -92,9 +90,8 @@ const UsersView: React.FC = () => {
       rol: user.rol,
       estaciones: Array.isArray(user.estacion)
         ? user.estacion.map(String)
-        : (typeof user.estacion === 'string' ? (user.estacion as string).split(',').filter(Boolean) : [])
-
-
+        : (typeof user.estacion === 'string' ? (user.estacion as string).split(',').filter(Boolean) : []),
+      password: "", // No se debe mostrar la contraseña actual por seguridad
     });
     setShowModal(true);
   };
@@ -106,7 +103,8 @@ const UsersView: React.FC = () => {
       email: "",
       phone: "",
       rol: "",
-      estaciones: []
+      estaciones: [],
+      password: "", // Añadir campo de contraseña
     });
     setShowModal(true);
   };
@@ -137,7 +135,7 @@ const UsersView: React.FC = () => {
       <h2 className="text-center mb-5 fw-bold" style={{ color: '#510C76' }}>Gestión de Usuarios</h2>
 
       {/* Filtros */}
-      <Row className="mb-4 bg-light p-3 rounded">
+      <Row className="mb-4 bg-light p-3 rounded shadow-sm">
         <Col sm={12} md={4}>
           <Form.Control
             type="text"
@@ -190,9 +188,9 @@ const UsersView: React.FC = () => {
           <Spinner animation="border" variant="primary" />
         </div>
       ) : (
-        <Row>
+        <Row className="g-4">
           {usersData.map((user) => (
-            <Col key={user.id} sm={12} md={6} lg={4} xl={3} className="mb-4">
+            <Col key={user.id} sm={12} md={6} lg={4} xl={3}>
               <Card className="shadow-sm border-0 rounded-4">
                 <div className="d-flex justify-content-center mt-4">
                   <Card.Img
@@ -219,7 +217,7 @@ const UsersView: React.FC = () => {
                         .map((station: string) => (
                           <span
                             key={station}
-                            className="badge  text-white m-1 p-1"
+                            className="badge text-white m-1 p-1"
                             style={{
                               borderRadius: '20px',
                               fontSize: '0.6rem',
@@ -242,7 +240,7 @@ const UsersView: React.FC = () => {
                       variant="outline-primary"
                       onClick={() => handleEditUser(user)}
                       title="Editar"
-                      className="flex-grow-1 "
+                      className="flex-grow-1"
                       style={{
                         backgroundColor: '#510C76',
                         color: '#fff',
@@ -271,7 +269,6 @@ const UsersView: React.FC = () => {
         </Row>
       )}
 
-
       {/* Modal User Form */}
       <Modal show={showModal} onHide={() => setShowModal(false)} centered>
         <Modal.Header closeButton>
@@ -280,22 +277,24 @@ const UsersView: React.FC = () => {
         <Modal.Body>
           <Form onSubmit={(e) => e.preventDefault()}>
             <Form.Group controlId="formUserName" className="mb-3">
-              <Form.Label>Nombre</Form.Label>
+              <Form.Label>Nombre*</Form.Label>
               <Form.Control
                 type="text"
                 placeholder="Ingrese nombre"
                 value={userForm.name}
                 onChange={(e) => setUserForm({ ...userForm, name: e.target.value })}
+                required
               />
             </Form.Group>
 
             <Form.Group controlId="formUserEmail" className="mb-3">
-              <Form.Label>Correo</Form.Label>
+              <Form.Label>Correo*</Form.Label>
               <Form.Control
                 type="email"
                 placeholder="Ingrese correo"
                 value={userForm.email}
                 onChange={(e) => setUserForm({ ...userForm, email: e.target.value })}
+                required
               />
             </Form.Group>
 
@@ -309,12 +308,24 @@ const UsersView: React.FC = () => {
               />
             </Form.Group>
 
+            <Form.Group controlId="formUserPassword" className="mb-3">
+              <Form.Label>Contraseña*</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Ingrese contraseña"
+                value={userForm.password}
+                onChange={(e) => setUserForm({ ...userForm, password: e.target.value })}
+                required
+              />
+            </Form.Group>
+
             <Form.Group controlId="formUserRole" className="mb-3">
-              <Form.Label>Rol</Form.Label>
+              <Form.Label>Rol*</Form.Label>
               <Form.Control
                 as="select"
                 value={userForm.rol}
                 onChange={(e) => setUserForm({ ...userForm, rol: e.target.value })}
+                required
               >
                 <option value="">Seleccione un rol</option>
                 {roles.map((rol) => (
@@ -349,8 +360,8 @@ const UsersView: React.FC = () => {
                 ))}
               </DropdownButton>
 
-              {/* Lista de estacio nes con checkboxes */}
-              <div className="mt-3 d-flex flex-wrap justify-content-start align-items-center gap-2 ">
+              {/* Lista de estaciones con checkboxes */}
+              <div className="mt-3 d-flex flex-wrap justify-content-start align-items-center gap-2">
                 {userForm.estaciones.map((station) => (
                   <Form.Check
                     key={station}
